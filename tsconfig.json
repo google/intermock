@@ -11,7 +11,9 @@
     "noEmitOnError": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
+    "outDir": "build",
     "pretty": true,
+    "rootDir": ".",
     "sourceMap": true,
     "strict": true,
     "target": "es2016"
