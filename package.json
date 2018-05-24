@@ -2,7 +2,9 @@
   "name": "intermock",
   "version": "0.0.1",
   "description": "Automatically create mock objects from TypeScript interfaces via Faker",
-  "bin": "./bin/intermock.js",
+  "bin": {
+     "intermock": "./bin/src/cli.js"
+  },
   "dependencies": {
     "command-line-args": "5.0.2",
     "command-line-usage": "5.0.5",
@@ -23,6 +25,7 @@
     "clean": "rimraf coverage build tmp",
     "ci": "npm run format-check && npm run test",
     "build": "tsc -p tsconfig.json",
+    "dist": "tsc -p tsconfig.json --outDir ./bin",
     "watch": "tsc -w -p tsconfig.json",
     "lint": "tslint -t stylish --project \"tsconfig.json\"",
     "format-check": "./bin/format-check.sh",
