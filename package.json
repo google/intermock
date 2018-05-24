@@ -1,0 +1,37 @@
+{
+  "name": "intermock",
+  "version": "0.0.1",
+  "description": "Automatically create mock objects from TypeScript interfaces via Faker",
+  "bin": "./bin/intermock.js",
+  "dependencies": {
+    "command-line-args": "5.0.2",
+    "command-line-usage": "5.0.5",
+    "faker": "4.1.0",
+    "typescript": "2.8.3"
+  },
+  "devDependencies": {
+    "@types/jest": "~22.2.3",
+    "@types/node": "~8.10.10",
+    "jest": "~22.4.3",
+    "rimraf": "~2.6.2",
+    "ts-jest": "~22.4.4",
+    "tslint": "~5.9.1",
+    "tslint-microsoft-contrib": "~5.0.3",
+    "tsutils": "~2.26.2"
+  },
+  "scripts": {
+    "clean": "rimraf coverage build tmp",
+    "ci": "npm run format-check && npm run test",
+    "build": "tsc -p tsconfig.json",
+    "watch": "tsc -w -p tsconfig.json",
+    "lint": "tslint -t stylish --project \"tsconfig.json\"",
+    "format-check": "./bin/format-check.sh",
+    "format": "clang-format -i -style='{Language: JavaScript, BasedOnStyle: Google, ColumnLimit: 80}' src/*.ts test/*.ts",
+    "pretest": "npm run lint",
+    "test": "npm run test-only",
+    "test-only": "jest --coverage",
+    "test:watch": "jest --watch"
+  },
+  "author": "Ryan McDermott <ryanmcdermott@google.com>",
+  "license": "MIT"
+}
