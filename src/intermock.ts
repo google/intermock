@@ -7,56 +7,53 @@ interface Options {
   outFile: string;
 }
 
+type FileTuple = [string, string];
+type FileTuples = [FileTuple];
+
 export class Intermock {
   constructor(private readonly files: string[]) {}
 
-  readFiles() {
+  readFiles(): Promise<any> {
     const filePromises = this.files.map(file => readFile(file));
     return new Promise((resolve) => {
       Promise.all(filePromises).then(buffers => {
-        const contents: string[] = [];
-        buffers.forEach(buffer => contents.push(buffer.toString()));
+        const contents: any = [];
+        buffers.forEach(
+            (buffer, index) =>
+                contents.push([this.files[index], buffer.toString()]));
         resolve(contents);
       });
     });
   }
 
-  delint(sourceFile: ts.SourceFile) {
-    delintNode(sourceFile);
+  traverseInterfaceChild(node: ts.Node, output: any) {
+    console.warn(node);
+  }
 
-    function delintNode(node: ts.Node) {
+  traverse(sourceFile: ts.SourceFile, output: any) {
+    const processNode = (node: ts.Node) => {
       switch (node.kind) {
-        case ts.SyntaxKind.ForStatement:
-        case ts.SyntaxKind.ForInStatement:
-        case ts.SyntaxKind.WhileStatement:
-        case ts.SyntaxKind.DoStatement:
-          if ((node as ts.IterationStatement).statement.kind !==
-              ts.SyntaxKind.Block) {
-            report(
-                node,
-                'A looping statement\'s contents should be wrapped in a block body.');
-          }
+        case ts.SyntaxKind.InterfaceDeclaration:
+          console.warn(node.kind);
+          node.getChildren().forEach(
+              child => this.traverseInterfaceChild(child, output));
           break;
 
         default:
           break;
       }
+    };
 
-      ts.forEachChild(node, delintNode);
-    }
-
-    function report(node: ts.Node, message: string) {
-      const {line, character} =
-          sourceFile.getLineAndCharacterOfPosition(node.getStart());
-      console.log(
-          `${sourceFile.fileName} (${line + 1},${character + 1}): ${message}`);
-    }
+    processNode(sourceFile);
   }
 
   async generate() {
     const output: any = {};
     const fileContents = await this.readFiles();
-    console.warn(fileContents);
+    fileContents.forEach(
+        (f: FileTuple) => this.traverse(
+            ts.createSourceFile(f[0], f[1], ts.ScriptTarget.ES2015, true),
+            output));
     return output;
   }
 }
