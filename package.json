@@ -3,18 +3,23 @@
   "version": "0.0.1",
   "description": "Automatically create mock objects from TypeScript interfaces via Faker",
   "bin": {
-     "intermock": "./bin/src/cli.js"
+    "intermock": "./bin/src/cli.js"
   },
   "dependencies": {
     "command-line-args": "5.0.2",
     "command-line-usage": "5.0.5",
     "faker": "4.1.0",
+    "fs-readfile-promise": "3.0.1",
     "typescript": "2.8.3"
   },
   "devDependencies": {
-    "@types/jest": "~22.2.3",
+    "@types/mocha": "5.2.0",
+    "@types/chai": "4.1.3",
     "@types/node": "~8.10.10",
-    "jest": "~22.4.3",
+    "@types/faker": "4.1.2",
+    "@types/fs-readfile-promise": "3.0.0",
+    "mocha": "5.2.0",
+    "chai": "4.1.2",
     "rimraf": "~2.6.2",
     "ts-jest": "~22.4.4",
     "tslint": "~5.9.1",
@@ -25,15 +30,15 @@
     "clean": "rimraf coverage build tmp",
     "ci": "npm run format-check && npm run test",
     "build": "tsc -p tsconfig.json",
-    "dist": "tsc -p tsconfig.json --outDir ./bin",
+    "dist": "tsc -p tsconfig.json --outDir ./bin --outFile ./bin/intermock.js",
     "watch": "tsc -w -p tsconfig.json",
     "lint": "tslint -t stylish --project \"tsconfig.json\"",
     "format-check": "./bin/format-check.sh",
     "format": "clang-format -i -style='{Language: JavaScript, BasedOnStyle: Google, ColumnLimit: 80}' src/*.ts test/*.ts",
     "pretest": "npm run lint",
     "test": "npm run test-only",
-    "test-only": "jest --coverage",
-    "test:watch": "jest --watch"
+    "test-only": "TODO FILL IN",
+    "test:watch": "TODO FILL IN"
   },
   "author": "Ryan McDermott <ryanmcdermott@google.com>",
   "license": "MIT"
