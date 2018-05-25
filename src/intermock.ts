@@ -13,15 +13,15 @@ type FileTuples = [FileTuple];
 export class Intermock {
   constructor(private readonly files: string[]) {}
 
-  readFiles(): Promise<any> {
+  private readFiles(): Promise<FileTuples> {
     const filePromises = this.files.map(file => readFile(file));
     return new Promise((resolve) => {
       Promise.all(filePromises).then(buffers => {
-        const contents: any = [];
+        const contents: any[] = [];
         buffers.forEach(
             (buffer, index) =>
                 contents.push([this.files[index], buffer.toString()]));
-        resolve(contents);
+        resolve(contents as FileTuples);
       });
     });
   }
@@ -34,7 +34,6 @@ export class Intermock {
     const processNode = (node: ts.Node) => {
       switch (node.kind) {
         case ts.SyntaxKind.InterfaceDeclaration:
-          console.warn(node.kind);
           node.getChildren().forEach(
               child => this.traverseInterfaceChild(child, output));
           break;
@@ -42,6 +41,8 @@ export class Intermock {
         default:
           break;
       }
+
+      ts.forEachChild(node, processNode);
     };
 
     processNode(sourceFile);
