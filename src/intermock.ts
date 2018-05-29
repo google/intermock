@@ -1,5 +1,6 @@
 import faker from 'faker';
 import readFile from 'fs-readfile-promise';
+import * as _ from 'lodash';
 import ts from 'typescript';
 
 interface Options {
@@ -26,16 +27,27 @@ export class Intermock {
     });
   }
 
-  traverseInterfaceChild(node: ts.Node, output: any) {
-    console.warn(node);
+  mock() {}
+
+  traverseInterfaceChild(node: ts.Node, output: any, path: string) {
+    switch (node.kind) {
+      case ts.SyntaxKind.PropertySignature:
+        //   console.warn(node);
+        break;
+      default:
+        break;
+    }
   }
 
   traverse(sourceFile: ts.SourceFile, output: any) {
     const processNode = (node: ts.Node) => {
       switch (node.kind) {
         case ts.SyntaxKind.InterfaceDeclaration:
-          node.getChildren().forEach(
-              child => this.traverseInterfaceChild(child, output));
+          const path = _.get(node, 'name.text', '');
+          _.set(output, path, {});
+
+          node.forEachChild(
+              child => this.traverseInterfaceChild(child, output, path));
           break;
 
         default:
@@ -55,6 +67,8 @@ export class Intermock {
         (f: FileTuple) => this.traverse(
             ts.createSourceFile(f[0], f[1], ts.ScriptTarget.ES2015, true),
             output));
+
+    console.warn('output: ', output);
     return output;
   }
 }

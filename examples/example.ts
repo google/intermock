@@ -8,8 +8,3 @@ interface Person {
   /** @mockType {name.lastName} */
   lastName: string;
 }
-
-/**
- * @mockRange {1-100}
- */
-type Persons = Person[];

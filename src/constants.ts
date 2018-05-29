@@ -1,1 +1,1 @@
-export const INTERFACE_RANGE = [1, 100];
+export const DEFAULT_IRANGE = [1, 100];
