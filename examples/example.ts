@@ -1,10 +1,10 @@
 /**
- * @mockRange {1-5}
+ * !mockRange {1-5}
  */
 interface Person {
-  /** @mockType {name.firstName} */
+  /** !mockType {name.firstName} */
   firstName: string;
 
-  /** @mockType {name.lastName} */
+  /** !mockType {name.lastName} */
   lastName: string;
 }
