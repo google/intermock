@@ -33,11 +33,14 @@ export class Intermock {
 
   mock(
       property: string, syntaxType: ts.SyntaxKind, mockType: string,
-      path: string) {
+      output: any, path: string) {
     const defaultMockType = _.get(propertyMap, property);
     if (mockType) {
+      _.set(output, path, fake(mockType));
     } else if (defaultMockType) {
+      _.set(output, path, fake(defaultMockType));
     } else {
+      throw new Error('mockType is not provided or cannot be inferred');
     }
   }
 
@@ -68,10 +71,12 @@ export class Intermock {
 
   processFile(sourceFile: ts.SourceFile, output: any) {
     const processNode = (node: ts.Node) => {
+      // TODO add case for generic `type`
       switch (node.kind) {
         case ts.SyntaxKind.InterfaceDeclaration:
           this.traverseInterface(node, output);
           break;
+
         default:
           break;
       }
