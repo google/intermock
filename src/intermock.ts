@@ -3,6 +3,7 @@ import * as _ from 'lodash';
 import ts from 'typescript';
 
 import {fake} from './fake';
+import {defaultTypeToMock} from './lib/defaultTypeToMock';
 import {propertyMap} from './propertyMap';
 
 interface Options {
@@ -38,16 +39,13 @@ export class Intermock {
   parseMockType(jsDocComment: string) {}
 
   mock(property: string, syntaxType: ts.SyntaxKind, mockType: string) {
-    const defaultMockType = _.get(propertyMap, property);
+    const smartMockType = _.get(propertyMap, property);
     if (mockType) {
       return fake(mockType);
-    } else if (defaultMockType) {
-      return fake(defaultMockType);
+    } else if (smartMockType) {
+      return fake(smartMockType);
     } else {
-      // TODO for basic types like string, number, boolean, etc. that don't have
-      // a default type
-
-      return '';
+      return defaultTypeToMock[syntaxType]();
     }
   }
 
