@@ -7,4 +7,11 @@ interface Person {
 
   /** !mockType {name.lastName} */
   lastName: string;
+
+  employeeDetail: EmployeeDetail;
+}
+
+interface EmployeeDetail {
+  /** !mockType {internet.email} */
+  email: string;
 }

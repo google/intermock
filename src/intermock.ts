@@ -44,17 +44,17 @@ export class Intermock {
     } else if (defaultMockType) {
       return fake(defaultMockType);
     } else {
-      // TODO for basic types like string, number, etc. that don't have a
-      // default type
+      // TODO for basic types like string, number, boolean, etc. that don't have
+      // a default type
 
       return '';
     }
   }
 
-  traverseInterfaceMembers(node: ts.Node, output: any) {
+  traverseInterfaceMembers(
+      node: ts.Node, output: any, sourceFile: ts.SourceFile) {
     switch (node.kind) {
       case ts.SyntaxKind.PropertySignature:
-        //   console.warn(node);
         const jsDocs = _.get(node, 'jsDoc', []);
         const property = _.get(node, 'name.text', '');
         let mockType = '';
@@ -64,17 +64,23 @@ export class Intermock {
           // mockRange for an array. In essence, we are only dealing with
           // primitives now
 
+          // TODO Handle error case where a complex type has MockDocs
+
           const jsDocComment = _.get(jsDocs[0], 'comment', '');
           if (jsDocComment.startsWith('!mockType')) {
             mockType = jsDocComment.match(/(?<=\{).+?(?=\})/g)[0];
           } else {
-            throw new Error(
-                'Cannot handle complex types yet, use mockType for primitive types for now');
+            // TODO
           }
-        }
 
-        const mock = this.mock(property, node.kind, mockType);
-        output[property] = mock;
+          const mock = this.mock(property, node.kind, mockType);
+          output[property] = mock;
+        } else {
+          // TODO handle arrays, and other complex types
+          _.set(output, property, {});
+          const typeName = _.get(node, 'type.typeName.text');
+          this.processFile(sourceFile, output[property], typeName);
+        }
 
         break;
       default:
@@ -82,24 +88,38 @@ export class Intermock {
     }
   }
 
-  traverseInterface(node: ts.Node, output: any) {
-    // TODO
-    const path = _.get(node, 'name.text', '');
-    _.set(output, path, {});
+  traverseInterface(
+      node: ts.Node, output: any, sourceFile: ts.SourceFile,
+      propToTraverse?: string) {
+    // TODO handle arrays, enums, etc.
+
+    if (!propToTraverse) {
+      const path = _.get(node, 'name.text', '');
+      _.set(output, path, {});
+
+      output = output[path];
+    }
 
     // TODO get range from JSDoc
     // TODO given a range of interfaces to generate, add to array. If 1
     // then just return an object
     node.forEachChild(
-        child => this.traverseInterfaceMembers(child, output[path]));
+        child => this.traverseInterfaceMembers(child, output, sourceFile));
   }
 
-  processFile(sourceFile: ts.SourceFile, output: any) {
+  processFile(sourceFile: ts.SourceFile, output: any, propToTraverse?: string) {
     const processNode = (node: ts.Node) => {
       // TODO add case for generic `type`
       switch (node.kind) {
         case ts.SyntaxKind.InterfaceDeclaration:
-          this.traverseInterface(node, output);
+          if (propToTraverse) {
+            const path = _.get(node, 'name.text', '');
+            if (path === propToTraverse) {
+              this.traverseInterface(node, output, sourceFile, propToTraverse);
+            }
+          } else {
+            this.traverseInterface(node, output, sourceFile);
+          }
           break;
 
         default:
