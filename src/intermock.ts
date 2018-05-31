@@ -45,6 +45,8 @@ export class Intermock {
     } else if (smartMockType) {
       return fake(smartMockType);
     } else {
+      console.warn(syntaxType);
+      console.warn(defaultTypeToMock);
       return defaultTypeToMock[syntaxType]();
     }
   }
@@ -75,9 +77,15 @@ export class Intermock {
           output[property] = mock;
         } else {
           // TODO handle arrays, and other complex types
-          _.set(output, property, {});
-          const typeName = _.get(node, 'type.typeName.text');
-          this.processFile(sourceFile, output[property], typeName);
+          if (_.get(node, 'type.kind') === ts.SyntaxKind.TypeReference) {
+            _.set(output, property, {});
+            const typeName = _.get(node, 'type.typeName.text');
+            this.processFile(sourceFile, output[property], typeName);
+          } else {
+            const type = _.get(node, 'type.kind');
+            const mock = this.mock(property, type, mockType);
+            output[property] = mock;
+          }
         }
 
         break;
@@ -94,7 +102,6 @@ export class Intermock {
     if (!propToTraverse) {
       const path = _.get(node, 'name.text', '');
       _.set(output, path, {});
-
       output = output[path];
     }
 

@@ -8,10 +8,16 @@ interface Person {
   /** !mockType {name.lastName} */
   lastName: string;
 
+  phone: number;
+
+  nickname: string;
+
   employeeDetail: EmployeeDetail;
 }
 
 interface EmployeeDetail {
   /** !mockType {internet.email} */
   email: string;
+
+  isFullTime: boolean;
 }
