@@ -4,6 +4,7 @@ import ts from 'typescript';
 
 import {fake} from './fake';
 import {defaultTypeToMock} from './lib/defaultTypeToMock';
+import {generateFixedData} from './lib/generateFixedData';
 import {propertyMap} from './propertyMap';
 
 interface Options {
