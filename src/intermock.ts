@@ -46,8 +46,6 @@ export class Intermock {
     } else if (smartMockType) {
       return fake(smartMockType);
     } else {
-      console.warn(syntaxType);
-      console.warn(defaultTypeToMock);
       return defaultTypeToMock[syntaxType]();
     }
   }

@@ -1,7 +1,10 @@
-describe('stub', () => {
-  beforeAll();
 
-  it('', () => {
-    expect(1).toBe(1);
+import 'mocha';
+
+import {expect} from 'chai';
+
+describe('stub', () => {
+  it('Test', () => {
+    expect(1).to.equal(1);
   });
 });
