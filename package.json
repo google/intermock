@@ -41,7 +41,7 @@
     "format-check": "./bin/format-check.sh",
     "format": "clang-format -i -style='{Language: JavaScript, BasedOnStyle: Google, ColumnLimit: 80}' src/*.ts test/*.ts",
     "test": "npm run test-only",
-    "test-only": "mocha -r ts-node/register test/**/*.spec.ts",
+    "test-only": "mocha --reporter mocha-notifier-reporter -r ts-node/register test/**/*.spec.ts",
     "test-watch": "./node_modules/watch-cli/bin/watch -p \"src/**/*.ts\" -c \"npm run build && npm run test\""
   },
   "author": "Ryan McDermott <ryanmcdermott@google.com>",
