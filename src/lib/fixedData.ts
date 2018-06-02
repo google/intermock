@@ -1,4 +1,6 @@
-export const fixedData = {
+import {MapLike} from './types';
+
+export const fixedData: MapLike<string|number|boolean> = {
   'address.zipCode': 53868,
   'address.city': 'East Diannabury',
   'address.cityPrefix': 'Lake',

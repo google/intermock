@@ -4,18 +4,13 @@ import ts from 'typescript';
 
 import {fake} from './fake';
 import {defaultTypeToMock} from './lib/defaultTypeToMock';
-import {generateFixedData} from './lib/generateFixedData';
+import {FileTuple, FileTuples} from './lib/types';
 import {propertyMap} from './propertyMap';
 
 interface Options {
   /** if not provided, then JSON output of generation is not written */
   outFile: string;
 }
-
-/** fileName: string, fileContent: string */
-type FileTuple = [string, string];
-
-type FileTuples = [FileTuple];
 
 /**
  * TODO Remove _.get throughout this code, opt for TS compiler methods to get

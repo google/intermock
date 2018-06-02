@@ -21,13 +21,15 @@
     "@types/lodash": "4.14.109",
     "@types/fs-readfile-promise": "3.0.0",
     "mocha": "5.2.0",
+    "mocha-notifier-reporter": "0.1.2",
     "chai": "4.1.2",
     "rimraf": "~2.6.2",
     "ts-jest": "~22.4.4",
     "ts-node": "6.0.5",
     "tslint": "~5.9.1",
     "tslint-microsoft-contrib": "~5.0.3",
-    "tsutils": "~2.26.2"
+    "tsutils": "~2.26.2",
+    "watch-cli": "0.2.3"
   },
   "scripts": {
     "clean": "rimraf coverage build tmp",
@@ -40,7 +42,7 @@
     "format": "clang-format -i -style='{Language: JavaScript, BasedOnStyle: Google, ColumnLimit: 80}' src/*.ts test/*.ts",
     "test": "npm run test-only",
     "test-only": "mocha -r ts-node/register test/**/*.spec.ts",
-    "test-watch": "mocha --watch -r ts-node/register test/**/*.spec.ts"
+    "test-watch": "./node_modules/watch-cli/bin/watch -p \"src/**/*.ts\" -c \"npm run build && npm run test\""
   },
   "author": "Ryan McDermott <ryanmcdermott@google.com>",
   "license": "MIT"
