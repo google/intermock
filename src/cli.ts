@@ -3,7 +3,8 @@
 import {Intermock} from './intermock';
 
 
-const intermock = new Intermock([`${__dirname}/../../examples/example.ts`]);
+const intermock =
+    new Intermock({files: [`${__dirname}/../../examples/example.ts`]});
 
 // intermock.generate().then((output: string) => {
 //   console.warn(output);

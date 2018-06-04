@@ -1,5 +1,5 @@
 import faker from 'faker';
-import {fixedData} from './lib/fixedData';
+import {fixedData} from './fixed-data';
 
 /**
  * Wrapper for Faker, or any mocking framework

@@ -1,4 +1,4 @@
-import {fake} from '../fake';
+import {fake} from './fake';
 import {generators} from './generators';
 
 export function generateFixedData() {

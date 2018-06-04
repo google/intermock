@@ -2,14 +2,15 @@ import readFile from 'fs-readfile-promise';
 import * as _ from 'lodash';
 import ts from 'typescript';
 
-import {fake} from './fake';
-import {defaultTypeToMock} from './lib/defaultTypeToMock';
+import {defaultTypeToMock} from './lib/default-type-to-mock';
+import {fake} from './lib/fake';
+import {smartProps} from './lib/smart-props';
 import {FileTuple, FileTuples} from './lib/types';
-import {propertyMap} from './propertyMap';
 
-interface Options {
-  /** if not provided, then JSON output of generation is not written */
-  outFile: string;
+export interface Options {
+  files: string[];
+
+  isFixedMode?: boolean;
 }
 
 /**
@@ -17,16 +18,16 @@ interface Options {
  * properties on AST nodes
  */
 export class Intermock {
-  constructor(private readonly files: string[]) {}
+  constructor(private readonly options: Options) {}
 
   private readFiles(): Promise<FileTuples> {
-    const filePromises = this.files.map(file => readFile(file));
+    const filePromises = this.options.files.map(file => readFile(file));
     return new Promise((resolve) => {
       Promise.all(filePromises).then(buffers => {
         const contents: any[] = [];
         buffers.forEach(
             (buffer, index) =>
-                contents.push([this.files[index], buffer.toString()]));
+                contents.push([this.options.files[index], buffer.toString()]));
         resolve(contents as FileTuples);
       });
     });
@@ -35,13 +36,15 @@ export class Intermock {
   parseMockType(jsDocComment: string) {}
 
   mock(property: string, syntaxType: ts.SyntaxKind, mockType: string) {
-    const smartMockType = _.get(propertyMap, property);
+    const smartMockType = _.get(smartProps, property);
+    const isFixedMode =
+        this.options.isFixedMode ? this.options.isFixedMode : false;
     if (mockType) {
-      return fake(mockType);
+      return fake(mockType, this.options.isFixedMode);
     } else if (smartMockType) {
-      return fake(smartMockType);
+      return fake(smartMockType, this.options.isFixedMode);
     } else {
-      return defaultTypeToMock[syntaxType]();
+      return defaultTypeToMock[syntaxType](isFixedMode);
     }
   }
 
