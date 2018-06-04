@@ -1,7 +1,8 @@
 import commandLineArgs from 'command-line-args';
 import commandLineUsage from 'command-line-usage';
-import {Intermock as IntermockTS} from 'lang/ts/intermock';
 import * as _ from 'lodash';
+
+import {Intermock as IntermockTS} from '../lang/ts/intermock';
 
 const optionDefinitions = [
   {
@@ -34,17 +35,17 @@ const instructions = [
     optionList: [
       {
         name: 'lang',
-        typeLabel: '[underline]{some_language}',
+        typeLabel: 'example: typescript',
         description: 'Language of interfaces, defaults to TypeScript',
       },
       {
         name: 'files',
-        typeLabel: '[underline]{web/apps/some-directory/interfaces1.ts}',
+        typeLabel: 'example: web/apps/some-directory/interfaces1.ts',
         description: 'Interface files to generate fake data from',
       },
       {
         name: 'outFile',
-        typeLabel: '[underline]{./output.json}',
+        typeLabel: 'example: ./output.json',
         description:
             'File to output interfaces to, defaults to printing to console',
       },
@@ -57,7 +58,7 @@ const instructions = [
 ];
 
 function isWelcomeMessageNeeded(options: any) {
-  if (_.isEmpty(options) || options.help) {
+  if (_.isEmpty(options) || !options.files || options.help) {
     return true;
   }
 
@@ -70,16 +71,23 @@ function showWelcomeMessage() {
 }
 
 function main() {
-  const options = commandLineArgs(optionDefinitions);
+  const options: any = commandLineArgs(optionDefinitions);
   if (isWelcomeMessageNeeded(options)) {
     showWelcomeMessage();
     return;
   }
 
-  //   const intermock =
-  //       new IntermockTS({files: [`${__dirname}/../../examples/example.ts`]});
+  const lang = options.language ? options.language : 'typescript';
 
-  //   intermock.generate();
+  if (lang === 'typescript') {
+    const intermock =
+        new IntermockTS({files: [`${__dirname}/../../examples/example.ts`]});
+
+    intermock.generate();
+
+  } else {
+    throw new Error(`${lang} is not currently supported`);
+  }
 }
 
 main();

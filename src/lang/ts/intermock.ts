@@ -1,10 +1,11 @@
 import readFile from 'fs-readfile-promise';
-import {defaultTypeToMock} from 'lib/default-type-to-mock';
-import {fake} from 'lib/fake';
-import {smartProps} from 'lib/smart-props';
-import {FileTuple, FileTuples} from 'lib/types';
 import * as _ from 'lodash';
 import ts from 'typescript';
+
+import {defaultTypeToMock} from '../../lib/default-type-to-mock';
+import {fake} from '../../lib/fake';
+import {smartProps} from '../../lib/smart-props';
+import {FileTuple, FileTuples} from '../../lib/types';
 
 export interface Options {
   files: string[];
