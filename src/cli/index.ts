@@ -1,6 +1,6 @@
 // TODO: Make this an actual CLI
 
-import {Intermock as IntermockTS} from '../lang/ts/intermock';
+import {Intermock as IntermockTS} from 'lang/ts/intermock';
 
 
 const intermock =
