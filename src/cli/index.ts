@@ -81,9 +81,13 @@ function main() {
   const lang = options.language ? options.language : 'typescript';
 
   if (lang === 'typescript') {
-    const intermock = new IntermockTS({files: options.files});
+    const intermock = new IntermockTS({
+      files: options.files,
+    });
 
-    intermock.generate();
+    intermock.generate().then((output: any) => {
+      console.warn(output);
+    });
 
   } else {
     throw new Error(`${lang} is not currently supported`);

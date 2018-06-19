@@ -29,3 +29,10 @@ interface EmployeeDetail {
 
   isFullTime: boolean;
 }
+
+interface User {
+  username: string;
+  firstName: string;
+  middleName?: string;
+  lastName: string;
+}

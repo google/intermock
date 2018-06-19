@@ -10,6 +10,7 @@ import {FileTuple, FileTuples} from '../../lib/types';
 export interface Options {
   files: string[];
   isFixedMode?: boolean;
+  isOptionalAlwaysEnabled?: boolean;
 }
 
 /**
@@ -54,6 +55,20 @@ export class Intermock {
       case ts.SyntaxKind.PropertySignature:
         const jsDocs = _.get(node, 'jsDoc', []);
         const property = _.get(node, 'name.text', '');
+        const isQuestionToken = _.get(node, 'questionToken');
+
+        if (isQuestionToken) {
+          if (this.options.isFixedMode &&
+              !this.options.isOptionalAlwaysEnabled) {
+            return;
+          }
+
+          else if (
+              Math.random() < .5 && !this.options.isOptionalAlwaysEnabled) {
+            return;
+          }
+        }
+
         let mockType = '';
 
         if (jsDocs.length > 0) {
