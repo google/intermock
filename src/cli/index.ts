@@ -72,6 +72,7 @@ function showWelcomeMessage() {
 
 function main() {
   const options: any = commandLineArgs(optionDefinitions);
+  console.warn(options);
   if (isWelcomeMessageNeeded(options)) {
     showWelcomeMessage();
     return;
@@ -80,8 +81,7 @@ function main() {
   const lang = options.language ? options.language : 'typescript';
 
   if (lang === 'typescript') {
-    const intermock =
-        new IntermockTS({files: [`${__dirname}/../../examples/example.ts`]});
+    const intermock = new IntermockTS({files: options.files});
 
     intermock.generate();
 

@@ -1,11 +1,19 @@
-/**
- * !mockRange {1-5}
- */
-interface Person {
+interface FlatInterface {
+  name: string;
+  age: number;
+}
+
+interface FlatPerson {
   /** !mockType {name.firstName} */
-  firstName: string;
+  fn: string;
 
   /** !mockType {name.lastName} */
+  ln: string;
+}
+
+interface Person {
+  firstName: string;
+
   lastName: string;
 
   phone: number;

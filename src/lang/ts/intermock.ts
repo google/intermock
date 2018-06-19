@@ -9,7 +9,6 @@ import {FileTuple, FileTuples} from '../../lib/types';
 
 export interface Options {
   files: string[];
-
   isFixedMode?: boolean;
 }
 
@@ -39,6 +38,7 @@ export class Intermock {
     const smartMockType = _.get(smartProps, property);
     const isFixedMode =
         this.options.isFixedMode ? this.options.isFixedMode : false;
+
     if (mockType) {
       return fake(mockType, this.options.isFixedMode);
     } else if (smartMockType) {
@@ -142,7 +142,6 @@ export class Intermock {
             ts.createSourceFile(f[0], f[1], ts.ScriptTarget.ES2015, true),
             output));
 
-    console.warn('output: ', output);
     return output;
   }
 }
