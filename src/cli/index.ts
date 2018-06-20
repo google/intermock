@@ -72,7 +72,7 @@ function showWelcomeMessage() {
 
 function main() {
   const options: any = commandLineArgs(optionDefinitions);
-  console.warn(options);
+
   if (isWelcomeMessageNeeded(options)) {
     showWelcomeMessage();
     return;
@@ -86,7 +86,7 @@ function main() {
     });
 
     intermock.generate().then((output: any) => {
-      console.warn(output);
+      console.log(output);
     });
 
   } else {

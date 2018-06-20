@@ -14,19 +14,21 @@
     "typescript": "2.8.3"
   },
   "devDependencies": {
-    "@types/mocha": "5.2.0",
+    "@types/chai": "4.1.3",
     "@types/command-line-args": "5.0.0",
     "@types/command-line-usage": "5.0.1",
-    "@types/chai": "4.1.3",
-    "@types/node": "~8.10.10",
     "@types/faker": "4.1.2",
-    "@types/lodash": "4.14.109",
     "@types/fs-readfile-promise": "3.0.0",
+    "@types/lodash": "4.14.109",
+    "@types/mocha": "5.2.0",
+    "@types/node": "~8.10.10",
+    "chai": "4.1.2",
     "mocha": "5.2.0",
     "mocha-multi-reporters": "1.1.7",
     "mocha-notifier-reporter": "0.1.2",
-    "chai": "4.1.2",
+    "nyc": "12.0.2",
     "rimraf": "~2.6.2",
+    "source-map-support": "0.5.6",
     "ts-jest": "~22.4.4",
     "ts-node": "6.0.5",
     "tslint": "~5.9.1",
@@ -36,6 +38,7 @@
   },
   "scripts": {
     "clean": "rimraf coverage build tmp",
+    "coverage": "nyc --reporter=html --reporter=text mocha --reporter mocha-multi-reporters --reporter-options configFile=mocha-config.json --no-colors -r ts-node/register test/**/*.spec.ts",
     "ci": "npm run format-check && npm run lint && npm run test",
     "build": "tsc -p tsconfig.json",
     "dist": "tsc -p tsconfig.json --outDir ./bin",
@@ -46,6 +49,23 @@
     "test": "npm run test-only",
     "test-only": "mocha --reporter mocha-multi-reporters --reporter-options configFile=mocha-config.json --no-colors -r ts-node/register test/**/*.spec.ts",
     "test-watch": "./node_modules/watch-cli/bin/watch -p \"./**/*.ts\" -c \"npm run build && npm run test\""
+  },
+  "nyc": {
+    "extension": [
+      ".ts",
+      ".tsx"
+    ],
+    "exclude": [
+      "**/*.d.ts",
+      "bin/**/*",
+      "build/**/*",
+      "coverage/**/*",
+      "test/**/*"
+    ],
+    "reporter": [
+      "html"
+    ],
+    "all": true
   },
   "author": "Ryan McDermott <ryanmcdermott@google.com>",
   "license": "MIT"

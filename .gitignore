@@ -8,6 +8,7 @@ node_modules/
 
 # Coverage
 coverage
+.nyc_output
 
 # Transpiled files
 build/
