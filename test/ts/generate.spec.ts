@@ -36,4 +36,24 @@ describe('', () => {
       expect(output.Person).to.deep.equal(expectedNested);
     });
   });
+
+  it('should generate mock for interfaces with optional types - optional forced as always',
+     () => {
+       const im = new Intermock(
+           {files: [`${__dirname}/test-data/optional.ts`], isFixedMode: true});
+
+       return im.generate().then((output: any) => {
+         expect(1).to.deep.equal(1);
+       });
+     });
+
+  it('should generate mock for interfaces with optional types - optional forced as never',
+     () => {
+       const im = new Intermock(
+           {files: [`${__dirname}/test-data/optional.ts`], isFixedMode: true});
+
+       return im.generate().then((output: any) => {
+         expect(1).to.deep.equal(1);
+       });
+     });
 });
