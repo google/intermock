@@ -45,7 +45,7 @@
     "format": "clang-format -i -style='{Language: JavaScript, BasedOnStyle: Google, ColumnLimit: 80}' src/*.ts test/*.ts",
     "test": "npm run test-only",
     "test-only": "mocha --reporter mocha-multi-reporters --reporter-options configFile=mocha-config.json --no-colors -r ts-node/register test/**/*.spec.ts",
-    "test-watch": "./node_modules/watch-cli/bin/watch -p \"src/**/*.ts\" -c \"npm run build && npm run test\""
+    "test-watch": "./node_modules/watch-cli/bin/watch -p \"./**/*.ts\" -c \"npm run build && npm run test\""
   },
   "author": "Ryan McDermott <ryanmcdermott@google.com>",
   "license": "MIT"

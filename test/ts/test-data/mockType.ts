@@ -6,7 +6,7 @@ interface FlatPerson {
   ln: string;
 }
 
-export const specifiedMockTypeInterface = {
+export const expectedMockType = {
   fn: 'Mabel',
   ln: 'Williamson'
 };

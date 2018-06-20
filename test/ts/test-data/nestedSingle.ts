@@ -17,7 +17,7 @@ interface EmployeeDetail {
   isFullTime: boolean;
 }
 
-export const nestedInterface = {
+export const expectedNested = {
   firstName: 'Mabel',
   lastName: 'Williamson',
   phone: 86924,
