@@ -2,6 +2,7 @@
 import 'mocha';
 
 import {expect} from 'chai';
+import * as _ from 'lodash';
 
 import {Intermock} from '../../src/lang/ts/intermock';
 
@@ -11,64 +12,55 @@ import {expectedNested} from './test-data/nestedSingle';
 import {expectedOptional1, expectedOptional2} from './test-data/optional';
 import {expectedTypeAlias} from './test-data/typeAlias';
 
+function runTestCase(
+    file: string, outputProp: any, expected: any, options?: any) {
+  const imOptions = _.assign({}, {files: [file], isFixedMode: true}, options);
+  const im = new Intermock(imOptions);
+
+  return im.generate().then((output: any) => {
+    expect(_.get(output, outputProp)).to.deep.equal(expected);
+  });
+}
+
 describe('', () => {
   it('should generate mock for a flat interface, with just primitives', () => {
-    const im = new Intermock(
-        {files: [`${__dirname}/test-data/flat.ts`], isFixedMode: true});
-
-    return im.generate().then((output: any) => {
-      expect(output.FlatInterface).to.deep.equal(expectedFlat);
-    });
+    return runTestCase(
+        `${__dirname}/test-data/flat.ts`, 'FlatInterface', expectedFlat);
   });
 
   it('should generate mock for a specified mock type', () => {
-    const im = new Intermock(
-        {files: [`${__dirname}/test-data/mockType.ts`], isFixedMode: true});
-
-    return im.generate().then((output: any) => {
-      expect(output.FlatPerson).to.deep.equal(expectedMockType);
-    });
+    return runTestCase(
+        `${__dirname}/test-data/mockType.ts`, 'FlatPerson', expectedMockType);
   });
 
   it('should generate mock for singly nested interfaces', () => {
-    const im = new Intermock(
-        {files: [`${__dirname}/test-data/nestedSingle.ts`], isFixedMode: true});
-
-    return im.generate().then((output: any) => {
-      expect(output.Person).to.deep.equal(expectedNested);
-    });
+    return runTestCase(
+        `${__dirname}/test-data/nestedSingle.ts`, 'Person', expectedNested);
   });
 
   it('should generate mock for interfaces with optional types - optional forced as always',
      () => {
-       const im = new Intermock(
-           {files: [`${__dirname}/test-data/optional.ts`], isFixedMode: true});
-
-       return im.generate().then((output: any) => {
-         expect(output.User).to.deep.equal(expectedOptional1.User);
-       });
+       return runTestCase(
+           `${__dirname}/test-data/optional.ts`, 'User',
+           expectedOptional1.User);
      });
 
   it('should generate mock for interfaces with optional types - optional forced as never',
      () => {
-       const im = new Intermock({
-         files: [`${__dirname}/test-data/optional.ts`],
-         isFixedMode: true,
-         isOptionalAlwaysEnabled: true
-       });
-
-       return im.generate().then((output: any) => {
-         expect(output.User).to.deep.equal(expectedOptional2.User);
-       });
+       return runTestCase(
+           `${__dirname}/test-data/optional.ts`, 'User', expectedOptional2.User,
+           {isOptionalAlwaysEnabled: true});
      });
 
-  it('should generate mock for type aliases', () => {
-    const im = new Intermock(
-        {files: [`${__dirname}/test-data/typeAlias.ts`], isFixedMode: true});
+  it('should generate mock for type aliases - as a property', () => {
+    return runTestCase(
+        `${__dirname}/test-data/typeAlias.ts`, 'Person',
+        expectedTypeAlias.Person);
+  });
 
-    return im.generate().then((output: any) => {
-      expect(output.Person).to.deep.equal(expectedTypeAlias.Person);
-      expect(output.Detail).to.deep.equal(expectedTypeAlias.Detail);
-    });
+  it('should generate mock for type aliases - as a definition', () => {
+    return runTestCase(
+        `${__dirname}/test-data/typeAlias.ts`, 'Detail',
+        expectedTypeAlias.Detail);
   });
 });
