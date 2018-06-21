@@ -30,19 +30,19 @@
 //   isFullTime: boolean;
 // }
 
-// interface User {
-//   username: string;
-//   firstName: string;
-//   middleName?: string;
-//   lastName: string;
-// }
-
-
-interface Person {
-  name: string;
-  detail: Detail;
+interface User {
+  username: string;
+  firstName: string;
+  middleName?: string;
+  lastName: string;
 }
 
-type Detail = {
-  phone: number;
-};
+
+// interface Person {
+//   name: string;
+//   detail: Detail;
+// }
+
+// type Detail = {
+//   phone: number;
+// };
