@@ -8,6 +8,7 @@ import {Intermock} from '../../src/lang/ts/intermock';
 import {expectedFlat} from './test-data/flat';
 import {expectedMockType} from './test-data/mockType';
 import {expectedNested} from './test-data/nestedSingle';
+import {expectedTypeAlias} from './test-data/typeAlias';
 
 describe('', () => {
   it('should generate mock for a flat interface, with just primitives', () => {
@@ -56,4 +57,14 @@ describe('', () => {
          expect(1).to.deep.equal(1);
        });
      });
+
+  it('should generate mock for type aliases', () => {
+    const im = new Intermock(
+        {files: [`${__dirname}/test-data/typeAlias.ts`], isFixedMode: true});
+
+    return im.generate().then((output: any) => {
+      expect(output.Person).to.deep.equal(expectedTypeAlias.Person);
+      expect(output.Detail).to.deep.equal(expectedTypeAlias.Detail);
+    });
+  });
 });

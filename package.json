@@ -40,7 +40,7 @@
     "clean": "rimraf coverage build tmp",
     "coverage": "nyc --reporter=html --reporter=text mocha --reporter mocha-multi-reporters --reporter-options configFile=mocha-config.json --no-colors -r ts-node/register test/**/*.spec.ts",
     "ci": "npm run format-check && npm run lint && npm run test",
-    "cli": "npm run build && node ./build/src/cli/index.js --files ./examples/example.ts",
+    "cli": "npm run build && node ./build/src/cli/index.js --fixed --files ./examples/example.ts",
     "build": "tsc -p tsconfig.json",
     "dist": "tsc -p tsconfig.json --outDir ./bin",
     "watch": "tsc -w -p tsconfig.json",

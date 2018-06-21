@@ -15,6 +15,7 @@ const optionDefinitions = [
   {name: 'outFile', alias: 'o', type: String},
   {name: 'lang', alias: 'l', type: String},
   {name: 'help', alias: 'h', type: Boolean},
+  {name: 'fixed', alias: 'x', type: Boolean},
 ];
 
 const instructions = [
@@ -79,11 +80,10 @@ function main() {
   }
 
   const lang = options.language ? options.language : 'typescript';
+  const isFixedMode = options.fixed;
 
   if (lang === 'typescript') {
-    const intermock = new IntermockTS({
-      files: options.files,
-    });
+    const intermock = new IntermockTS({files: options.files, isFixedMode});
 
     intermock.generate().then((output: any) => {
       console.log(output);

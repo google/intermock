@@ -134,6 +134,10 @@ export class Intermock {
       // TODO add case for generic `type`
       switch (node.kind) {
         case ts.SyntaxKind.InterfaceDeclaration:
+          /**
+           * TODO: Handle interfaces that extend others, via checking hertiage
+           * clauses
+           */
           if (propToTraverse) {
             const path = _.get(node, 'name.text', '');
             if (path === propToTraverse) {
