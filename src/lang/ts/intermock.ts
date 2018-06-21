@@ -108,13 +108,18 @@ export class Intermock {
 
   traverseInterface(
       node: ts.Node, output: any, sourceFile: ts.SourceFile,
-      propToTraverse?: string) {
+      propToTraverse?: string, path?: string) {
     // TODO handle arrays, enums, etc.
 
-    if (!propToTraverse) {
-      const path = _.get(node, 'name.text', '');
+    if (path) {
       _.set(output, path, {});
       output = output[path];
+    }
+
+    if (!propToTraverse && !path) {
+      const newPath = _.get(node, 'name.escapedText', '');
+      _.set(output, newPath, {});
+      output = output[newPath];
     }
 
     // TODO get range from JSDoc
@@ -136,6 +141,19 @@ export class Intermock {
             }
           } else {
             this.traverseInterface(node, output, sourceFile);
+          }
+          break;
+        case ts.SyntaxKind.TypeAliasDeclaration:
+          if (propToTraverse) {
+            const path = _.get(node, 'name.text', '');
+            if (path === propToTraverse) {
+              this.traverseInterface(
+                  _.get(node, 'type'), output, sourceFile, propToTraverse);
+            }
+          } else {
+            this.traverseInterface(
+                _.get(node, 'type'), output, sourceFile, undefined,
+                _.get(node, 'name.text'));
           }
           break;
 
