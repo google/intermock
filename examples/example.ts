@@ -30,12 +30,12 @@
 //   isFullTime: boolean;
 // }
 
-interface User {
-  username: string;
-  firstName: string;
-  middleName?: string;
-  lastName: string;
-}
+// interface User {
+//   username: string;
+//   firstName: string;
+//   middleName?: string;
+//   lastName: string;
+// }
 
 
 // interface Person {
@@ -46,3 +46,13 @@ interface User {
 // type Detail = {
 //   phone: number;
 // };
+
+enum Awesomeness {
+  COOL,
+  LAME
+}
+
+interface Person {
+  name: string;
+  status: Awesomeness;
+}

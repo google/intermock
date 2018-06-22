@@ -18,6 +18,8 @@ export interface Options {
  * properties on AST nodes
  */
 export class Intermock {
+  types: any = {};
+
   constructor(private readonly options: Options) {}
 
   private readFiles(): Promise<FileTuples> {
@@ -90,9 +92,13 @@ export class Intermock {
         } else {
           // TODO handle arrays, and other complex types
           if (_.get(node, 'type.kind') === ts.SyntaxKind.TypeReference) {
-            _.set(output, property, {});
             const typeName = _.get(node, 'type.typeName.text');
-            this.processFile(sourceFile, output[property], typeName);
+            if (this.types[typeName] === ts.SyntaxKind.EnumDeclaration) {
+              this.setEnum(node, output, typeName);
+            } else {
+              output[property] = {};
+              this.processFile(sourceFile, output[property], typeName);
+            }
           } else {
             const type = _.get(node, 'type.kind');
             const mock = this.mock(property, type, mockType);
@@ -106,19 +112,24 @@ export class Intermock {
     }
   }
 
+  setEnum(node: ts.Node, output: any, typeName: string) {
+    //  const members = (node as ts.EnumDeclaration).members;
+    //  const selectedMember = members[Math.ceil(members.length / 2)];
+  }
+
   traverseInterface(
       node: ts.Node, output: any, sourceFile: ts.SourceFile,
       propToTraverse?: string, path?: string) {
     // TODO handle arrays, enums, etc.
 
     if (path) {
-      _.set(output, path, {});
+      output[path] = {};
       output = output[path];
     }
 
     if (!propToTraverse && !path) {
-      const newPath = _.get(node, 'name.escapedText', '');
-      _.set(output, newPath, {});
+      const newPath = (node as ts.InterfaceDeclaration).name.text;
+      output[newPath] = {};
       output = output[newPath];
     }
 
@@ -131,7 +142,6 @@ export class Intermock {
 
   processFile(sourceFile: ts.SourceFile, output: any, propToTraverse?: string) {
     const processNode = (node: ts.Node) => {
-      // TODO add case for generic `type`
       switch (node.kind) {
         case ts.SyntaxKind.InterfaceDeclaration:
           /**
@@ -139,7 +149,7 @@ export class Intermock {
            * clauses
            */
           if (propToTraverse) {
-            const path = _.get(node, 'name.text', '');
+            const path = (node as ts.InterfaceDeclaration).name.text;
             if (path === propToTraverse) {
               this.traverseInterface(node, output, sourceFile, propToTraverse);
             }
@@ -148,16 +158,15 @@ export class Intermock {
           }
           break;
         case ts.SyntaxKind.TypeAliasDeclaration:
+          const type = (node as ts.TypeAliasDeclaration).type;
+          const path = (node as ts.TypeAliasDeclaration).name.text;
+
           if (propToTraverse) {
-            const path = _.get(node, 'name.text', '');
             if (path === propToTraverse) {
-              this.traverseInterface(
-                  _.get(node, 'type'), output, sourceFile, propToTraverse);
+              this.traverseInterface(type, output, sourceFile, propToTraverse);
             }
           } else {
-            this.traverseInterface(
-                _.get(node, 'type'), output, sourceFile, undefined,
-                _.get(node, 'name.text'));
+            this.traverseInterface(type, output, sourceFile, undefined, path);
           }
           break;
 
@@ -171,13 +180,31 @@ export class Intermock {
     processNode(sourceFile);
   }
 
+  gatherTypes(sourceFile: ts.SourceFile) {
+    const processNode = (node: ts.Node) => {
+      const name = (node as ts.DeclarationStatement).name;
+      const text = name ? name.text : '';
+
+      this.types[text] = node.kind;
+
+      ts.forEachChild(node, processNode);
+    };
+
+    processNode(sourceFile);
+  }
   async generate() {
     const output: any = {};
     const fileContents = await this.readFiles();
-    fileContents.forEach(
-        (f: FileTuple) => this.processFile(
-            ts.createSourceFile(f[0], f[1], ts.ScriptTarget.ES2015, true),
-            output));
+    fileContents.forEach((f: FileTuple) => {
+      this.gatherTypes(
+          ts.createSourceFile(f[0], f[1], ts.ScriptTarget.ES2015, true));
+    });
+
+    fileContents.forEach((f: FileTuple) => {
+      this.processFile(
+          ts.createSourceFile(f[0], f[1], ts.ScriptTarget.ES2015, true),
+          output);
+    });
 
     return output;
   }
