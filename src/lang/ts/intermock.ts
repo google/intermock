@@ -60,6 +60,26 @@ export class Intermock {
     return false;
   }
 
+  processPropertyTypeReference(
+      node: ts.PropertySignature, output: any, property: string,
+      typeName: string, sourceFile: ts.SourceFile) {
+    switch (this.types[typeName]) {
+      case ts.SyntaxKind.EnumDeclaration:
+        this.setEnum(sourceFile, node, output, typeName, property);
+        break;
+      default:
+        output[property] = {};
+        this.processFile(sourceFile, output[property], typeName);
+        break;
+    }
+  }
+
+  processGenericPropertyType(
+      output: any, property: string, kind: ts.SyntaxKind, mockType: string) {
+    const mock = this.mock(property, kind, mockType);
+    output[property] = mock;
+  }
+
   processJsDocs(
       node: ts.PropertySignature, output: any, property: string,
       jsDocs: string[]) {
@@ -112,16 +132,12 @@ export class Intermock {
       // TODO handle arrays, and other complex types
       switch (kind) {
         case ts.SyntaxKind.TypeReference:
-          if (this.types[typeName] === ts.SyntaxKind.EnumDeclaration) {
-            this.setEnum(sourceFile, node, output, typeName, property);
-          } else {
-            output[property] = {};
-            this.processFile(sourceFile, output[property], typeName);
-          }
+          this.processPropertyTypeReference(
+              node, output, property, typeName, sourceFile);
           break;
         default:
-          const mock = this.mock(property, kind as ts.SyntaxKind, mockType);
-          output[property] = mock;
+          this.processGenericPropertyType(
+              output, property, kind as ts.SyntaxKind, mockType);
           break;
       }
     };
