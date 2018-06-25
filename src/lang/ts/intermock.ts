@@ -13,10 +13,6 @@ export interface Options {
   isOptionalAlwaysEnabled?: boolean;
 }
 
-/**
- * TODO Remove _.get throughout this code, opt for TS compiler methods to get
- * properties on AST nodes
- */
 export class Intermock {
   types: any = {};
 
