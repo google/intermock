@@ -64,6 +64,27 @@ export class Intermock {
     return false;
   }
 
+  processJsDocs(
+      node: ts.PropertySignature, output: any, property: string,
+      jsDocs: string[]) {
+    // TODO handle case where we get multiple mock JSDocs or a JSDoc like
+    // mockRange for an array. In essence, we are only dealing with
+    // primitives now
+
+    // TODO Handle error case where a complex type has MockDocs
+
+    let mockType = '';
+    const jsDocComment = _.get(jsDocs[0], 'comment', '');
+    if (jsDocComment.startsWith('!mockType')) {
+      mockType = jsDocComment.match(/(?<=\{).+?(?=\})/g)[0];
+    } else {
+      // TODO
+    }
+
+    const mock = this.mock(property, node.kind, mockType);
+    output[property] = mock;
+  }
+
   traverseInterfaceMembers(
       node: ts.Node, output: any, sourceFile: ts.SourceFile) {
     if (node.kind !== ts.SyntaxKind.PropertySignature) {
@@ -74,7 +95,7 @@ export class Intermock {
       const jsDocs = _.get(node, 'jsDoc', []);
       const property = node.name.getText();
       const questionToken = node.questionToken;
-      let mockType = '';
+      const mockType = '';
       let typeName = '';
       let kind;
 
@@ -82,28 +103,14 @@ export class Intermock {
         return;
       }
 
+      if (jsDocs.length > 0) {
+        this.processJsDocs(node, output, property, jsDocs);
+        return;
+      }
+
       if (node.type) {
         kind = node.type.kind;
         typeName = node.type.getText();
-      }
-
-      if (jsDocs.length > 0) {
-        // TODO handle case where we get multiple mock JSDocs or a JSDoc like
-        // mockRange for an array. In essence, we are only dealing with
-        // primitives now
-
-        // TODO Handle error case where a complex type has MockDocs
-        const jsDocComment = _.get(jsDocs[0], 'comment', '');
-        if (jsDocComment.startsWith('!mockType')) {
-          mockType = jsDocComment.match(/(?<=\{).+?(?=\})/g)[0];
-        } else {
-          // TODO
-        }
-
-        const mock = this.mock(property, node.kind, mockType);
-        output[property] = mock;
-
-        return;
       }
 
       // TODO handle arrays, and other complex types
