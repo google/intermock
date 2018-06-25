@@ -163,6 +163,10 @@ export class Intermock {
                   output[property] =
                       Number(selectedMember.initializer.getText());
                   break;
+                case ts.SyntaxKind.StringLiteral:
+                  output[property] =
+                      selectedMember.initializer.getText().replace(/\'/g, '');
+                  break;
                 default:
                   break;
               }
