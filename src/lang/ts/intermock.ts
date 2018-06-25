@@ -53,63 +53,57 @@ export class Intermock {
 
   traverseInterfaceMembers(
       node: ts.Node, output: any, sourceFile: ts.SourceFile) {
-    switch (node.kind) {
-      case ts.SyntaxKind.PropertySignature:
-        const jsDocs = _.get(node, 'jsDoc', []);
-        const property = _.get(node, 'name.text', '');
-        const isQuestionToken = _.get(node, 'questionToken');
+    if (node.kind !== ts.SyntaxKind.PropertySignature) {
+      return;
+    }
+    const jsDocs = _.get(node, 'jsDoc', []);
+    const property = _.get(node, 'name.text', '');
+    const isQuestionToken = _.get(node, 'questionToken');
 
-        if (isQuestionToken) {
-          if (this.options.isFixedMode &&
-              !this.options.isOptionalAlwaysEnabled) {
-            return;
-          }
+    if (isQuestionToken) {
+      if (this.options.isFixedMode && !this.options.isOptionalAlwaysEnabled) {
+        return;
+      }
 
-          else if (
-              Math.random() < .5 && !this.options.isOptionalAlwaysEnabled) {
-            return;
-          }
-        }
+      else if (Math.random() < .5 && !this.options.isOptionalAlwaysEnabled) {
+        return;
+      }
+    }
 
 
-        let mockType = '';
+    let mockType = '';
 
-        if (jsDocs.length > 0) {
-          // TODO handle case where we get multiple mock JSDocs or a JSDoc like
-          // mockRange for an array. In essence, we are only dealing with
-          // primitives now
+    if (jsDocs.length > 0) {
+      // TODO handle case where we get multiple mock JSDocs or a JSDoc like
+      // mockRange for an array. In essence, we are only dealing with
+      // primitives now
 
-          // TODO Handle error case where a complex type has MockDocs
+      // TODO Handle error case where a complex type has MockDocs
 
-          const jsDocComment = _.get(jsDocs[0], 'comment', '');
-          if (jsDocComment.startsWith('!mockType')) {
-            mockType = jsDocComment.match(/(?<=\{).+?(?=\})/g)[0];
-          } else {
-            // TODO
-          }
+      const jsDocComment = _.get(jsDocs[0], 'comment', '');
+      if (jsDocComment.startsWith('!mockType')) {
+        mockType = jsDocComment.match(/(?<=\{).+?(?=\})/g)[0];
+      } else {
+        // TODO
+      }
 
-          const mock = this.mock(property, node.kind, mockType);
-          output[property] = mock;
+      const mock = this.mock(property, node.kind, mockType);
+      output[property] = mock;
+    } else {
+      // TODO handle arrays, and other complex types
+      if (_.get(node, 'type.kind') === ts.SyntaxKind.TypeReference) {
+        const typeName = _.get(node, 'type.typeName.text');
+        if (this.types[typeName] === ts.SyntaxKind.EnumDeclaration) {
+          this.setEnum(sourceFile, node, output, typeName, property);
         } else {
-          // TODO handle arrays, and other complex types
-          if (_.get(node, 'type.kind') === ts.SyntaxKind.TypeReference) {
-            const typeName = _.get(node, 'type.typeName.text');
-            if (this.types[typeName] === ts.SyntaxKind.EnumDeclaration) {
-              this.setEnum(sourceFile, node, output, typeName, property);
-            } else {
-              output[property] = {};
-              this.processFile(sourceFile, output[property], typeName);
-            }
-          } else {
-            const type = _.get(node, 'type.kind');
-            const mock = this.mock(property, type, mockType);
-            output[property] = mock;
-          }
+          output[property] = {};
+          this.processFile(sourceFile, output[property], typeName);
         }
-
-        break;
-      default:
-        break;
+      } else {
+        const type = _.get(node, 'type.kind');
+        const mock = this.mock(property, type, mockType);
+        output[property] = mock;
+      }
     }
   }
 
