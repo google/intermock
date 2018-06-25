@@ -6,6 +6,7 @@ import * as _ from 'lodash';
 
 import {Intermock} from '../../src/lang/ts/intermock';
 
+import {expectedEnum} from './test-data/enum';
 import {expectedFlat} from './test-data/flat';
 import {expectedMockType} from './test-data/mockType';
 import {expectedNested} from './test-data/nestedSingle';
@@ -62,5 +63,10 @@ describe('', () => {
     return runTestCase(
         `${__dirname}/test-data/typeAlias.ts`, 'Detail',
         expectedTypeAlias.Detail);
+  });
+
+  it('should generate mock for enums', () => {
+    return runTestCase(
+        `${__dirname}/test-data/enum.ts`, 'Person', expectedEnum.Person);
   });
 });
