@@ -1,6 +1,6 @@
 import readFile from 'fs-readfile-promise';
 import * as _ from 'lodash';
-import ts from 'typescript';
+import ts, {PropertySignature} from 'typescript';
 
 import {defaultTypeToMock} from '../../lib/default-type-to-mock';
 import {fake} from '../../lib/fake';
@@ -56,55 +56,66 @@ export class Intermock {
     if (node.kind !== ts.SyntaxKind.PropertySignature) {
       return;
     }
-    const jsDocs = _.get(node, 'jsDoc', []);
-    const property = _.get(node, 'name.text', '');
-    const isQuestionToken = _.get(node, 'questionToken');
 
-    if (isQuestionToken) {
-      if (this.options.isFixedMode && !this.options.isOptionalAlwaysEnabled) {
-        return;
+    const processPropertySignature = (node: ts.PropertySignature) => {
+      const jsDocs = _.get(node, 'jsDoc', []);
+      const property = node.name.getText();
+      const isQuestionToken = node.questionToken;
+
+      let typeName;
+      let kind;
+
+      if (node.type) {
+        kind = node.type.kind;
       }
 
-      else if (Math.random() < .5 && !this.options.isOptionalAlwaysEnabled) {
-        return;
-      }
-    }
-
-
-    let mockType = '';
-
-    if (jsDocs.length > 0) {
-      // TODO handle case where we get multiple mock JSDocs or a JSDoc like
-      // mockRange for an array. In essence, we are only dealing with
-      // primitives now
-
-      // TODO Handle error case where a complex type has MockDocs
-
-      const jsDocComment = _.get(jsDocs[0], 'comment', '');
-      if (jsDocComment.startsWith('!mockType')) {
-        mockType = jsDocComment.match(/(?<=\{).+?(?=\})/g)[0];
-      } else {
-        // TODO
-      }
-
-      const mock = this.mock(property, node.kind, mockType);
-      output[property] = mock;
-    } else {
-      // TODO handle arrays, and other complex types
-      if (_.get(node, 'type.kind') === ts.SyntaxKind.TypeReference) {
-        const typeName = _.get(node, 'type.typeName.text');
-        if (this.types[typeName] === ts.SyntaxKind.EnumDeclaration) {
-          this.setEnum(sourceFile, node, output, typeName, property);
-        } else {
-          output[property] = {};
-          this.processFile(sourceFile, output[property], typeName);
+      if (isQuestionToken) {
+        if (this.options.isFixedMode && !this.options.isOptionalAlwaysEnabled) {
+          return;
         }
-      } else {
-        const type = _.get(node, 'type.kind');
-        const mock = this.mock(property, type, mockType);
-        output[property] = mock;
+
+        else if (Math.random() < .5 && !this.options.isOptionalAlwaysEnabled) {
+          return;
+        }
       }
-    }
+
+
+      let mockType = '';
+
+      if (jsDocs.length > 0) {
+        // TODO handle case where we get multiple mock JSDocs or a JSDoc like
+        // mockRange for an array. In essence, we are only dealing with
+        // primitives now
+
+        // TODO Handle error case where a complex type has MockDocs
+
+        const jsDocComment = _.get(jsDocs[0], 'comment', '');
+        if (jsDocComment.startsWith('!mockType')) {
+          mockType = jsDocComment.match(/(?<=\{).+?(?=\})/g)[0];
+        } else {
+          // TODO
+        }
+
+        const mock = this.mock(property, node.kind, mockType);
+        output[property] = mock;
+      } else {
+        // TODO handle arrays, and other complex types
+        if (kind === ts.SyntaxKind.TypeReference) {
+          const typeName = _.get(node, 'type.typeName.text');
+          if (this.types[typeName] === ts.SyntaxKind.EnumDeclaration) {
+            this.setEnum(sourceFile, node, output, typeName, property);
+          } else {
+            output[property] = {};
+            this.processFile(sourceFile, output[property], typeName);
+          }
+        } else {
+          const mock = this.mock(property, kind as ts.SyntaxKind, mockType);
+          output[property] = mock;
+        }
+      }
+    };
+
+    processPropertySignature(node as ts.PropertySignature);
   }
 
   setEnum(
@@ -124,6 +135,8 @@ export class Intermock {
                 case ts.SyntaxKind.NumericLiteral:
                   output[property] =
                       Number(selectedMember.initializer.getText());
+                  break;
+                default:
                   break;
               }
             } else {
