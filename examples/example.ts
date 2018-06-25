@@ -52,7 +52,14 @@ enum Awesomeness {
   LAME
 }
 
+enum GreatNumbers {
+  e = 2.71,
+  pi = 3.14,
+  golden = 1.61
+}
+
 interface Person {
   name: string;
   status: Awesomeness;
+  favoriteNumber: GreatNumbers;
 }

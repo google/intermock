@@ -71,6 +71,7 @@ export class Intermock {
           }
         }
 
+
         let mockType = '';
 
         if (jsDocs.length > 0) {
@@ -94,7 +95,7 @@ export class Intermock {
           if (_.get(node, 'type.kind') === ts.SyntaxKind.TypeReference) {
             const typeName = _.get(node, 'type.typeName.text');
             if (this.types[typeName] === ts.SyntaxKind.EnumDeclaration) {
-              this.setEnum(node, output, typeName);
+              this.setEnum(sourceFile, node, output, typeName, property);
             } else {
               output[property] = {};
               this.processFile(sourceFile, output[property], typeName);
@@ -112,9 +113,39 @@ export class Intermock {
     }
   }
 
-  setEnum(node: ts.Node, output: any, typeName: string) {
-    //  const members = (node as ts.EnumDeclaration).members;
-    //  const selectedMember = members[Math.ceil(members.length / 2)];
+  setEnum(
+      sourceFile: ts.SourceFile, node: ts.Node, output: any, typeName: string,
+      property: string) {
+    const processNode = (node: ts.Node) => {
+      switch (node.kind) {
+        case ts.SyntaxKind.EnumDeclaration:
+          if ((node as ts.EnumDeclaration).name.text === typeName) {
+            const members = (node as ts.EnumDeclaration).members;
+            const selectedMemberIdx = Math.floor(members.length / 2);
+            const selectedMember = members[selectedMemberIdx];
+
+            // TODO handle bitwise initializers
+            if (selectedMember.initializer) {
+              switch (selectedMember.initializer.kind) {
+                case ts.SyntaxKind.NumericLiteral:
+                  output[property] =
+                      Number(selectedMember.initializer.getText());
+                  break;
+              }
+            } else {
+              output[property] = selectedMemberIdx;
+            }
+          }
+          break;
+        default:
+
+          break;
+      }
+
+      ts.forEachChild(node, processNode);
+    };
+
+    processNode(sourceFile);
   }
 
   traverseInterface(
