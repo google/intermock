@@ -35,8 +35,6 @@ export class Intermock {
     });
   }
 
-  parseMockType(jsDocComment: string) {}
-
   mock(property: string, syntaxType: ts.SyntaxKind, mockType: string) {
     const smartMockType = _.get(smartProps, property);
     const isFixedMode =
@@ -51,6 +49,21 @@ export class Intermock {
     }
   }
 
+  isQuestionToken(questionToken: ts.Token<ts.SyntaxKind.QuestionToken>|
+                  undefined) {
+    if (questionToken) {
+      if (this.options.isFixedMode && !this.options.isOptionalAlwaysEnabled) {
+        return true;
+      }
+
+      else if (Math.random() < .5 && !this.options.isOptionalAlwaysEnabled) {
+        return true;
+      }
+    }
+
+    return false;
+  }
+
   traverseInterfaceMembers(
       node: ts.Node, output: any, sourceFile: ts.SourceFile) {
     if (node.kind !== ts.SyntaxKind.PropertySignature) {
@@ -60,27 +73,19 @@ export class Intermock {
     const processPropertySignature = (node: ts.PropertySignature) => {
       const jsDocs = _.get(node, 'jsDoc', []);
       const property = node.name.getText();
-      const isQuestionToken = node.questionToken;
-
-      let typeName;
+      const questionToken = node.questionToken;
+      let mockType = '';
+      let typeName = '';
       let kind;
+
+      if (this.isQuestionToken(questionToken)) {
+        return;
+      }
 
       if (node.type) {
         kind = node.type.kind;
+        typeName = node.type.getText();
       }
-
-      if (isQuestionToken) {
-        if (this.options.isFixedMode && !this.options.isOptionalAlwaysEnabled) {
-          return;
-        }
-
-        else if (Math.random() < .5 && !this.options.isOptionalAlwaysEnabled) {
-          return;
-        }
-      }
-
-
-      let mockType = '';
 
       if (jsDocs.length > 0) {
         // TODO handle case where we get multiple mock JSDocs or a JSDoc like
@@ -88,7 +93,6 @@ export class Intermock {
         // primitives now
 
         // TODO Handle error case where a complex type has MockDocs
-
         const jsDocComment = _.get(jsDocs[0], 'comment', '');
         if (jsDocComment.startsWith('!mockType')) {
           mockType = jsDocComment.match(/(?<=\{).+?(?=\})/g)[0];
@@ -98,20 +102,24 @@ export class Intermock {
 
         const mock = this.mock(property, node.kind, mockType);
         output[property] = mock;
-      } else {
-        // TODO handle arrays, and other complex types
-        if (kind === ts.SyntaxKind.TypeReference) {
-          const typeName = _.get(node, 'type.typeName.text');
+
+        return;
+      }
+
+      // TODO handle arrays, and other complex types
+      switch (kind) {
+        case ts.SyntaxKind.TypeReference:
           if (this.types[typeName] === ts.SyntaxKind.EnumDeclaration) {
             this.setEnum(sourceFile, node, output, typeName, property);
           } else {
             output[property] = {};
             this.processFile(sourceFile, output[property], typeName);
           }
-        } else {
+          break;
+        default:
           const mock = this.mock(property, kind as ts.SyntaxKind, mockType);
           output[property] = mock;
-        }
+          break;
       }
     };
 
@@ -145,7 +153,6 @@ export class Intermock {
           }
           break;
         default:
-
           break;
       }
 
@@ -158,8 +165,6 @@ export class Intermock {
   traverseInterface(
       node: ts.Node, output: any, sourceFile: ts.SourceFile,
       propToTraverse?: string, path?: string) {
-    // TODO handle arrays, enums, etc.
-
     if (path) {
       output[path] = {};
       output = output[path];
