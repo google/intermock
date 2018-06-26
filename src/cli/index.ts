@@ -12,6 +12,7 @@ const optionDefinitions = [
     multiple: true,
     defaultOption: true
   },
+  {name: 'interfaces', alias: 'i', type: String, multiple: true},
   {name: 'outFile', alias: 'o', type: String},
   {name: 'lang', alias: 'l', type: String},
   {name: 'help', alias: 'h', type: Boolean},
@@ -83,7 +84,8 @@ function main() {
   const isFixedMode = options.fixed;
 
   if (lang === 'typescript') {
-    const intermock = new IntermockTS({files: options.files, isFixedMode});
+    const intermock = new IntermockTS(
+        {files: options.files, interfaces: options.interfaces, isFixedMode});
 
     intermock.generate().then((output: any) => {
       console.log(JSON.stringify(output));

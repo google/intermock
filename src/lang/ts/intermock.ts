@@ -10,6 +10,7 @@ import {FileTuple, FileTuples} from '../../lib/types';
 
 export interface Options {
   files: string[];
+  interfaces?: string[];
   isFixedMode?: boolean;
   isOptionalAlwaysEnabled?: boolean;
 }
@@ -33,7 +34,7 @@ export class Intermock {
   }
 
   mock(property: string, syntaxType: ts.SyntaxKind, mockType: string) {
-    const smartMockType = _.get(smartProps, property);
+    const smartMockType = smartProps[property];
     const isFixedMode =
         this.options.isFixedMode ? this.options.isFixedMode : false;
 
@@ -226,6 +227,18 @@ export class Intermock {
         child => this.traverseInterfaceMembers(child, output, sourceFile));
   }
 
+  isSpecificInterface(name: string) {
+    if (!this.options.interfaces) {
+      return true;
+    }
+
+    if (!_.includes(this.options.interfaces, name)) {
+      return false;
+    }
+
+    return true;
+  }
+
   processFile(sourceFile: ts.SourceFile, output: any, propToTraverse?: string) {
     const processNode = (node: ts.Node) => {
       switch (node.kind) {
@@ -234,9 +247,12 @@ export class Intermock {
            * TODO: Handle interfaces that extend others, via checking hertiage
            * clauses
            */
+          const p = (node as ts.InterfaceDeclaration).name.text;
+          if (!this.isSpecificInterface(p)) {
+            return;
+          }
           if (propToTraverse) {
-            const path = (node as ts.InterfaceDeclaration).name.text;
-            if (path === propToTraverse) {
+            if (p === propToTraverse) {
               this.traverseInterface(node, output, sourceFile, propToTraverse);
             }
           } else {
@@ -246,6 +262,10 @@ export class Intermock {
         case ts.SyntaxKind.TypeAliasDeclaration:
           const type = (node as ts.TypeAliasDeclaration).type;
           const path = (node as ts.TypeAliasDeclaration).name.text;
+
+          if (!this.isSpecificInterface(path)) {
+            return;
+          }
 
           if (propToTraverse) {
             if (path === propToTraverse) {
@@ -278,6 +298,7 @@ export class Intermock {
 
     processNode(sourceFile);
   }
+
   async generate() {
     const output: any = {};
     const fileContents = await this.readFiles();

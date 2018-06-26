@@ -12,6 +12,7 @@ import {expectedFlat} from './test-data/flat';
 import {expectedMockType} from './test-data/mockType';
 import {expectedNested} from './test-data/nestedSingle';
 import {expectedOptional1, expectedOptional2} from './test-data/optional';
+import {expectedSpecificInterface} from './test-data/specificInterfaces';
 import {expectedTypeAlias} from './test-data/typeAlias';
 
 function runTestCase(
@@ -20,7 +21,11 @@ function runTestCase(
   const im = new Intermock(imOptions);
 
   return im.generate().then((output: any) => {
-    expect(_.get(output, outputProp)).to.deep.equal(expected);
+    if (outputProp) {
+      expect(_.get(output, outputProp)).to.deep.equal(expected);
+    } else {
+      expect(output).to.deep.equal(expected);
+    }
   });
 }
 
@@ -74,5 +79,11 @@ describe('', () => {
   it('should generate mock for basic arrays', () => {
     return runTestCase(
         `${__dirname}/test-data/array.ts`, 'User', expectedArray1.User);
+  });
+
+  it('should generate mock for specific interfaces', () => {
+    return runTestCase(
+        `${__dirname}/test-data/specificInterfaces.ts`, '',
+        expectedSpecificInterface, {interfaces: ['Person', 'User']});
   });
 });

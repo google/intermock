@@ -64,13 +64,26 @@
 //   favoriteNumber: GreatNumbers;
 // }
 
-interface Order {
-  id: string;
+// interface Order {
+//   id: string;
 
-  /** !mockType {lorem.words} */
+//   /** !mockType {lorem.words} */
+//   name: string;
+// }
+
+// interface User {
+//   orders: Order[];
+// }
+
+
+interface User {
   name: string;
 }
 
-interface User {
-  orders: Order[];
+interface Person {
+  age: number;
+}
+
+interface Order {
+  id: string;
 }
