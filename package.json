@@ -11,7 +11,7 @@
     "faker": "4.1.0",
     "fs-readfile-promise": "3.0.1",
     "lodash": "4.17.10",
-    "typescript": "2.8.3"
+    "typescript": "2.9.2"
   },
   "devDependencies": {
     "@types/chai": "4.1.3",
