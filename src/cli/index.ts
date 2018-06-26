@@ -1,6 +1,6 @@
 import commandLineArgs from 'command-line-args';
 import commandLineUsage from 'command-line-usage';
-import * as _ from 'lodash';
+import {convertCompilerOptionsFromJson} from 'typescript';
 
 import {Intermock as IntermockTS} from '../lang/ts/intermock';
 
@@ -59,7 +59,7 @@ const instructions = [
 ];
 
 function isWelcomeMessageNeeded(options: any) {
-  if (_.isEmpty(options) || !options.files || options.help) {
+  if (!options || !options.files || options.help) {
     return true;
   }
 
@@ -86,7 +86,7 @@ function main() {
     const intermock = new IntermockTS({files: options.files, isFixedMode});
 
     intermock.generate().then((output: any) => {
-      console.log(output);
+      console.log(JSON.stringify(output));
     });
 
   } else {

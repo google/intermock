@@ -47,19 +47,28 @@
 //   phone: number;
 // };
 
-enum Awesomeness {
-  COOL,
-  LAME
-}
+// enum Awesomeness {
+//   COOL,
+//   LAME
+// }
 
-enum GreatNumbers {
-  e = 2.71,
-  pi = 3.14,
-  golden = 1.61
-}
+// enum GreatNumbers {
+//   e = 2.71,
+//   pi = 3.14,
+//   golden = 1.61
+// }
 
-interface Person {
+// interface Person {
+//   name: string;
+//   status: Awesomeness;
+//   favoriteNumber: GreatNumbers;
+// }
+
+interface Order {
+  id: string;
   name: string;
-  status: Awesomeness;
-  favoriteNumber: GreatNumbers;
+}
+
+interface User {
+  orders: Order[];
 }

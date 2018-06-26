@@ -2,6 +2,7 @@ import readFile from 'fs-readfile-promise';
 import * as _ from 'lodash';
 import ts, {PropertySignature} from 'typescript';
 
+import {DEFAULT_ARRAY_RANGE, FIXED_ARRAY_COUNT} from '../../lib/constants';
 import {defaultTypeToMock} from '../../lib/default-type-to-mock';
 import {fake} from '../../lib/fake';
 import {smartProps} from '../../lib/smart-props';
@@ -101,6 +102,21 @@ export class Intermock {
     output[property] = mock;
   }
 
+  processArrayPropertyType(
+      node: ts.PropertySignature, output: any, property: string,
+      typeName: string, sourceFile: ts.SourceFile) {
+    typeName = typeName.replace('[', '').replace(']', '');
+    output[property] = [];
+
+    const arrayRange = this.options.isFixedMode ?
+        FIXED_ARRAY_COUNT :
+        _.random(DEFAULT_ARRAY_RANGE[0], DEFAULT_ARRAY_RANGE[1]);
+    for (let i = 0; i < arrayRange; i++) {
+      output[property].push({});
+      this.processFile(sourceFile, output[property][i], typeName);
+    }
+  }
+
   traverseInterfaceMembers(
       node: ts.Node, output: any, sourceFile: ts.SourceFile) {
     if (node.kind !== ts.SyntaxKind.PropertySignature) {
@@ -133,6 +149,10 @@ export class Intermock {
       switch (kind) {
         case ts.SyntaxKind.TypeReference:
           this.processPropertyTypeReference(
+              node, output, property, typeName, sourceFile);
+          break;
+        case ts.SyntaxKind.ArrayType:
+          this.processArrayPropertyType(
               node, output, property, typeName, sourceFile);
           break;
         default:
