@@ -66,6 +66,8 @@
 
 interface Order {
   id: string;
+
+  /** !mockType {lorem.words} */
   name: string;
 }
 

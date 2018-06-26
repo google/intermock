@@ -4,4 +4,5 @@ export const smartProps = {
   lastName: 'name.lastName',
   email: 'internet.email',
   emailAddress: 'internet.email',
+  id: 'random.uuid'
 };
