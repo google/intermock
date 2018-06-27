@@ -22,6 +22,7 @@ interface Order {
 
 interface User {
   orders: Order[];
+  moreOrders: Array<Order>;
 }
 
 export const expectedArray1 = {
@@ -31,6 +32,20 @@ export const expectedArray1 = {
   },
   'User': {
     'orders': [
+      {
+        'id': 'bfc8cb62-c6ce-4194-a2a5-499320b837eb',
+        'name': 'consequuntur ab fugiat'
+      },
+      {
+        'id': 'bfc8cb62-c6ce-4194-a2a5-499320b837eb',
+        'name': 'consequuntur ab fugiat'
+      },
+      {
+        'id': 'bfc8cb62-c6ce-4194-a2a5-499320b837eb',
+        'name': 'consequuntur ab fugiat'
+      }
+    ],
+    'moreOrders': [
       {
         'id': 'bfc8cb62-c6ce-4194-a2a5-499320b837eb',
         'name': 'consequuntur ab fugiat'

@@ -85,9 +85,16 @@ export class Intermock {
         this.setEnum(sourceFile, node, output, typeName, property);
         break;
       default:
-        output[property] = {};
-        this.processFile(sourceFile, output[property], typeName);
-        break;
+        if (typeName.startsWith('Array<')) {
+          const arrayType = typeName.replace('Array<', '').replace('>', '');
+          this.processArrayPropertyType(
+              node, output, property, arrayType, sourceFile);
+          break;
+        } else {
+          output[property] = {};
+          this.processFile(sourceFile, output[property], typeName);
+          break;
+        }
     }
   }
 
@@ -161,7 +168,6 @@ export class Intermock {
         typeName = node.type.getText();
       }
 
-      // TODO handle arrays, and other complex types
       switch (kind) {
         case ts.SyntaxKind.TypeReference:
           this.processPropertyTypeReference(

@@ -92,14 +92,27 @@
 // }
 
 
-interface User {
-  name: string;
-}
+// interface User {
+//   name: string;
+// }
 
-interface Person {
-  age: number;
-}
+// interface Person {
+//   age: number;
+// }
+
+// interface Order {
+//   id: string;
+// }
+
 
 interface Order {
   id: string;
+
+  /** !mockType {lorem.words} */
+  name: string;
+}
+
+interface User {
+  orders: Order[];
+  moreOrders: Array<Order>;
 }
