@@ -14,10 +14,17 @@
  * limitations under the License.
  */
 export const smartProps: {[index: string]: string} = {
+  name: 'name.findName',
   firstName: 'name.firstName',
   middleName: 'name.firstName',
   lastName: 'name.lastName',
+  nickName: 'name.findName',
+  informalName: 'name.findName',
+  phone: 'phone.phoneNumber',
   email: 'internet.email',
+  primaryEmail: 'internet.email',
+  initials: 'address.countryCode',
+  avatarUrl: 'internet.avatar',
   emailAddress: 'internet.email',
   id: 'random.uuid'
 };
