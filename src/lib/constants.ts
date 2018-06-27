@@ -13,5 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export const DEFAULT_ARRAY_RANGE: [number, number] = [1, 100];
+export const DEFAULT_ARRAY_RANGE: [number, number] = [1, 10];
 export const FIXED_ARRAY_COUNT = 3;
