@@ -56,6 +56,11 @@ const instructions = [
         description: 'Language of interfaces, defaults to TypeScript',
       },
       {
+        name: 'interfaces',
+        typeLabel: 'example: --interfaces "Person" "User"',
+        description: 'Optional list of interfaces to mock',
+      },
+      {
         name: 'files',
         typeLabel: 'example: web/apps/some-directory/interfaces1.ts',
         description: 'Interface files to generate fake data from',

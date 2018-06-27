@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 export const smartProps: {[index: string]: string} = {
-  name: 'name.findName',
   firstName: 'name.firstName',
   middleName: 'name.firstName',
   lastName: 'name.lastName',
