@@ -80,16 +80,36 @@ export class Intermock {
   processPropertyTypeReference(
       node: ts.PropertySignature, output: any, property: string,
       typeName: string, kind: ts.SyntaxKind, sourceFile: ts.SourceFile) {
-    switch (this.types[typeName]) {
+    let normalizedTypeName;
+
+    if (typeName.startsWith('Array<')) {
+      normalizedTypeName = typeName.replace('Array<', '').replace('>', '');
+    } else {
+      normalizedTypeName = typeName;
+    }
+
+    switch (this.types[normalizedTypeName].kind) {
       case ts.SyntaxKind.EnumDeclaration:
         this.setEnum(sourceFile, node, output, typeName, property);
         break;
       default:
-        if (typeName.startsWith('Array<')) {
-          const arrayType = typeName.replace('Array<', '').replace('>', '');
+        if (normalizedTypeName !== typeName) {
           this.processArrayPropertyType(
-              node, output, property, arrayType, kind, sourceFile);
+              node, output, property, normalizedTypeName, kind, sourceFile);
           break;
+        } else if (
+            this.types[normalizedTypeName].kind !==
+            this.types[normalizedTypeName].aliasedTo) {
+          const alias = this.types[normalizedTypeName].aliasedTo;
+          const isPrimitiveType = alias === ts.SyntaxKind.StringKeyword ||
+              alias === ts.SyntaxKind.NumberKeyword ||
+              alias === ts.SyntaxKind.BooleanKeyword;
+
+          if (isPrimitiveType) {
+            output[property] = this.mock(property, alias, '');
+          } else {
+            // TODO
+          }
         } else {
           output[property] = {};
           this.processFile(sourceFile, output[property], typeName);
@@ -325,7 +345,9 @@ export class Intermock {
       const name = (node as ts.DeclarationStatement).name;
       const text = name ? name.text : '';
 
-      this.types[text] = node.kind;
+      const aliasedTo = _.get(node, 'type.kind', node.kind);
+
+      this.types[text] = {kind: node.kind, aliasedTo};
 
       ts.forEachChild(node, processNode);
     };

@@ -16,17 +16,24 @@
 interface Person {
   name: string;
   detail: Detail;
+  indirection: Roundabout;
 }
 
 type Detail = {
   phone: number;
 };
 
+type Roundabout = string;
+
 export const expectedTypeAlias = {
   Person: {
     name:
         'Animi repellat eveniet eveniet dolores quo ullam rerum reiciendis ipsam. Corrupti voluptatem ipsa illum veritatis eligendi sit autem ut quia. Ea sint voluptas impedit ducimus dolores possimus.',
-    detail: {phone: '845.046.3789'}
+    indirection:
+        'Animi repellat eveniet eveniet dolores quo ullam rerum reiciendis ipsam. Corrupti voluptatem ipsa illum veritatis eligendi sit autem ut quia. Ea sint voluptas impedit ducimus dolores possimus.',
+    detail: {
+      phone: '845.046.3789',
+    }
   },
   Detail: {phone: '845.046.3789'}
 };

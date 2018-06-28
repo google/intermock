@@ -105,6 +105,30 @@
 // }
 
 
+// interface Order {
+//   id: string;
+
+//   /** !mockType {lorem.words} */
+//   name: string;
+// }
+
+// interface User {
+//   orders: Order[];
+//   bestFriends: string[];
+// }
+
+// interface Person {
+//   name: string;
+//   detail: Detail;
+//   indirection: Roundabout;
+// }
+
+// type Detail = {
+//   phone: number;
+// };
+
+// type Roundabout = string;
+
 interface Order {
   id: string;
 
@@ -114,5 +138,6 @@ interface Order {
 
 interface User {
   orders: Order[];
+  moreOrders: Array<Order>;
   bestFriends: string[];
 }
