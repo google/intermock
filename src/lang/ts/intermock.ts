@@ -79,7 +79,7 @@ export class Intermock {
 
   processPropertyTypeReference(
       node: ts.PropertySignature, output: any, property: string,
-      typeName: string, sourceFile: ts.SourceFile) {
+      typeName: string, kind: ts.SyntaxKind, sourceFile: ts.SourceFile) {
     switch (this.types[typeName]) {
       case ts.SyntaxKind.EnumDeclaration:
         this.setEnum(sourceFile, node, output, typeName, property);
@@ -88,7 +88,7 @@ export class Intermock {
         if (typeName.startsWith('Array<')) {
           const arrayType = typeName.replace('Array<', '').replace('>', '');
           this.processArrayPropertyType(
-              node, output, property, arrayType, sourceFile);
+              node, output, property, arrayType, kind, sourceFile);
           break;
         } else {
           output[property] = {};
@@ -127,16 +127,27 @@ export class Intermock {
 
   processArrayPropertyType(
       node: ts.PropertySignature, output: any, property: string,
-      typeName: string, sourceFile: ts.SourceFile) {
+      typeName: string, kind: ts.SyntaxKind, sourceFile: ts.SourceFile) {
     typeName = typeName.replace('[', '').replace(']', '');
     output[property] = [];
+
+    kind = _.get(node, 'type.elementType.kind');
+
+    const isPrimitiveType = kind === ts.SyntaxKind.StringKeyword ||
+        kind === ts.SyntaxKind.BooleanKeyword ||
+        kind === ts.SyntaxKind.NumberKeyword;
 
     const arrayRange = this.options.isFixedMode ?
         FIXED_ARRAY_COUNT :
         _.random(DEFAULT_ARRAY_RANGE[0], DEFAULT_ARRAY_RANGE[1]);
+
     for (let i = 0; i < arrayRange; i++) {
-      output[property].push({});
-      this.processFile(sourceFile, output[property][i], typeName);
+      if (isPrimitiveType) {
+        output[property][i] = this.mock(property, kind, '');
+      } else {
+        output[property].push({});
+        this.processFile(sourceFile, output[property][i], typeName);
+      }
     }
   }
 
@@ -171,11 +182,13 @@ export class Intermock {
       switch (kind) {
         case ts.SyntaxKind.TypeReference:
           this.processPropertyTypeReference(
-              node, output, property, typeName, sourceFile);
+              node, output, property, typeName, kind as ts.SyntaxKind,
+              sourceFile);
           break;
         case ts.SyntaxKind.ArrayType:
           this.processArrayPropertyType(
-              node, output, property, typeName, sourceFile);
+              node, output, property, typeName, kind as ts.SyntaxKind,
+              sourceFile);
           break;
         default:
           this.processGenericPropertyType(

@@ -23,6 +23,7 @@ interface Order {
 interface User {
   orders: Order[];
   moreOrders: Array<Order>;
+  bestFriends: string[];
 }
 
 export const expectedArray1 = {
@@ -58,6 +59,12 @@ export const expectedArray1 = {
         'id': 'bfc8cb62-c6ce-4194-a2a5-499320b837eb',
         'name': 'consequuntur ab fugiat'
       }
+    ],
+    'bestFriends': [
+      'Animi repellat eveniet eveniet dolores quo ullam rerum reiciendis ipsam. Corrupti voluptatem ipsa illum veritatis eligendi sit autem ut quia. Ea sint voluptas impedit ducimus dolores possimus.',
+      'Animi repellat eveniet eveniet dolores quo ullam rerum reiciendis ipsam. Corrupti voluptatem ipsa illum veritatis eligendi sit autem ut quia. Ea sint voluptas impedit ducimus dolores possimus.',
+      'Animi repellat eveniet eveniet dolores quo ullam rerum reiciendis ipsam. Corrupti voluptatem ipsa illum veritatis eligendi sit autem ut quia. Ea sint voluptas impedit ducimus dolores possimus.'
     ]
+
   }
 };

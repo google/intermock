@@ -114,5 +114,5 @@ interface Order {
 
 interface User {
   orders: Order[];
-  moreOrders: Array<Order>;
+  bestFriends: string[];
 }
