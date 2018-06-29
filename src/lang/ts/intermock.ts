@@ -88,17 +88,18 @@ export class Intermock {
       normalizedTypeName = typeName;
     }
 
+    if (normalizedTypeName !== typeName) {
+      this.processArrayPropertyType(
+          node, output, property, normalizedTypeName, kind, sourceFile);
+      return;
+    }
+
     switch (this.types[normalizedTypeName].kind) {
       case ts.SyntaxKind.EnumDeclaration:
         this.setEnum(sourceFile, node, output, typeName, property);
         break;
       default:
-        if (normalizedTypeName !== typeName) {
-          this.processArrayPropertyType(
-              node, output, property, normalizedTypeName, kind, sourceFile);
-          break;
-        } else if (
-            this.types[normalizedTypeName].kind !==
+        if (this.types[normalizedTypeName].kind !==
             this.types[normalizedTypeName].aliasedTo) {
           const alias = this.types[normalizedTypeName].aliasedTo;
           const isPrimitiveType = alias === ts.SyntaxKind.StringKeyword ||
@@ -302,7 +303,7 @@ export class Intermock {
            * clauses
            */
           const p = (node as ts.InterfaceDeclaration).name.text;
-          if (!this.isSpecificInterface(p)) {
+          if (!this.isSpecificInterface(p) && !propToTraverse) {
             return;
           }
           if (propToTraverse) {
