@@ -15,7 +15,7 @@
  */
 import readFile from 'fs-readfile-promise';
 import * as _ from 'lodash';
-import ts, {PropertySignature} from 'typescript';
+import ts from 'typescript';
 
 import {DEFAULT_ARRAY_RANGE, FIXED_ARRAY_COUNT} from '../../lib/constants';
 import {defaultTypeToMock} from '../../lib/default-type-to-mock';
