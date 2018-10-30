@@ -21,7 +21,7 @@ import {DEFAULT_ARRAY_RANGE, FIXED_ARRAY_COUNT} from '../../lib/constants';
 import {defaultTypeToMock} from '../../lib/default-type-to-mock';
 import {fake} from '../../lib/fake';
 import {smartProps} from '../../lib/smart-props';
-import {FileTuple, FileTuples} from '../../lib/types';
+import {FileTuple, FileTuples, MapLike} from '../../lib/types';
 
 export interface Options {
   files: string[];
@@ -30,8 +30,15 @@ export interface Options {
   isOptionalAlwaysEnabled?: boolean;
 }
 
+type TypeCacheRecord = {
+  kind: ts.SyntaxKind,
+  aliasedTo: ts.SyntaxKind
+};
+
+type Output = MapLike<{}>;
+
 export class Intermock {
-  types: any = {};
+  types: MapLike<{}> = {};
 
   constructor(private readonly options: Options) {}
 
@@ -39,7 +46,7 @@ export class Intermock {
     const filePromises = this.options.files.map(file => readFile(file));
     return new Promise((resolve) => {
       Promise.all(filePromises).then(buffers => {
-        const contents: any[] = [];
+        const contents: string[][] = [];
         buffers.forEach(
             (buffer, index) =>
                 contents.push([this.options.files[index], buffer.toString()]));
@@ -78,7 +85,7 @@ export class Intermock {
   }
 
   processPropertyTypeReference(
-      node: ts.PropertySignature, output: any, property: string,
+      node: ts.PropertySignature, output: Output, property: string,
       typeName: string, kind: ts.SyntaxKind, sourceFile: ts.SourceFile) {
     let normalizedTypeName;
 
@@ -94,14 +101,15 @@ export class Intermock {
       return;
     }
 
-    switch (this.types[normalizedTypeName].kind) {
+    switch ((this.types[normalizedTypeName] as TypeCacheRecord).kind) {
       case ts.SyntaxKind.EnumDeclaration:
         this.setEnum(sourceFile, node, output, typeName, property);
         break;
       default:
-        if (this.types[normalizedTypeName].kind !==
-            this.types[normalizedTypeName].aliasedTo) {
-          const alias = this.types[normalizedTypeName].aliasedTo;
+        if ((this.types[normalizedTypeName] as TypeCacheRecord).kind !==
+            (this.types[normalizedTypeName] as TypeCacheRecord).aliasedTo) {
+          const alias =
+              (this.types[normalizedTypeName] as TypeCacheRecord).aliasedTo;
           const isPrimitiveType = alias === ts.SyntaxKind.StringKeyword ||
               alias === ts.SyntaxKind.NumberKeyword ||
               alias === ts.SyntaxKind.BooleanKeyword;
@@ -120,13 +128,13 @@ export class Intermock {
   }
 
   processGenericPropertyType(
-      output: any, property: string, kind: ts.SyntaxKind, mockType: string) {
+      output: Output, property: string, kind: ts.SyntaxKind, mockType: string) {
     const mock = this.mock(property, kind, mockType);
     output[property] = mock;
   }
 
   processJsDocs(
-      node: ts.PropertySignature, output: any, property: string,
+      node: ts.PropertySignature, output: Output, property: string,
       jsDocs: string[]) {
     // TODO handle case where we get multiple mock JSDocs or a JSDoc like
     // mockRange for an array. In essence, we are only dealing with
@@ -147,7 +155,7 @@ export class Intermock {
   }
 
   processArrayPropertyType(
-      node: ts.PropertySignature, output: any, property: string,
+      node: ts.PropertySignature, output: Output, property: string,
       typeName: string, kind: ts.SyntaxKind, sourceFile: ts.SourceFile) {
     typeName = typeName.replace('[', '').replace(']', '');
     output[property] = [];
@@ -164,16 +172,17 @@ export class Intermock {
 
     for (let i = 0; i < arrayRange; i++) {
       if (isPrimitiveType) {
-        output[property][i] = this.mock(property, kind, '');
+        (output[property] as Array<{}>)[i] = this.mock(property, kind, '');
       } else {
-        output[property].push({});
-        this.processFile(sourceFile, output[property][i], typeName);
+        (output[property] as Array<{}>).push({});
+        this.processFile(
+            sourceFile, (output[property] as Array<{}>)[i], typeName);
       }
     }
   }
 
   traverseInterfaceMembers(
-      node: ts.Node, output: any, sourceFile: ts.SourceFile) {
+      node: ts.Node, output: Output, sourceFile: ts.SourceFile) {
     if (node.kind !== ts.SyntaxKind.PropertySignature) {
       return;
     }
@@ -222,8 +231,8 @@ export class Intermock {
   }
 
   setEnum(
-      sourceFile: ts.SourceFile, node: ts.Node, output: any, typeName: string,
-      property: string) {
+      sourceFile: ts.SourceFile, node: ts.Node, output: Output,
+      typeName: string, property: string) {
     const processNode = (node: ts.Node) => {
       switch (node.kind) {
         case ts.SyntaxKind.EnumDeclaration:
@@ -262,7 +271,7 @@ export class Intermock {
   }
 
   traverseInterface(
-      node: ts.Node, output: any, sourceFile: ts.SourceFile,
+      node: ts.Node, output: Output, sourceFile: ts.SourceFile,
       propToTraverse?: string, path?: string) {
     if (path) {
       output[path] = {};
@@ -294,7 +303,8 @@ export class Intermock {
     return true;
   }
 
-  processFile(sourceFile: ts.SourceFile, output: any, propToTraverse?: string) {
+  processFile(
+      sourceFile: ts.SourceFile, output: Output, propToTraverse?: string) {
     const processNode = (node: ts.Node) => {
       switch (node.kind) {
         case ts.SyntaxKind.InterfaceDeclaration:
@@ -345,7 +355,6 @@ export class Intermock {
     const processNode = (node: ts.Node) => {
       const name = (node as ts.DeclarationStatement).name;
       const text = name ? name.text : '';
-
       const aliasedTo = _.get(node, 'type.kind', node.kind);
 
       this.types[text] = {kind: node.kind, aliasedTo};
@@ -357,7 +366,7 @@ export class Intermock {
   }
 
   async generate() {
-    const output: any = {};
+    const output: Output = {};
     const fileContents = await this.readFiles();
     fileContents.forEach((f: FileTuple) => {
       this.gatherTypes(
