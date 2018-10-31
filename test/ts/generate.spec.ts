@@ -103,7 +103,7 @@ describe('', () => {
         expectedSpecificInterface, {interfaces: ['Person', 'User']});
   });
 
-  it('should generate mock for basic arrays', () => {
+  it('should generate mock for any types', () => {
     return runTestCase(`${__dirname}/test-data/any.ts`, 'User', expectedAny);
   });
 });
