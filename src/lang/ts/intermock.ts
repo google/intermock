@@ -84,6 +84,12 @@ export class Intermock {
     return false;
   }
 
+  processGenericPropertyType(
+      output: Output, property: string, kind: ts.SyntaxKind, mockType: string) {
+    const mock = this.mock(property, kind, mockType);
+    output[property] = mock;
+  }
+
   processPropertyTypeReference(
       node: ts.PropertySignature, output: Output, property: string,
       typeName: string, kind: ts.SyntaxKind, sourceFile: ts.SourceFile) {
@@ -125,12 +131,6 @@ export class Intermock {
           break;
         }
     }
-  }
-
-  processGenericPropertyType(
-      output: Output, property: string, kind: ts.SyntaxKind, mockType: string) {
-    const mock = this.mock(property, kind, mockType);
-    output[property] = mock;
   }
 
   processJsDocs(
@@ -191,7 +191,7 @@ export class Intermock {
       const jsDocs = _.get(node, 'jsDoc', []);
       const property = node.name.getText();
       const questionToken = node.questionToken;
-      const mockType = '';
+
       let typeName = '';
       let kind;
 
@@ -222,7 +222,7 @@ export class Intermock {
           break;
         default:
           this.processGenericPropertyType(
-              output, property, kind as ts.SyntaxKind, mockType);
+              output, property, kind as ts.SyntaxKind, '');
           break;
       }
     };

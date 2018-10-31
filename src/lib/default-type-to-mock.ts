@@ -25,4 +25,5 @@ export const defaultTypeToMock:
           fake('lorem.text', isFixedMode),
       [ts.SyntaxKind.BooleanKeyword]: (isFixedMode = false) =>
           fake('random.boolean', isFixedMode),
+      [ts.SyntaxKind.AnyKeyword]: (isFixedMode = false) => '',
     };

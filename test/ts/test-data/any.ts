@@ -13,18 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export const smartProps: {[index: string]: string} = {
-  firstName: 'name.firstName',
-  middleName: 'name.firstName',
-  lastName: 'name.lastName',
-  nickName: 'name.findName',
-  informalName: 'name.findName',
-  phone: 'phone.phoneNumber',
-  email: 'internet.email',
-  primaryEmail: 'internet.email',
-  initials: 'address.countryCode',
-  avatarUrl: 'internet.avatar',
-  emailAddress: 'internet.email',
-  id: 'random.uuid',
-  oid: 'random.uuid',
+
+export interface User {
+  firstName: string;
+  lastName: string;
+  stats: any;
+}
+
+export const expectedAny = {
+  firstName: 'Mabel',
+  lastName: 'Williamson',
+  stats: ''
 };
