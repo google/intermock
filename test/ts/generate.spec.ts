@@ -106,4 +106,6 @@ describe('', () => {
   it('should generate mock for any types', () => {
     return runTestCase(`${__dirname}/test-data/any.ts`, 'User', expectedAny);
   });
+
+  it('should generate mock for interfaces with functions', () => {});
 });
