@@ -55,33 +55,6 @@ export class Intermock {
     });
   }
 
-  /**
-   * Stringfy a POJO and preserve its functions.
-   *
-   * Courtesy of @cowboy
-   * https://gist.github.com/cowboy/3749767
-   * @param obj
-   * @param prop
-   */
-  stringify(obj: object) {
-    const placeholder = '____PLACEHOLDER____';
-    const fns: string[] = [];
-
-    let json = JSON.stringify(obj, (key: string, value: string) => {
-      if (typeof value === 'function') {
-        fns.push(value);
-        return placeholder;
-      }
-      return value;
-    }, 2);
-
-    json = json.replace(new RegExp('"' + placeholder + '"', 'g'), () => {
-      return fns.shift();
-    });
-
-    return json + ';';
-  }
-
   mock(property: string, syntaxType: ts.SyntaxKind, mockType: string) {
     const smartMockType = smartProps[property];
     const isFixedMode =

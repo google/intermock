@@ -45,7 +45,7 @@ function runTestCase(
   });
 }
 
-describe('', () => {
+describe('Intermock TypeScript: Mock tests', () => {
   it('should generate mock for a flat interface, with just primitives', () => {
     return runTestCase(
         `${__dirname}/test-data/flat.ts`, 'FlatInterface', expectedFlat);
