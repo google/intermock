@@ -24,7 +24,7 @@ import {smartProps} from '../../lib/smart-props';
 import {FileTuple, FileTuples, MapLike} from '../../lib/types';
 
 export interface Options {
- files: string[];
+  files: string[];
   interfaces?: string[];
   isFixedMode?: boolean;
   isOptionalAlwaysEnabled?: boolean;
