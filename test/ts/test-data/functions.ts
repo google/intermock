@@ -15,10 +15,6 @@
  */
 
 
-interface FunctionInterface {
-  fakeFunction: () => number;
+export interface FunctionInterface {
+  basicFunctionRetNum: () => number;
 }
-
-export const expectedFunction = {
-  fakeFunction: () => 86924
-};

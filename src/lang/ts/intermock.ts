@@ -21,6 +21,7 @@ import {DEFAULT_ARRAY_RANGE, FIXED_ARRAY_COUNT} from '../../lib/constants';
 import {defaultTypeToMock} from '../../lib/default-type-to-mock';
 import {fake} from '../../lib/fake';
 import {smartProps} from '../../lib/smart-props';
+import {stringify} from '../../lib/stringify';
 import {FileTuple, FileTuples, MapLike} from '../../lib/types';
 
 export interface Options {
@@ -55,7 +56,7 @@ export class Intermock {
     });
   }
 
-  mock(property: string, syntaxType: ts.SyntaxKind, mockType: string) {
+  mock(property: string, syntaxType: ts.SyntaxKind, mockType?: string) {
     const smartMockType = smartProps[property];
     const isFixedMode =
         this.options.isFixedMode ? this.options.isFixedMode : false;
@@ -88,6 +89,26 @@ export class Intermock {
       output: Output, property: string, kind: ts.SyntaxKind, mockType: string) {
     const mock = this.mock(property, kind, mockType);
     output[property] = mock;
+  }
+
+  processFunctionPropertyType(
+      node: ts.PropertySignature, output: Output, property: string,
+      typeName: string, kind: ts.SyntaxKind, sourceFile: ts.SourceFile) {
+    // TODO process args from parameters of function
+    const args = '';
+    let body = '';
+
+    const funcNode = node.type as ts.FunctionTypeNode;
+    const returnType = funcNode.type;
+
+    switch (returnType) {
+      default:
+        body = `return ${JSON.stringify(this.mock('', returnType.kind))}`;
+        break;
+    }
+
+    const func = new Function(args, body);
+    output[property] = func;
   }
 
   processPropertyTypeReference(
@@ -217,6 +238,11 @@ export class Intermock {
           break;
         case ts.SyntaxKind.ArrayType:
           this.processArrayPropertyType(
+              node, output, property, typeName, kind as ts.SyntaxKind,
+              sourceFile);
+          break;
+        case ts.SyntaxKind.FunctionType:
+          this.processFunctionPropertyType(
               node, output, property, typeName, kind as ts.SyntaxKind,
               sourceFile);
           break;

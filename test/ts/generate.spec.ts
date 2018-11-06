@@ -20,7 +20,7 @@ import {expect} from 'chai';
 import * as _ from 'lodash';
 
 import {Intermock} from '../../src/lang/ts/intermock';
-
+import {MapLike} from '../../src/lib/types';
 import {expectedAny} from './test-data/any';
 import {expectedArray1} from './test-data/array';
 import {expectedEnum} from './test-data/enum';
@@ -30,6 +30,7 @@ import {expectedNested} from './test-data/nestedSingle';
 import {expectedOptional1, expectedOptional2} from './test-data/optional';
 import {expectedSpecificInterface} from './test-data/specificInterfaces';
 import {expectedTypeAlias} from './test-data/typeAlias';
+
 
 function runTestCase(
     file: string, outputProp: any, expected: any, options?: any) {
@@ -43,6 +44,13 @@ function runTestCase(
       expect(output).to.deep.equal(expected);
     }
   });
+}
+
+function getOutput(file: string, options?: any): Promise<MapLike<{}>> {
+  const imOptions = _.assign({}, {files: [file], isFixedMode: true}, options);
+  const im = new Intermock(imOptions);
+
+  return im.generate();
 }
 
 describe('Intermock TypeScript: Mock tests', () => {
@@ -107,5 +115,10 @@ describe('Intermock TypeScript: Mock tests', () => {
     return runTestCase(`${__dirname}/test-data/any.ts`, 'User', expectedAny);
   });
 
-  it('should generate mock for interfaces with functions', () => {});
+  it('should generate mock for interfaces with functions', async () => {
+    const output = await getOutput(`${__dirname}/test-data/functions.ts`);
+    const ret = (output as any).FunctionInterface.basicFunctionRetNum();
+
+    expect(ret).to.eql(86924);
+  });
 });
