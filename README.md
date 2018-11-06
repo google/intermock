@@ -1,8 +1,13 @@
 # intermock
-Mocking library to create mock objects for TypeScript interfaces via Faker
+Mocking library to create mock objects and JSON for TypeScript interfaces via Faker
 
 ## Installation
-TODO
+`git clone sso://user/ryanmcdermott/intermock`
+
+## Development
+If you want to run the build script and tests after you save a file while developing, 
+run the following command:
+`npm run test-watch`
 
 ## License
-TODO
+See `LICENSE` in this repo
