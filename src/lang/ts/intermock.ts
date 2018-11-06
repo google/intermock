@@ -103,7 +103,7 @@ export class Intermock {
 
     switch (returnType.kind) {
       case ts.SyntaxKind.TypeReference:
-        const tempBody: any = {};
+        const tempBody: MapLike<{}> = {};
         this.processPropertyTypeReference(
             node, tempBody, 'body', _.get(returnType, 'typeName.text'),
             returnType.kind, sourceFile);

@@ -21,23 +21,31 @@ import * as _ from 'lodash';
 
 import {Intermock} from '../../src/lang/ts/intermock';
 import {MapLike} from '../../src/lib/types';
+
 import {expectedAny} from './test-data/any';
 import {expectedArray1} from './test-data/array';
 import {expectedEnum} from './test-data/enum';
 import {expectedFlat} from './test-data/flat';
+import {FunctionInterface} from './test-data/functions';
 import {expectedMockType} from './test-data/mockType';
 import {expectedNested} from './test-data/nestedSingle';
 import {expectedOptional1, expectedOptional2} from './test-data/optional';
 import {expectedSpecificInterface} from './test-data/specificInterfaces';
 import {expectedTypeAlias} from './test-data/typeAlias';
 
+interface Options {
+  files?: string[];
+  isFixedMode?: boolean;
+  isOptionalAlwaysEnabled?: boolean;
+  interfaces?: string[];
+}
 
 function runTestCase(
-    file: string, outputProp: any, expected: any, options?: any) {
+    file: string, outputProp: string, expected: unknown, options?: Options) {
   const imOptions = _.assign({}, {files: [file], isFixedMode: true}, options);
   const im = new Intermock(imOptions);
 
-  return im.generate().then((output: any) => {
+  return im.generate().then((output: MapLike<{}>) => {
     if (outputProp) {
       expect(_.get(output, outputProp)).to.deep.equal(expected);
     } else {
@@ -46,7 +54,7 @@ function runTestCase(
   });
 }
 
-function getOutput(file: string, options?: any): Promise<MapLike<{}>> {
+function getOutput(file: string, options?: Options): Promise<MapLike<{}>> {
   const imOptions = _.assign({}, {files: [file], isFixedMode: true}, options);
   const im = new Intermock(imOptions);
 
@@ -117,10 +125,10 @@ describe('Intermock TypeScript: Mock tests', () => {
 
   it('should generate mock for interfaces with functions', async () => {
     const output = await getOutput(`${__dirname}/test-data/functions.ts`);
-    const basicRet = (output as any).FunctionInterface.basicFunctionRetNum();
+    const basicRet =
+        (output.FunctionInterface as FunctionInterface).basicFunctionRetNum();
     const interfaceRet =
-        (output as any).FunctionInterface.functionRetInterface();
-    console.warn(interfaceRet);
+        (output.FunctionInterface as FunctionInterface).functionRetInterface();
 
     expect(basicRet).to.eql(86924);
     expect(interfaceRet).to.eql({

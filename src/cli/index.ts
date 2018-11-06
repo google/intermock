@@ -15,9 +15,9 @@
  */
 import commandLineArgs from 'command-line-args';
 import commandLineUsage from 'command-line-usage';
-import {convertCompilerOptionsFromJson} from 'typescript';
 
 import {Intermock as IntermockTS} from '../lang/ts/intermock';
+import {MapLike} from '../lib/types';
 
 const optionDefinitions = [
   {
@@ -74,12 +74,20 @@ const instructions = [
       {
         name: 'help',
         description: 'Print this usage guide.',
-      },
+      }
     ],
   },
 ];
 
-function isWelcomeMessageNeeded(options: any) {
+interface Options {
+  files: string[];
+  help: boolean;
+  language: string;
+  interfaces: string[];
+  fixed: boolean;
+}
+
+function isWelcomeMessageNeeded(options: Options) {
   if (!options || !options.files || options.help) {
     return true;
   }
@@ -93,7 +101,7 @@ function showWelcomeMessage() {
 }
 
 function main() {
-  const options: any = commandLineArgs(optionDefinitions);
+  const options: Options = commandLineArgs(optionDefinitions) as Options;
 
   if (isWelcomeMessageNeeded(options)) {
     showWelcomeMessage();
@@ -107,7 +115,7 @@ function main() {
     const intermock = new IntermockTS(
         {files: options.files, interfaces: options.interfaces, isFixedMode});
 
-    intermock.generate().then((output: any) => {
+    intermock.generate().then((output: MapLike<{}>) => {
       console.log(JSON.stringify(output));
     });
 

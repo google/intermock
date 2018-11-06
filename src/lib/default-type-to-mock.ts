@@ -15,7 +15,6 @@
  */
 import ts from 'typescript';
 import {fake} from './fake';
-import {MapLike} from './types';
 
 export const defaultTypeToMock:
     {[index: number]: (isFixedMode: boolean) => string | number | boolean} = {
