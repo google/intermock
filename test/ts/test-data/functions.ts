@@ -1,3 +1,4 @@
+
 /**
  * Copyright 2018 Google Inc. All Rights Reserved.
  *
@@ -14,7 +15,12 @@
  * limitations under the License.
  */
 
+interface User {
+  name: string;
+  email: string;
+}
 
 export interface FunctionInterface {
   basicFunctionRetNum: () => number;
+  functionRetInterface: () => User;
 }

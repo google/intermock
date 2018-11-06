@@ -117,8 +117,16 @@ describe('Intermock TypeScript: Mock tests', () => {
 
   it('should generate mock for interfaces with functions', async () => {
     const output = await getOutput(`${__dirname}/test-data/functions.ts`);
-    const ret = (output as any).FunctionInterface.basicFunctionRetNum();
+    const basicRet = (output as any).FunctionInterface.basicFunctionRetNum();
+    const interfaceRet =
+        (output as any).FunctionInterface.functionRetInterface();
+    console.warn(interfaceRet);
 
-    expect(ret).to.eql(86924);
+    expect(basicRet).to.eql(86924);
+    expect(interfaceRet).to.eql({
+      name:
+          'Animi repellat eveniet eveniet dolores quo ullam rerum reiciendis ipsam. Corrupti voluptatem ipsa illum veritatis eligendi sit autem ut quia. Ea sint voluptas impedit ducimus dolores possimus.',
+      email: 'Myron_Olson39@hotmail.com'
+    });
   });
 });

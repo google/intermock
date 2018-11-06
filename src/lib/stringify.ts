@@ -20,7 +20,6 @@
  * Courtesy of @cowboy
  * https://gist.github.com/cowboy/3749767
  * @param obj
- * @param prop
  */
 export function stringify(obj: object) {
   const placeholder = '____PLACEHOLDER____';

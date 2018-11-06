@@ -101,7 +101,15 @@ export class Intermock {
     const funcNode = node.type as ts.FunctionTypeNode;
     const returnType = funcNode.type;
 
-    switch (returnType) {
+    switch (returnType.kind) {
+      case ts.SyntaxKind.TypeReference:
+        const tempBody: any = {};
+        this.processPropertyTypeReference(
+            node, tempBody, 'body', _.get(returnType, 'typeName.text'),
+            returnType.kind, sourceFile);
+
+        body = `return ${stringify(tempBody['body'])}`;
+        break;
       default:
         body = `return ${JSON.stringify(this.mock('', returnType.kind))}`;
         break;
