@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import * as _ from 'lodash';
 import ts from 'typescript';
 
 import {DEFAULT_ARRAY_RANGE, FIXED_ARRAY_COUNT} from '../../lib/constants';
@@ -102,7 +101,9 @@ export class Intermock {
       case ts.SyntaxKind.TypeReference:
         const tempBody: MapLike<{}> = {};
         this.processPropertyTypeReference(
-            node, tempBody, 'body', _.get(returnType, 'typeName.text'),
+            node, tempBody, 'body',
+            ((returnType as ts.TypeReferenceNode).typeName as ts.Identifier)
+                .text,
             returnType.kind, sourceFile);
 
         body = `return ${stringify(tempBody['body'])}`;
