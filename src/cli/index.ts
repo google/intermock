@@ -18,7 +18,6 @@ import commandLineUsage from 'command-line-usage';
 import {readFiles} from 'lib/read-files';
 
 import {mock as IntermockTS} from '../lang/ts/intermock';
-import {MapLike} from '../lib/types';
 
 const optionDefinitions = [
   {

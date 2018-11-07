@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-export interface MapLike<T> {
-  [index: string]: T;
-}
 
 /** fileName: string, fileContent: string */
 export type FileTuple = [string, string];

@@ -15,10 +15,9 @@
  */
 import {fake} from './fake';
 import {generators} from './generators';
-import {MapLike} from './types';
 
 export function generateFixedData() {
-  const fixedData: MapLike<number|string|boolean> = {};
+  const fixedData: Record<string, number|string|boolean> = {};
   generators.forEach(generator => fixedData[generator] = fake(generator));
   return fixedData;
 }

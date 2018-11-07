@@ -17,11 +17,10 @@
 import 'mocha';
 
 import {expect} from 'chai';
-import * as _ from 'lodash';
 
 import {mock, Options} from '../../src/lang/ts/intermock';
 import {readFiles} from '../../src/lib/read-files';
-import {FileTuples, MapLike} from '../../src/lib/types';
+import {FileTuples} from '../../src/lib/types';
 
 import {expectedAny} from './test-data/any';
 import {expectedArray1} from './test-data/array';
@@ -37,20 +36,20 @@ import {expectedTypeAlias} from './test-data/typeAlias';
 async function runTestCase(
     file: string, outputProp: string, expected: unknown, options?: Options) {
   const files = await readFiles([file]);
-  const imOptions = _.assign({}, {files, isFixedMode: true}, options);
-  const output = mock(imOptions);
+  const imOptions = Object.assign({}, {files, isFixedMode: true}, options);
+  const output: Record<string, {}> = mock(imOptions);
 
   if (outputProp) {
-    expect(_.get(output, outputProp)).to.deep.equal(expected);
+    expect(output[outputProp]).to.deep.equal(expected);
   } else {
     expect(output).to.deep.equal(expected);
   }
 }
 
 async function getOutput(
-    file: string, options?: Options): Promise<MapLike<{}>> {
+    file: string, options?: Options): Promise<Record<string, {}>> {
   const files = await readFiles([file]);
-  const imOptions = _.assign({}, {files, isFixedMode: true}, options);
+  const imOptions = Object.assign({}, {files, isFixedMode: true}, options);
   return mock(imOptions);
 }
 

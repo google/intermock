@@ -13,9 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {MapLike} from './types';
 
-export const fixedData: MapLike<string|number|boolean> = {
+export const fixedData: Record<string, string|number|boolean> = {
   'address.zipCode': 53868,
   'address.city': 'East Diannabury',
   'address.cityPrefix': 'Lake',

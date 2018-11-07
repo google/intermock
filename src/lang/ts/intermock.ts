@@ -21,10 +21,11 @@ import {fake} from '../../lib/fake';
 import {randomRange} from '../../lib/random-range';
 import {smartProps} from '../../lib/smart-props';
 import {stringify} from '../../lib/stringify';
-import {FileTuple, FileTuples, MapLike} from '../../lib/types';
+import {FileTuple, FileTuples} from '../../lib/types';
 
 export interface Options {
   files?: FileTuples;
+  language?: string;
   interfaces?: string[];
   isFixedMode?: boolean;
   useJson?: boolean;
@@ -44,9 +45,9 @@ type TypeCacheRecord = {
   aliasedTo: ts.SyntaxKind
 };
 
-type Output = MapLike<{}>;
+type Output = Record<string, {}>;
 
-const types: MapLike<{}> = {};
+const types: Record<string, {}> = {};
 
 
 function generatePrimitive(
@@ -100,7 +101,7 @@ function processFunctionPropertyType(
 
   switch (returnType.kind) {
     case ts.SyntaxKind.TypeReference:
-      const tempBody: MapLike<{}> = {};
+      const tempBody: Record<string, {}> = {};
       processPropertyTypeReference(
           node, tempBody, 'body',
           ((returnType as ts.TypeReferenceNode).typeName as ts.Identifier).text,
