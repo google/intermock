@@ -20,7 +20,6 @@ import {expect} from 'chai';
 
 import {mock, Options} from '../../src/lang/ts/intermock';
 import {readFiles} from '../../src/lib/read-files';
-import {FileTuples} from '../../src/lib/types';
 
 import {expectedAny} from './test-data/any';
 import {expectedArray1} from './test-data/array';

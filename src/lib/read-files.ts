@@ -1,6 +1,7 @@
 import readFile from 'fs-readfile-promise';
 
-import {FileTuples} from './types';
+export type FileTuple = [string, string];
+export type FileTuples = FileTuple[];
 
 export function readFiles(files: string[]): Promise<FileTuples> {
   const filePromises = files.map(file => readFile(file));

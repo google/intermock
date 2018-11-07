@@ -21,10 +21,9 @@ import {fake} from '../../lib/fake';
 import {randomRange} from '../../lib/random-range';
 import {smartProps} from '../../lib/smart-props';
 import {stringify} from '../../lib/stringify';
-import {FileTuple, FileTuples} from '../../lib/types';
 
 export interface Options {
-  files?: FileTuples;
+  files?: Array<[string, string]>;
   language?: string;
   interfaces?: string[];
   isFixedMode?: boolean;
