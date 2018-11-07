@@ -32,6 +32,10 @@ export interface Options {
   isOptionalAlwaysEnabled?: boolean;
 }
 
+interface JSDoc {
+  comment: string;
+}
+
 type TypeCacheRecord = {
   kind: ts.SyntaxKind,
   aliasedTo: ts.SyntaxKind
@@ -165,7 +169,7 @@ export class Intermock {
 
   processJsDocs(
       node: ts.PropertySignature, output: Output, property: string,
-      jsDocs: string[]) {
+      jsDocs: JSDoc[]) {
     // TODO handle case where we get multiple mock JSDocs or a JSDoc like
     // mockRange for an array. In essence, we are only dealing with
     // primitives now
@@ -173,9 +177,17 @@ export class Intermock {
     // TODO Handle error case where a complex type has MockDocs
 
     let mockType = '';
-    const jsDocComment = _.get(jsDocs[0], 'comment', '');
+    let jsDocComment = '';
+
+    if (jsDocs.length > 0 && jsDocs[0].comment) {
+      jsDocComment = jsDocs[0].comment;
+    }
+
     if (jsDocComment.startsWith('!mockType')) {
-      mockType = jsDocComment.match(/(?<=\{).+?(?=\})/g)[0];
+      const match = jsDocComment.match(/(?<=\{).+?(?=\})/g);
+      if (match) {
+        mockType = match[0];
+      }
     } else {
       // TODO
     }
@@ -190,7 +202,9 @@ export class Intermock {
     typeName = typeName.replace('[', '').replace(']', '');
     output[property] = [];
 
-    kind = _.get(node, 'type.elementType.kind');
+    if ((node.type as ts.ArrayTypeNode).elementType) {
+      kind = (node.type as ts.ArrayTypeNode).elementType.kind;
+    }
 
     const isPrimitiveType = kind === ts.SyntaxKind.StringKeyword ||
         kind === ts.SyntaxKind.BooleanKeyword ||
@@ -390,8 +404,13 @@ export class Intermock {
     const processNode = (node: ts.Node) => {
       const name = (node as ts.DeclarationStatement).name;
       const text = name ? name.text : '';
+      let aliasedTo;
 
-      const aliasedTo = _.get(node, 'type.kind', node.kind);
+      if ((node as ts.TypeAliasDeclaration).type) {
+        aliasedTo = (node as ts.TypeAliasDeclaration).type.kind;
+      } else {
+        aliasedTo = node.kind;
+      }
 
       this.types[text] = {kind: node.kind, aliasedTo};
 
