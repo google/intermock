@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import readFile from 'fs-readfile-promise';
 import * as _ from 'lodash';
 import ts from 'typescript';
 
@@ -21,9 +20,10 @@ import {DEFAULT_ARRAY_RANGE, FIXED_ARRAY_COUNT} from '../../lib/constants';
 import {defaultTypeToMock} from '../../lib/default-type-to-mock';
 import {fake} from '../../lib/fake';
 import {randomRange} from '../../lib/random-range';
+import {readFiles} from '../../lib/read-files';
 import {smartProps} from '../../lib/smart-props';
 import {stringify} from '../../lib/stringify';
-import {FileTuple, FileTuples, MapLike} from '../../lib/types';
+import {FileTuple, MapLike} from '../../lib/types';
 
 export interface Options {
   files: string[];
@@ -51,19 +51,6 @@ export class Intermock {
   types: MapLike<{}> = {};
 
   constructor(private readonly options: Options) {}
-
-  private readFiles(): Promise<FileTuples> {
-    const filePromises = this.options.files.map(file => readFile(file));
-    return new Promise((resolve) => {
-      Promise.all(filePromises).then(buffers => {
-        const contents: string[][] = [];
-        buffers.forEach(
-            (buffer, index) =>
-                contents.push([this.options.files[index], buffer.toString()]));
-        resolve(contents as FileTuples);
-      });
-    });
-  }
 
   generatePrimitive(
       property: string, syntaxType: ts.SyntaxKind, mockType?: string) {
@@ -434,7 +421,8 @@ export class Intermock {
 
   async generate() {
     const output: Output = {};
-    const fileContents = await this.readFiles();
+    const fileContents = await readFiles(this.options.files);
+
     fileContents.forEach((f: FileTuple) => {
       this.gatherTypes(
           ts.createSourceFile(f[0], f[1], ts.ScriptTarget.ES2015, true));
