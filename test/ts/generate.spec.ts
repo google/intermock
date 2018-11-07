@@ -38,6 +38,7 @@ interface Options {
   isFixedMode?: boolean;
   isOptionalAlwaysEnabled?: boolean;
   interfaces?: string[];
+  useJson?: boolean;
 }
 
 function runTestCase(
@@ -137,4 +138,6 @@ describe('Intermock TypeScript: Mock tests', () => {
       email: 'Myron_Olson39@hotmail.com'
     });
   });
+
+  it('should generate JSON', () => {});
 });
