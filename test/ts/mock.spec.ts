@@ -19,8 +19,9 @@ import 'mocha';
 import {expect} from 'chai';
 import * as _ from 'lodash';
 
-import {Intermock} from '../../src/lang/ts/intermock';
-import {MapLike} from '../../src/lib/types';
+import {mock, Options} from '../../src/lang/ts/intermock';
+import {readFiles} from '../../src/lib/read-files';
+import {FileTuples, MapLike} from '../../src/lib/types';
 
 import {expectedAny} from './test-data/any';
 import {expectedArray1} from './test-data/array';
@@ -33,33 +34,24 @@ import {expectedOptional1, expectedOptional2} from './test-data/optional';
 import {expectedSpecificInterface} from './test-data/specificInterfaces';
 import {expectedTypeAlias} from './test-data/typeAlias';
 
-interface Options {
-  files?: string[];
-  isFixedMode?: boolean;
-  isOptionalAlwaysEnabled?: boolean;
-  interfaces?: string[];
-  useJson?: boolean;
-}
-
-function runTestCase(
+async function runTestCase(
     file: string, outputProp: string, expected: unknown, options?: Options) {
-  const imOptions = _.assign({}, {files: [file], isFixedMode: true}, options);
-  const im = new Intermock(imOptions);
+  const files = await readFiles([file]);
+  const imOptions = _.assign({}, {files, isFixedMode: true}, options);
+  const output = mock(imOptions);
 
-  return im.generate().then((output: MapLike<{}>) => {
-    if (outputProp) {
-      expect(_.get(output, outputProp)).to.deep.equal(expected);
-    } else {
-      expect(output).to.deep.equal(expected);
-    }
-  });
+  if (outputProp) {
+    expect(_.get(output, outputProp)).to.deep.equal(expected);
+  } else {
+    expect(output).to.deep.equal(expected);
+  }
 }
 
-function getOutput(file: string, options?: Options): Promise<MapLike<{}>> {
-  const imOptions = _.assign({}, {files: [file], isFixedMode: true}, options);
-  const im = new Intermock(imOptions);
-
-  return im.generate();
+async function getOutput(
+    file: string, options?: Options): Promise<MapLike<{}>> {
+  const files = await readFiles([file]);
+  const imOptions = _.assign({}, {files, isFixedMode: true}, options);
+  return mock(imOptions);
 }
 
 describe('Intermock TypeScript: Mock tests', () => {

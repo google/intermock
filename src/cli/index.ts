@@ -15,8 +15,9 @@
  */
 import commandLineArgs from 'command-line-args';
 import commandLineUsage from 'command-line-usage';
+import {readFiles} from 'lib/read-files';
 
-import {Intermock as IntermockTS} from '../lang/ts/intermock';
+import {mock as IntermockTS} from '../lang/ts/intermock';
 import {MapLike} from '../lib/types';
 
 const optionDefinitions = [
@@ -112,11 +113,11 @@ function main() {
   const isFixedMode = options.fixed;
 
   if (lang === 'typescript') {
-    const intermock = new IntermockTS(
-        {files: options.files, interfaces: options.interfaces, isFixedMode});
+    return readFiles(options.files).then((files) => {
+      const output =
+          IntermockTS({files, interfaces: options.interfaces, isFixedMode});
 
-    intermock.generate().then((output: MapLike<{}>) => {
-      console.log(JSON.stringify(output));
+      return JSON.stringify(output);
     });
 
   } else {

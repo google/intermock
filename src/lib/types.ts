@@ -20,4 +20,4 @@ export interface MapLike<T> {
 /** fileName: string, fileContent: string */
 export type FileTuple = [string, string];
 
-export type FileTuples = [FileTuple];
+export type FileTuples = FileTuple[];
