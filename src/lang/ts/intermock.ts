@@ -20,6 +20,7 @@ import ts from 'typescript';
 import {DEFAULT_ARRAY_RANGE, FIXED_ARRAY_COUNT} from '../../lib/constants';
 import {defaultTypeToMock} from '../../lib/default-type-to-mock';
 import {fake} from '../../lib/fake';
+import {randomRange} from '../../lib/random-range';
 import {smartProps} from '../../lib/smart-props';
 import {stringify} from '../../lib/stringify';
 import {FileTuple, FileTuples, MapLike} from '../../lib/types';
@@ -197,7 +198,7 @@ export class Intermock {
 
     const arrayRange = this.options.isFixedMode ?
         FIXED_ARRAY_COUNT :
-        _.random(DEFAULT_ARRAY_RANGE[0], DEFAULT_ARRAY_RANGE[1]);
+        randomRange(DEFAULT_ARRAY_RANGE[0], DEFAULT_ARRAY_RANGE[1]);
 
     for (let i = 0; i < arrayRange; i++) {
       if (isPrimitiveType) {
@@ -389,6 +390,7 @@ export class Intermock {
     const processNode = (node: ts.Node) => {
       const name = (node as ts.DeclarationStatement).name;
       const text = name ? name.text : '';
+
       const aliasedTo = _.get(node, 'type.kind', node.kind);
 
       this.types[text] = {kind: node.kind, aliasedTo};
