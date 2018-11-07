@@ -36,6 +36,10 @@ interface JSDoc {
   comment: string;
 }
 
+interface NodeWithDocs extends ts.PropertySignature {
+  jsDoc: JSDoc[];
+}
+
 type TypeCacheRecord = {
   kind: ts.SyntaxKind,
   aliasedTo: ts.SyntaxKind
@@ -61,7 +65,8 @@ export class Intermock {
     });
   }
 
-  mock(property: string, syntaxType: ts.SyntaxKind, mockType?: string) {
+  generatePrimitive(
+      property: string, syntaxType: ts.SyntaxKind, mockType?: string) {
     const smartMockType = smartProps[property];
     const isFixedMode =
         this.options.isFixedMode ? this.options.isFixedMode : false;
@@ -92,7 +97,7 @@ export class Intermock {
 
   processGenericPropertyType(
       output: Output, property: string, kind: ts.SyntaxKind, mockType: string) {
-    const mock = this.mock(property, kind, mockType);
+    const mock = this.generatePrimitive(property, kind, mockType);
     output[property] = mock;
   }
 
@@ -116,7 +121,8 @@ export class Intermock {
         body = `return ${stringify(tempBody['body'])}`;
         break;
       default:
-        body = `return ${JSON.stringify(this.mock('', returnType.kind))}`;
+        body = `return ${
+            JSON.stringify(this.generatePrimitive('', returnType.kind))}`;
         break;
     }
 
@@ -155,7 +161,7 @@ export class Intermock {
               alias === ts.SyntaxKind.BooleanKeyword;
 
           if (isPrimitiveType) {
-            output[property] = this.mock(property, alias, '');
+            output[property] = this.generatePrimitive(property, alias, '');
           } else {
             // TODO
           }
@@ -192,7 +198,7 @@ export class Intermock {
       // TODO
     }
 
-    const mock = this.mock(property, node.kind, mockType);
+    const mock = this.generatePrimitive(property, node.kind, mockType);
     output[property] = mock;
   }
 
@@ -216,7 +222,8 @@ export class Intermock {
 
     for (let i = 0; i < arrayRange; i++) {
       if (isPrimitiveType) {
-        (output[property] as Array<{}>)[i] = this.mock(property, kind, '');
+        (output[property] as Array<{}>)[i] =
+            this.generatePrimitive(property, kind, '');
       } else {
         (output[property] as Array<{}>).push({});
         this.processFile(
@@ -232,7 +239,12 @@ export class Intermock {
     }
 
     const processPropertySignature = (node: ts.PropertySignature) => {
-      const jsDocs = _.get(node, 'jsDoc', []);
+      let jsDocs: JSDoc[] = [];
+
+      if ((node as NodeWithDocs).jsDoc) {
+        jsDocs = (node as NodeWithDocs).jsDoc;
+      }
+
       const property = node.name.getText();
       const questionToken = node.questionToken;
 
@@ -345,7 +357,7 @@ export class Intermock {
       return true;
     }
 
-    if (!_.includes(this.options.interfaces, name)) {
+    if (this.options.interfaces.indexOf(name) === -1) {
       return false;
     }
 
