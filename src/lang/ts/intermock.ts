@@ -111,6 +111,15 @@ function isQuestionToken(
   return false;
 }
 
+/**
+ * Process an untyped interface property, defaults to generating a primitive.
+ *
+ * @param output The object outputted by Intermock after all types are mocked
+ * @param property Output property to write to
+ * @param kind TS data type of property type
+ * @param mockType Specification of what Faker type to use
+ * @param options Intermock general options object
+ */
 function processGenericPropertyType(
     output: Output, property: string, kind: ts.SyntaxKind, mockType: string,
     options: Options) {
@@ -118,6 +127,18 @@ function processGenericPropertyType(
   output[property] = mock;
 }
 
+/**
+ * Generate a function for a call signature of a property of an interface. Uses
+ * the `new Function` constructor and stringifies any internal function
+ * declarations/calls or returned complex types.
+ *
+ * @param node Node being processed
+ * @param output The object outputted by Intermock after all types are mocked
+ * @param property Output property to write to
+ * @param sourceFile TypeScript AST object compiled from file data
+ * @param options Intermock general options object
+ * @param types Top-level types of interfaces/aliases etc.
+ */
 function processFunctionPropertyType(
     node: ts.PropertySignature, output: Output, property: string,
     sourceFile: ts.SourceFile, options: Options, types: Record<string, {}>) {
@@ -148,6 +169,18 @@ function processFunctionPropertyType(
   output[property] = func;
 }
 
+/**
+ * Process an individual interface property.
+ *
+ * @param node Node being processed
+ * @param output The object outputted by Intermock after all types are mocked
+ * @param property Output property to write to
+ * @param typeName Type name of property
+ * @param kind TS data type of property type
+ * @param sourceFile TypeScript AST object compiled from file data
+ * @param options Intermock general options object
+ * @param types Top-level types of interfaces/aliases etc.
+ */
 function processPropertyTypeReference(
     node: ts.PropertySignature, output: Output, property: string,
     typeName: string, kind: ts.SyntaxKind, sourceFile: ts.SourceFile,
@@ -192,6 +225,16 @@ function processPropertyTypeReference(
   }
 }
 
+/**
+ * Process JSDocs to determine if a different Faker type should be used to mock
+ * the data of the interface.
+ *
+ * @param node Node being processed
+ * @param output The object outputted by Intermock after all types are mocked
+ * @param property Output property to write to
+ * @param jsDocs JSDocs to process
+ * @param options Intermock general options object
+ */
 function processJsDocs(
     node: ts.PropertySignature, output: Output, property: string,
     jsDocs: JSDoc[], options: Options) {
@@ -221,6 +264,18 @@ function processJsDocs(
   output[property] = mock;
 }
 
+/**
+ * Process an array definition.
+ *
+ * @param node Node being processed
+ * @param output The object outputted by Intermock after all types are mocked
+ * @param property Output property to write to
+ * @param typeName Type name of property
+ * @param kind TS data type of property type
+ * @param sourceFile TypeScript AST object compiled from file data
+ * @param options Intermock general options object
+ * @param types Top-level types of interfaces/aliases etc.
+ */
 function processArrayPropertyType(
     node: ts.PropertySignature, output: Output, property: string,
     typeName: string, kind: ts.SyntaxKind, sourceFile: ts.SourceFile,
@@ -253,6 +308,15 @@ function processArrayPropertyType(
   }
 }
 
+/**
+ * Process each interface property.
+ *
+ * @param node Node being processed
+ * @param output The object outputted by Intermock after all types are mocked
+ * @param sourceFile TypeScript AST object compiled from file data
+ * @param options Intermock general options object
+ * @param types Top-level types of interfaces/aliases etc.
+ */
 function traverseInterfaceMembers(
     node: ts.Node, output: Output, sourceFile: ts.SourceFile, options: Options,
     types: Record<string, {}>) {
@@ -276,6 +340,7 @@ function traverseInterfaceMembers(
     if (isQuestionToken(questionToken, options)) {
       return;
     }
+
 
     if (jsDocs.length > 0) {
       processJsDocs(node, output, property, jsDocs, options);
@@ -312,6 +377,14 @@ function traverseInterfaceMembers(
   processPropertySignature(node as ts.PropertySignature);
 }
 
+/**
+ * Process an enum and set it.
+ *
+ * @param sourceFile TypeScript AST object compiled from file data
+ * @param output The object outputted by Intermock after all types are mocked
+ * @param typeName Type name of property
+ * @param property Output property to write to
+ */
 function setEnum(
     sourceFile: ts.SourceFile, output: Output, typeName: string,
     property: string) {
@@ -351,6 +424,18 @@ function setEnum(
   processNode(sourceFile);
 }
 
+/**
+ * Traverse each declared interface in a node.
+ *
+ * @param node Node being processed
+ * @param output The object outputted by Intermock after all types are mocked
+ * @param sourceFile TypeScript AST object compiled from file data
+ * @param options Intermock general options object
+ * @param types Top-level types of interfaces/aliases etc.
+ * @param propToTraverse Optional specific property to traverse through the
+ *     interface
+ * @param path Optional specific path to write to on the output object
+ */
 function traverseInterface(
     node: ts.Node, output: Output, sourceFile: ts.SourceFile, options: Options,
     types: Types, propToTraverse?: string, path?: string) {
@@ -385,6 +470,16 @@ function isSpecificInterface(name: string, options: Options) {
   return true;
 }
 
+/**
+ * Process an individual TS file given a TS AST object.
+ *
+ * @param sourceFile TypeScript AST object compiled from file data
+ * @param output The object outputted by Intermock after all types are mocked
+ * @param options Intermock general options object
+ * @param types Top-level types of interfaces/aliases etc.
+ * @param propToTraverse Optional specific property to traverse through the
+ *     interface
+ */
 function processFile(
     sourceFile: ts.SourceFile, output: Output, options: Options, types: Types,
     propToTraverse?: string) {
