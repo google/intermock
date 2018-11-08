@@ -26,6 +26,7 @@ import {expectedArray1} from './test-data/array';
 import {expectedEnum} from './test-data/enum';
 import {expectedFlat} from './test-data/flat';
 import {FunctionInterface} from './test-data/functions';
+import {expectedJson} from './test-data/json';
 import {expectedMockType} from './test-data/mockType';
 import {expectedNested} from './test-data/nestedSingle';
 import {expectedOptional1, expectedOptional2} from './test-data/optional';
@@ -129,5 +130,10 @@ describe('Intermock TypeScript: Mock tests', () => {
     });
   });
 
-  it('should generate JSON', () => {});
+  it('should generate JSON', async () => {
+    const output: any =
+        await getOutput(`${__dirname}/test-data/json.ts`, {output: 'json'});
+
+    expect(JSON.parse(output)).to.deep.equal(JSON.parse(expectedJson));
+  });
 });
