@@ -36,7 +36,7 @@ async function runTestCase(
     file: string, outputProp: string, expected: unknown, options?: Options) {
   const files = await readFiles([file]);
   const imOptions = Object.assign({}, {files, isFixedMode: true}, options);
-  const output: Record<string, {}> = mock(imOptions);
+  const output = mock(imOptions) as Record<string, {}>;
 
   if (outputProp) {
     expect(output[outputProp]).to.deep.equal(expected);
@@ -49,7 +49,7 @@ async function getOutput(
     file: string, options?: Options): Promise<Record<string, {}>> {
   const files = await readFiles([file]);
   const imOptions = Object.assign({}, {files, isFixedMode: true}, options);
-  return mock(imOptions);
+  return mock(imOptions) as Record<string, {}>;
 }
 
 describe('Intermock TypeScript: Mock tests', () => {

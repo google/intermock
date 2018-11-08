@@ -27,9 +27,11 @@ export interface Options {
   language?: string;
   interfaces?: string[];
   isFixedMode?: boolean;
-  useJson?: boolean;
+  output?: OutputType;
   isOptionalAlwaysEnabled?: boolean;
 }
+
+type OutputType = 'object'|'json'|'string';
 
 interface JSDoc {
   comment: string;
@@ -45,9 +47,7 @@ type TypeCacheRecord = {
 };
 
 type Output = Record<string, {}>;
-
-const types: Record<string, {}> = {};
-
+type Types = Record<string, {}>;
 
 function generatePrimitive(
     property: string, syntaxType: ts.SyntaxKind, options: Options,
@@ -89,8 +89,7 @@ function processGenericPropertyType(
 
 function processFunctionPropertyType(
     node: ts.PropertySignature, output: Output, property: string,
-    typeName: string, kind: ts.SyntaxKind, sourceFile: ts.SourceFile,
-    options: Options) {
+    sourceFile: ts.SourceFile, options: Options, types: Record<string, {}>) {
   // TODO process args from parameters of function
   const args = '';
   let body = '';
@@ -104,7 +103,7 @@ function processFunctionPropertyType(
       processPropertyTypeReference(
           node, tempBody, 'body',
           ((returnType as ts.TypeReferenceNode).typeName as ts.Identifier).text,
-          returnType.kind, sourceFile, options);
+          returnType.kind, sourceFile, options, types);
 
       body = `return ${stringify(tempBody['body'])}`;
       break;
@@ -121,7 +120,7 @@ function processFunctionPropertyType(
 function processPropertyTypeReference(
     node: ts.PropertySignature, output: Output, property: string,
     typeName: string, kind: ts.SyntaxKind, sourceFile: ts.SourceFile,
-    options: Options) {
+    options: Options, types: Record<string, {}>) {
   let normalizedTypeName;
 
   if (typeName.startsWith('Array<')) {
@@ -132,13 +131,14 @@ function processPropertyTypeReference(
 
   if (normalizedTypeName !== typeName) {
     processArrayPropertyType(
-        node, output, property, normalizedTypeName, kind, sourceFile, options);
+        node, output, property, normalizedTypeName, kind, sourceFile, options,
+        types);
     return;
   }
 
   switch ((types[normalizedTypeName] as TypeCacheRecord).kind) {
     case ts.SyntaxKind.EnumDeclaration:
-      setEnum(sourceFile, node, output, typeName, property);
+      setEnum(sourceFile, output, typeName, property);
       break;
     default:
       if ((types[normalizedTypeName] as TypeCacheRecord).kind !==
@@ -155,7 +155,7 @@ function processPropertyTypeReference(
         }
       } else {
         output[property] = {};
-        processFile(sourceFile, output[property], options, typeName);
+        processFile(sourceFile, output[property], options, types, typeName);
         break;
       }
   }
@@ -193,7 +193,7 @@ function processJsDocs(
 function processArrayPropertyType(
     node: ts.PropertySignature, output: Output, property: string,
     typeName: string, kind: ts.SyntaxKind, sourceFile: ts.SourceFile,
-    options: Options) {
+    options: Options, types: Record<string, {}>) {
   typeName = typeName.replace('[', '').replace(']', '');
   output[property] = [];
 
@@ -216,14 +216,15 @@ function processArrayPropertyType(
     } else {
       (output[property] as Array<{}>).push({});
       processFile(
-          sourceFile, (output[property] as Array<{}>)[i], options, typeName);
+          sourceFile, (output[property] as Array<{}>)[i], options, types,
+          typeName);
     }
   }
 }
 
 function traverseInterfaceMembers(
-    node: ts.Node, output: Output, sourceFile: ts.SourceFile,
-    options: Options) {
+    node: ts.Node, output: Output, sourceFile: ts.SourceFile, options: Options,
+    types: Record<string, {}>) {
   if (node.kind !== ts.SyntaxKind.PropertySignature) {
     return;
   }
@@ -259,17 +260,16 @@ function traverseInterfaceMembers(
       case ts.SyntaxKind.TypeReference:
         processPropertyTypeReference(
             node, output, property, typeName, kind as ts.SyntaxKind, sourceFile,
-            options);
+            options, types);
         break;
       case ts.SyntaxKind.ArrayType:
         processArrayPropertyType(
             node, output, property, typeName, kind as ts.SyntaxKind, sourceFile,
-            options);
+            options, types);
         break;
       case ts.SyntaxKind.FunctionType:
         processFunctionPropertyType(
-            node, output, property, typeName, kind as ts.SyntaxKind, sourceFile,
-            options);
+            node, output, property, sourceFile, options, types);
         break;
       default:
         processGenericPropertyType(
@@ -282,7 +282,7 @@ function traverseInterfaceMembers(
 }
 
 function setEnum(
-    sourceFile: ts.SourceFile, node: ts.Node, output: Output, typeName: string,
+    sourceFile: ts.SourceFile, output: Output, typeName: string,
     property: string) {
   const processNode = (node: ts.Node) => {
     switch (node.kind) {
@@ -322,7 +322,7 @@ function setEnum(
 
 function traverseInterface(
     node: ts.Node, output: Output, sourceFile: ts.SourceFile, options: Options,
-    propToTraverse?: string, path?: string) {
+    types: Types, propToTraverse?: string, path?: string) {
   if (path) {
     output[path] = {};
     output = output[path];
@@ -338,7 +338,8 @@ function traverseInterface(
   // TODO given a range of interfaces to generate, add to array. If 1
   // then just return an object
   node.forEachChild(
-      child => traverseInterfaceMembers(child, output, sourceFile, options));
+      child =>
+          traverseInterfaceMembers(child, output, sourceFile, options, types));
 }
 
 function isSpecificInterface(name: string, options: Options) {
@@ -354,7 +355,7 @@ function isSpecificInterface(name: string, options: Options) {
 }
 
 function processFile(
-    sourceFile: ts.SourceFile, output: Output, options: Options,
+    sourceFile: ts.SourceFile, output: Output, options: Options, types: Types,
     propToTraverse?: string) {
   const processNode = (node: ts.Node) => {
     switch (node.kind) {
@@ -370,10 +371,10 @@ function processFile(
         if (propToTraverse) {
           if (p === propToTraverse) {
             traverseInterface(
-                node, output, sourceFile, options, propToTraverse);
+                node, output, sourceFile, options, types, propToTraverse);
           }
         } else {
-          traverseInterface(node, output, sourceFile, options);
+          traverseInterface(node, output, sourceFile, options, types);
         }
         break;
       case ts.SyntaxKind.TypeAliasDeclaration:
@@ -387,10 +388,11 @@ function processFile(
         if (propToTraverse) {
           if (path === propToTraverse) {
             traverseInterface(
-                type, output, sourceFile, options, propToTraverse);
+                type, output, sourceFile, options, types, propToTraverse);
           }
         } else {
-          traverseInterface(type, output, sourceFile, options, undefined, path);
+          traverseInterface(
+              type, output, sourceFile, options, types, undefined, path);
         }
         break;
 
@@ -405,9 +407,12 @@ function processFile(
 }
 
 function gatherTypes(sourceFile: ts.SourceFile) {
+  const types: Types = {};
+
   const processNode = (node: ts.Node) => {
     const name = (node as ts.DeclarationStatement).name;
     const text = name ? name.text : '';
+
     let aliasedTo;
 
     if ((node as ts.TypeAliasDeclaration).type) {
@@ -422,25 +427,40 @@ function gatherTypes(sourceFile: ts.SourceFile) {
   };
 
   processNode(sourceFile);
+
+  return types;
+}
+
+function formatOutput(output: Output, options: Options) {
+  switch (options.output) {
+    case 'json':
+      return JSON.stringify(output);
+    case 'string':
+      return stringify(output);
+    default:
+      return output;
+  }
 }
 
 export function mock(options: Options) {
   const output: Output = {};
   const fileContents = options.files;
+  let types: Types;
 
   if (!fileContents) {
     return {};
   }
 
   fileContents.forEach((f) => {
-    gatherTypes(ts.createSourceFile(f[0], f[1], ts.ScriptTarget.ES2015, true));
+    types = gatherTypes(
+        ts.createSourceFile(f[0], f[1], ts.ScriptTarget.ES2015, true));
   });
 
   fileContents.forEach((f) => {
     processFile(
         ts.createSourceFile(f[0], f[1], ts.ScriptTarget.ES2015, true), output,
-        options);
+        options, types);
   });
 
-  return output;
+  return formatOutput(output, options);
 }
