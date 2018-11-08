@@ -22,16 +22,32 @@ import {randomRange} from '../../lib/random-range';
 import {smartProps} from '../../lib/smart-props';
 import {stringify} from '../../lib/stringify';
 
+/**
+ * Intermock general options
+ */
 export interface Options {
+  // Array of file tuples. (filename, data)
   files?: Array<[string, string]>;
-  language?: string;
+
+  // TypeScript is currently the only supported language
+  language?: SupportedLanguage;
+
+  // Specific interfaces to write to output
   interfaces?: string[];
+
+  // Used for testing mode,
   isFixedMode?: boolean;
+
+  // One of object|json|string. Strings have their object's functions
+  // stringified.
   output?: OutputType;
+
+  // Should optional properties always be enabled
   isOptionalAlwaysEnabled?: boolean;
 }
 
 type OutputType = 'object'|'json'|'string';
+type SupportedLanguage = 'typescript';
 
 interface JSDoc {
   comment: string;
@@ -49,6 +65,14 @@ type TypeCacheRecord = {
 type Output = Record<string, {}>;
 type Types = Record<string, {}>;
 
+/**
+ * Generate fake data using faker for primitive types: string|number|boolean.
+ *
+ * @param property Output property to write to
+ * @param syntaxType Type of primitive, such as boolean|number|string
+ * @param options Intermock options object
+ * @param mockType Optional specification of what Faker type to use
+ */
 function generatePrimitive(
     property: string, syntaxType: ts.SyntaxKind, options: Options,
     mockType?: string) {
@@ -64,6 +88,13 @@ function generatePrimitive(
   }
 }
 
+/**
+ * Determines if a property marked as optional will have fake data generated for
+ * it. Invokes this using Math.random.
+ *
+ * @param questionToken
+ * @param options Intermock general options object
+ */
 function isQuestionToken(
     questionToken: ts.Token<ts.SyntaxKind.QuestionToken>|undefined,
     options: Options) {
@@ -406,6 +437,12 @@ function processFile(
   processNode(sourceFile);
 }
 
+/**
+ * Gathers all interfaces and types references ahead of time so that when
+ * interface properties reference them then we can know their type.
+ *
+ * @param sourceFile TypeScript AST object compiled from file data
+ */
 function gatherTypes(sourceFile: ts.SourceFile) {
   const types: Types = {};
 
@@ -431,6 +468,12 @@ function gatherTypes(sourceFile: ts.SourceFile) {
   return types;
 }
 
+/**
+ * Fromat output based on the specified output type in the options object.
+ *
+ * @param output The object outputted by Intermock after all types are mocked
+ * @param options Intermock general options object
+ */
 function formatOutput(output: Output, options: Options) {
   switch (options.output) {
     case 'json':
@@ -442,6 +485,17 @@ function formatOutput(output: Output, options: Options) {
   }
 }
 
+/**
+ * Intermock API.
+ *
+ * Given an options object, with a files array property, Intermock parses the
+ * AST and generates mock objects with fake data.
+ *
+ * This is the only part of the API exposed to a caller (including the CLI). All
+ * data is passed through the `files` property on the options object.
+ *
+ * @param options Intermock general options object
+ */
 export function mock(options: Options) {
   const output: Output = {};
   const fileContents = options.files;
