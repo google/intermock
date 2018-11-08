@@ -47,7 +47,7 @@ async function runTestCase(
 }
 
 async function getOutput(
-    file: string, options?: Options): Promise<Record<string, {}>> {
+    file: string, options?: Options): Promise<Record<string, {}>|string> {
   const files = await readFiles([file]);
   const imOptions = Object.assign({}, {files, isFixedMode: true}, options);
   return mock(imOptions) as Record<string, {}>;
@@ -118,9 +118,11 @@ describe('Intermock TypeScript: Mock tests', () => {
   it('should generate mock for interfaces with functions', async () => {
     const output = await getOutput(`${__dirname}/test-data/functions.ts`);
     const basicRet =
-        (output.FunctionInterface as FunctionInterface).basicFunctionRetNum();
+        ((output as Record<string, {}>).FunctionInterface as FunctionInterface)
+            .basicFunctionRetNum();
     const interfaceRet =
-        (output.FunctionInterface as FunctionInterface).functionRetInterface();
+        ((output as Record<string, {}>).FunctionInterface as FunctionInterface)
+            .functionRetInterface();
 
     expect(basicRet).to.eql(86924);
     expect(interfaceRet).to.eql({
@@ -131,9 +133,10 @@ describe('Intermock TypeScript: Mock tests', () => {
   });
 
   it('should generate JSON', async () => {
-    const output: any =
+    const output =
         await getOutput(`${__dirname}/test-data/json.ts`, {output: 'json'});
 
-    expect(JSON.parse(output)).to.deep.equal(JSON.parse(expectedJson));
+    expect(JSON.parse(output as string))
+        .to.deep.equal(JSON.parse(expectedJson));
   });
 });

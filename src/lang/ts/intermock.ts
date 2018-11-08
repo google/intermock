@@ -569,7 +569,7 @@ function gatherTypes(sourceFile: ts.SourceFile) {
  * @param output The object outputted by Intermock after all types are mocked
  * @param options Intermock general options object
  */
-function formatOutput(output: Output, options: Options) {
+function formatOutput(output: Output, options: Options): string|Output {
   switch (options.output) {
     case 'json':
       return JSON.stringify(output);
