@@ -2,26 +2,19 @@
   "name": "intermock",
   "version": "0.0.1",
   "description": "Automatically create mock objects and JSON from TypeScript interfaces via Faker",
-  "bin": {
-    "intermock": "./bin/src/cli.js"
-  },
   "dependencies": {
-    "command-line-args": "5.0.2",
-    "command-line-usage": "5.0.5",
     "faker": "4.1.0",
-    "fs-readfile-promise": "3.0.1",
     "typescript": "3.1.3"
   },
   "devDependencies": {
     "@types/chai": "4.1.3",
-    "@types/command-line-args": "5.0.0",
-    "@types/command-line-usage": "5.0.1",
     "@types/faker": "4.1.2",
     "@types/fs-readfile-promise": "3.0.0",
     "@types/mocha": "5.2.0",
     "@types/node": "~8.10.10",
     "clang-format": "1.2.4",
     "chai": "4.1.2",
+    "fs-readfile-promise": "3.0.1",
     "mocha": "5.2.0",
     "mocha-multi-reporters": "1.1.7",
     "mocha-notifier-reporter": "0.1.2",
@@ -39,14 +32,13 @@
     "clean": "rimraf coverage build tmp",
     "coverage": "nyc --reporter=html --reporter=text mocha --reporter mocha-multi-reporters --reporter-options configFile=mocha-config.json --no-colors -r ts-node/register test/**/*.spec.ts",
     "ci": "npm run format-check && npm run lint && npm run test",
-    "cli": "npm run build && node ./build/src/cli/index.js --fixed --files ./examples/example.ts",
     "build": "tsc -p tsconfig.json",
     "dist": "tsc -p tsconfig.json --outDir ./bin",
     "watch": "tsc -w -p tsconfig.json",
     "lint": "tslint -t stylish --project \"tsconfig.json\"",
     "format-check": "./format-check.sh",
     "format": "./node_modules/clang-format/bin/linux_x64/clang-format -i -style=file src/**/*.ts test/**/*.ts",
-    "run-watch": "./node_modules/watch-cli/bin/watch -p \"./**/*.ts\" -c \"npm run cli\"",
+    "run-watch": "./node_modules/watch-cli/bin/watch -p \"./**/*.ts\" -c \"npm run build\"",
     "test": "npm run test-only",
     "test-only": "mocha --reporter mocha-multi-reporters --reporter-options configFile=mocha-config.json --no-colors -r ts-node/register test/**/*.spec.ts",
     "test-watch": "./node_modules/watch-cli/bin/watch -p \"./**/*.ts\" -c \"npm run build && npm run test\""
