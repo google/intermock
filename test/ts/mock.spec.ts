@@ -18,7 +18,8 @@ import 'mocha';
 
 import {expect} from 'chai';
 
-import {mock, Options} from '../../src/lang/ts/intermock';
+import {mock} from '../../index';
+import {Options} from '../../src/lang/ts/intermock';
 import {readFiles} from '../../src/lib/read-files';
 
 import {expectedAny} from './test-data/any';
