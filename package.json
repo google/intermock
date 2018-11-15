@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "Automatically create mock objects and JSON from TypeScript interfaces via Faker",
   "bin": {
-    "intermock": "./bin/src/cli.js"
+    "intermock": "./build/src/cli.js"
   },
   "dependencies": {
     "command-line-args": "5.0.2",
