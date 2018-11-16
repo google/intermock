@@ -205,7 +205,8 @@ function processPropertyTypeReference(
 
   if (!types[normalizedTypeName]) {
     throw new Error(`Type '${
-        normalizedTypeName}' is not specified in the provided files but is required for property: . Please include it.`);
+        normalizedTypeName}' is not specified in the provided files but is required for property: '${
+        property}'. Please include it.`);
   }
 
   switch ((types[normalizedTypeName] as TypeCacheRecord).kind) {
