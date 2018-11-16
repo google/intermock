@@ -79,6 +79,7 @@ function generatePrimitive(
   const smartMockType = smartProps[property];
   const isFixedMode = options.isFixedMode ? options.isFixedMode : false;
 
+  console.log(arguments);
   if (mockType) {
     return fake(mockType, options.isFixedMode);
   } else if (smartMockType) {
@@ -198,6 +199,13 @@ function processPropertyTypeReference(
         node, output, property, normalizedTypeName, kind, sourceFile, options,
         types);
     return;
+  }
+  console.log();
+  console.log(property, kind, typeName);
+
+  if (!types[normalizedTypeName]) {
+    throw new Error(`Type '${
+        normalizedTypeName}' is not specified in the provided files but is required for property: . Please include it.`);
   }
 
   switch ((types[normalizedTypeName] as TypeCacheRecord).kind) {
@@ -340,7 +348,6 @@ function traverseInterfaceMembers(
     if (isQuestionToken(questionToken, options)) {
       return;
     }
-
 
     if (jsDocs.length > 0) {
       processJsDocs(node, output, property, jsDocs, options);
