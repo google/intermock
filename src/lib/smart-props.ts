@@ -25,6 +25,7 @@ export const smartProps: {[index: string]: string} = {
   initials: 'address.countryCode',
   avatarUrl: 'internet.avatar',
   emailAddress: 'internet.email',
+  username: 'internet.userName',
   id: 'random.uuid',
   oid: 'random.uuid',
 };
