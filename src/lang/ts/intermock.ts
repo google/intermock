@@ -634,15 +634,17 @@ function formatOutput(output: Output, options: Options): string|Output {
 export function mock(options: Options) {
   const output: Output = {};
   const fileContents = options.files;
-  let types: Types;
+  let types: Types = {};
 
   if (!fileContents) {
     return {};
   }
 
   fileContents.forEach((f) => {
-    types = gatherTypes(
-        ts.createSourceFile(f[0], f[1], ts.ScriptTarget.ES2015, true));
+    types = Object.assign(
+        {}, types,
+        gatherTypes(
+            ts.createSourceFile(f[0], f[1], ts.ScriptTarget.ES2015, true)));
   });
 
   fileContents.forEach((f) => {
