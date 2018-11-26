@@ -59,11 +59,12 @@ interface NodeWithDocs extends ts.PropertySignature {
 
 type TypeCacheRecord = {
   kind: ts.SyntaxKind,
-  aliasedTo: ts.SyntaxKind
+  aliasedTo: ts.SyntaxKind,
+  node: ts.Node,
 };
 
 type Output = Record<string, {}>;
-type Types = Record<string, {}>;
+type Types = Record<string, TypeCacheRecord>;
 
 /**
  * Generate fake data using faker for primitive types: string|number|boolean.
@@ -89,8 +90,8 @@ function generatePrimitive(
 }
 
 /**
- * Determines if a property marked as optional will have fake data generated for
- * it. Invokes this using Math.random.
+ * Determines if a property marked as optional will have fake data generated
+ * for it. Invokes this using Math.random.
  *
  * @param questionToken
  * @param options Intermock general options object
@@ -128,8 +129,8 @@ function processGenericPropertyType(
 }
 
 /**
- * Generate a function for a call signature of a property of an interface. Uses
- * the `new Function` constructor and stringifies any internal function
+ * Generate a function for a call signature of a property of an interface.
+ * Uses the `new Function` constructor and stringifies any internal function
  * declarations/calls or returned complex types.
  *
  * @param node Node being processed
@@ -141,7 +142,7 @@ function processGenericPropertyType(
  */
 function processFunctionPropertyType(
     node: ts.PropertySignature, output: Output, property: string,
-    sourceFile: ts.SourceFile, options: Options, types: Record<string, {}>) {
+    sourceFile: ts.SourceFile, options: Options, types: Types) {
   // TODO process args from parameters of function
   const args = '';
   let body = '';
@@ -184,7 +185,7 @@ function processFunctionPropertyType(
 function processPropertyTypeReference(
     node: ts.PropertySignature, output: Output, property: string,
     typeName: string, kind: ts.SyntaxKind, sourceFile: ts.SourceFile,
-    options: Options, types: Record<string, {}>) {
+    options: Options, types: Types) {
   let normalizedTypeName;
 
   if (typeName.startsWith('Array<')) {
@@ -232,8 +233,8 @@ function processPropertyTypeReference(
 }
 
 /**
- * Process JSDocs to determine if a different Faker type should be used to mock
- * the data of the interface.
+ * Process JSDocs to determine if a different Faker type should be used to
+ * mock the data of the interface.
  *
  * @param node Node being processed
  * @param output The object outputted by Intermock after all types are mocked
@@ -285,7 +286,7 @@ function processJsDocs(
 function processArrayPropertyType(
     node: ts.PropertySignature, output: Output, property: string,
     typeName: string, kind: ts.SyntaxKind, sourceFile: ts.SourceFile,
-    options: Options, types: Record<string, {}>) {
+    options: Options, types: Types) {
   typeName = typeName.replace('[', '').replace(']', '');
   output[property] = [];
 
@@ -325,7 +326,7 @@ function processArrayPropertyType(
  */
 function traverseInterfaceMembers(
     node: ts.Node, output: Output, sourceFile: ts.SourceFile, options: Options,
-    types: Record<string, {}>) {
+    types: Types) {
   if (node.kind !== ts.SyntaxKind.PropertySignature) {
     return;
   }
@@ -429,8 +430,6 @@ function setEnum(
   processNode(sourceFile);
 }
 
-function gatherExtensions(node: ts.Node) {}
-
 /**
  * Traverse each declared interface in a node.
  *
@@ -477,7 +476,6 @@ function traverseInterface(
     });
 
     extensions.forEach(extension => {
-      console.warn(JSON.stringify(extension));
       output = Object.assign(output, extension);
     });
   }
@@ -620,8 +618,8 @@ function formatOutput(output: Output, options: Options): string|Output {
  * Given an options object, with a files array property, Intermock parses the
  * AST and generates mock objects with fake data.
  *
- * This is the only part of the API exposed to a caller (including the CLI). All
- * data is passed through the `files` property on the options object.
+ * This is the only part of the API exposed to a caller (including the CLI).
+ * All data is passed through the `files` property on the options object.
  *
  * @param options Intermock general options object
  */
