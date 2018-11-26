@@ -79,7 +79,6 @@ function generatePrimitive(
   const smartMockType = smartProps[property];
   const isFixedMode = options.isFixedMode ? options.isFixedMode : false;
 
-  console.log(arguments);
   if (mockType) {
     return fake(mockType, options.isFixedMode);
   } else if (smartMockType) {
@@ -200,8 +199,6 @@ function processPropertyTypeReference(
         types);
     return;
   }
-  console.log();
-  console.log(property, kind, typeName);
 
   if (!types[normalizedTypeName]) {
     throw new Error(`Type '${
@@ -432,6 +429,8 @@ function setEnum(
   processNode(sourceFile);
 }
 
+function gatherExtensions(node: ts.Node) {}
+
 /**
  * Traverse each declared interface in a node.
  *
@@ -457,6 +456,33 @@ function traverseInterface(
     output[newPath] = {};
     output = output[newPath];
   }
+
+  const heritageClauses = (node as ts.InterfaceDeclaration).heritageClauses;
+  const extensions: Output[] = [];
+  if (heritageClauses && heritageClauses.length > 0) {
+    heritageClauses.forEach((clause) => {
+      const extensionTypes = clause.types;
+
+      extensionTypes.forEach(extensionTypeNode => {
+        const extensionType = extensionTypeNode.expression.getText();
+        const extensionNode = (types[extensionType] as any).node;
+        let extensionOutput: Output = {};
+        traverseInterface(
+            extensionNode, extensionOutput, sourceFile, options, types,
+            propToTraverse, path);
+
+        extensionOutput = extensionOutput[extensionType];
+        extensions.push(extensionOutput);
+      });
+    });
+
+    extensions.forEach(extension => {
+      console.warn(JSON.stringify(extension));
+      output = Object.assign(output, extension);
+    });
+  }
+
+
 
   // TODO get range from JSDoc
   // TODO given a range of interfaces to generate, add to array. If 1
@@ -561,7 +587,7 @@ function gatherTypes(sourceFile: ts.SourceFile) {
       aliasedTo = node.kind;
     }
 
-    types[text] = {kind: node.kind, aliasedTo};
+    types[text] = {kind: node.kind, aliasedTo, node};
 
     ts.forEachChild(node, processNode);
   };

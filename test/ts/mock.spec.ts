@@ -25,6 +25,7 @@ import {readFiles} from '../../src/lib/read-files';
 import {expectedAny} from './test-data/any';
 import {expectedArray1} from './test-data/array';
 import {expectedEnum} from './test-data/enum';
+import {expectedContractor} from './test-data/extension';
 import {expectedFlat} from './test-data/flat';
 import {FunctionInterface} from './test-data/functions';
 import {expectedJson} from './test-data/json';
@@ -139,5 +140,11 @@ describe('Intermock TypeScript: Mock tests', () => {
 
     expect(JSON.parse(output as string))
         .to.deep.equal(JSON.parse(expectedJson));
+  });
+
+  it('should generate extended interfaces', async () => {
+    return runTestCase(
+        `${__dirname}/test-data/extension.ts`, 'Contractor',
+        expectedContractor.Contractor);
   });
 });
