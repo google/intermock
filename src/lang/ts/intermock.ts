@@ -464,6 +464,14 @@ function traverseInterface(
 
       extensionTypes.forEach(extensionTypeNode => {
         const extensionType = extensionTypeNode.expression.getText();
+
+        if (!types[extensionType]) {
+          throw new Error(`Type '${
+              extensionType}' is not specified in the provided files but is required for interface extension of: '${
+              (node as ts.InterfaceDeclaration)
+                  .name.text}'. Please include it.`);
+        }
+
         const extensionNode = (types[extensionType] as any).node;
         let extensionOutput: Output = {};
         traverseInterface(
