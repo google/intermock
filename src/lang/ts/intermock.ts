@@ -254,7 +254,6 @@ function processJsDocs(
   // primitives now
 
   // TODO Handle error case where a complex type has MockDocs
-
   let mockType = '';
   let jsDocComment = '';
 
@@ -319,6 +318,15 @@ function processArrayPropertyType(
   }
 }
 
+function isAnyJsDocs(jsDocs: JSDoc[]) {
+  if (jsDocs.length > 0 && jsDocs[0].comment &&
+      jsDocs[0].comment.includes('!mockType')) {
+    return true;
+  }
+
+  return false;
+}
+
 /**
  * Process each interface property.
  *
@@ -352,7 +360,7 @@ function traverseInterfaceMembers(
       return;
     }
 
-    if (jsDocs.length > 0) {
+    if (isAnyJsDocs(jsDocs)) {
       processJsDocs(node, output, property, jsDocs, options);
       return;
     }

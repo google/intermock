@@ -29,6 +29,7 @@ export const smartProps: {[index: string]: string} = {
   startDate: 'date.past',
   createdOn: 'date.past',
   createdAt: 'date.past',
+  companyName: 'company.companyName',
   date: 'date.past',
   endDate: 'date.future',
   id: 'random.uuid',

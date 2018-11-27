@@ -98,7 +98,7 @@ function main() {
     try {
       const output = IntermockTS({
         files,
-        output: 'string',
+        output: 'json',
         interfaces,
         isFixedMode,
       });
