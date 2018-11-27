@@ -16,6 +16,7 @@
 import ts from 'typescript';
 import {fake} from './fake';
 
+/* tslint:disable */
 export const defaultTypeToMock:
     {[index: number]: (isFixedMode: boolean) => any} = {
       [ts.SyntaxKind.NumberKeyword]: (isFixedMode = false) =>
@@ -27,3 +28,4 @@ export const defaultTypeToMock:
       [ts.SyntaxKind.ObjectKeyword]: (isFixedMode = false) => {},
       [ts.SyntaxKind.AnyKeyword]: (isFixedMode = false) => '',
     };
+/* tslint:enable */

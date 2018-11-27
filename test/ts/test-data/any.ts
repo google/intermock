@@ -17,7 +17,9 @@
 export interface User {
   firstName: string;
   lastName: string;
+  /* tslint:disable */
   stats: any;
+  /* tslint:enable */
 }
 
 export const expectedAny = {

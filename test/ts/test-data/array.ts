@@ -22,7 +22,9 @@ interface Order {
 
 interface User {
   orders: Order[];
+  /* tslint:disable */
   moreOrders: Array<Order>;
+  /* tslint:enable */
   bestFriends: string[];
 }
 
