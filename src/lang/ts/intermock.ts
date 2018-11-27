@@ -189,12 +189,15 @@ function processPropertyTypeReference(
     options: Options, types: Types) {
   let normalizedTypeName;
 
-  if (typeName.startsWith('Array<')) {
-    normalizedTypeName = typeName.replace('Array<', '').replace('>', '');
+  if (typeName.startsWith('Array<') || typeName.startsWith('IterableArray<')) {
+    normalizedTypeName = typeName.replace('Array<', '')
+                             .replace('IterableArray<', '')
+                             .replace('>', '');
   } else {
     normalizedTypeName = typeName;
   }
 
+  // TODO: Handle other generics
   if (normalizedTypeName !== typeName) {
     processArrayPropertyType(
         node, output, property, normalizedTypeName, kind, sourceFile, options,
@@ -395,12 +398,12 @@ function traverseInterfaceMembers(
 function setEnum(
     sourceFile: ts.SourceFile, output: Output, types: Types, typeName: string,
     property: string) {
-  const node: any = types[typeName].node;
+  const node: unknown = types[typeName].node;
   if (!node) {
     return;
   }
 
-  const members = node.members;
+  const members = (node as ts.EnumDeclaration).members;
   const selectedMemberIdx = Math.floor(members.length / 2);
   const selectedMember = members[selectedMemberIdx];
 
