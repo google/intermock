@@ -30,6 +30,7 @@ import {expectedFlat} from './test-data/flat';
 import {FunctionInterface} from './test-data/functions';
 import {expectedJson} from './test-data/json';
 import {expectedMockType} from './test-data/mockType';
+import {expectedNamespaced} from './test-data/namespace';
 import {expectedNested} from './test-data/nestedSingle';
 import {expectedOptional1, expectedOptional2} from './test-data/optional';
 import {expectedSpecificInterface} from './test-data/specificInterfaces';
@@ -146,5 +147,11 @@ describe('Intermock TypeScript: Mock tests', () => {
     return runTestCase(
         `${__dirname}/test-data/extension.ts`, 'Contractor',
         expectedContractor.Contractor);
+  });
+
+  it('should generate mock for namespaced interfaces and enums', () => {
+    return runTestCase(
+        `${__dirname}/test-data/namespace.ts`, 'Person',
+        expectedNamespaced.Person);
   });
 });

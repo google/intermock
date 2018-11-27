@@ -15,6 +15,10 @@
  */
 
 
+declare namespace enums {
+  enum Awesomeness { COOL, LAME }
+  enum GreatNumbers { e = 2.71, pi = 3.14, golden = 1.61 }
+}
 
 enum GreatMusicians {
   mozart = 'Mozart',
@@ -26,25 +30,16 @@ enum GreatNovels {
   GRAPES_OF_WRATH,
   SLAUGHTERHOUSE_FIVE
 }
-enum Awesomeness {
-  COOL,
-  LAME
-}
-enum GreatNumbers {
-  e = 2.71,
-  pi = 3.14,
-  golden = 1.61
-}
 
 interface Person {
   name: string;
-  status: Awesomeness;
-  favoriteNumber: GreatNumbers;
+  status: enums.Awesomeness;
+  favoriteNumber: enums.GreatNumbers;
   favoriteMusicians: GreatMusicians;
   favoriteNovel: GreatNovels;
 }
 
-export const expectedEnum = {
+export const expectedNamespaced = {
   Person: {
     name:
         'Animi repellat eveniet eveniet dolores quo ullam rerum reiciendis ipsam. Corrupti voluptatem ipsa illum veritatis eligendi sit autem ut quia. Ea sint voluptas impedit ducimus dolores possimus.',

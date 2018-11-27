@@ -17,12 +17,13 @@ import ts from 'typescript';
 import {fake} from './fake';
 
 export const defaultTypeToMock:
-    {[index: number]: (isFixedMode: boolean) => string | number | boolean} = {
+    {[index: number]: (isFixedMode: boolean) => any} = {
       [ts.SyntaxKind.NumberKeyword]: (isFixedMode = false) =>
           fake('random.number', isFixedMode),
       [ts.SyntaxKind.StringKeyword]: (isFixedMode = false) =>
           fake('lorem.text', isFixedMode),
       [ts.SyntaxKind.BooleanKeyword]: (isFixedMode = false) =>
           fake('random.boolean', isFixedMode),
+      [ts.SyntaxKind.ObjectKeyword]: (isFixedMode = false) => {},
       [ts.SyntaxKind.AnyKeyword]: (isFixedMode = false) => '',
     };

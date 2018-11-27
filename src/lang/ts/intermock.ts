@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import {type} from 'os';
 import ts from 'typescript';
 
 import {DEFAULT_ARRAY_RANGE, FIXED_ARRAY_COUNT} from '../../lib/constants';
@@ -209,7 +210,7 @@ function processPropertyTypeReference(
 
   switch ((types[normalizedTypeName] as TypeCacheRecord).kind) {
     case ts.SyntaxKind.EnumDeclaration:
-      setEnum(sourceFile, output, typeName, property);
+      setEnum(sourceFile, output, types, normalizedTypeName, property);
       break;
     default:
       if ((types[normalizedTypeName] as TypeCacheRecord).kind !==
@@ -392,42 +393,33 @@ function traverseInterfaceMembers(
  * @param property Output property to write to
  */
 function setEnum(
-    sourceFile: ts.SourceFile, output: Output, typeName: string,
+    sourceFile: ts.SourceFile, output: Output, types: Types, typeName: string,
     property: string) {
-  const processNode = (node: ts.Node) => {
-    switch (node.kind) {
-      case ts.SyntaxKind.EnumDeclaration:
-        if ((node as ts.EnumDeclaration).name.text === typeName) {
-          const members = (node as ts.EnumDeclaration).members;
-          const selectedMemberIdx = Math.floor(members.length / 2);
-          const selectedMember = members[selectedMemberIdx];
+  const node: any = types[typeName].node;
+  if (!node) {
+    return;
+  }
 
-          // TODO handle bitwise initializers
-          if (selectedMember.initializer) {
-            switch (selectedMember.initializer.kind) {
-              case ts.SyntaxKind.NumericLiteral:
-                output[property] = Number(selectedMember.initializer.getText());
-                break;
-              case ts.SyntaxKind.StringLiteral:
-                output[property] =
-                    selectedMember.initializer.getText().replace(/\'/g, '');
-                break;
-              default:
-                break;
-            }
-          } else {
-            output[property] = selectedMemberIdx;
-          }
-        }
+  const members = node.members;
+  const selectedMemberIdx = Math.floor(members.length / 2);
+  const selectedMember = members[selectedMemberIdx];
+
+  // TODO handle bitwise initializers
+  if (selectedMember.initializer) {
+    switch (selectedMember.initializer.kind) {
+      case ts.SyntaxKind.NumericLiteral:
+        output[property] = Number(selectedMember.initializer.getText());
+        break;
+      case ts.SyntaxKind.StringLiteral:
+        output[property] =
+            selectedMember.initializer.getText().replace(/\'/g, '');
         break;
       default:
         break;
     }
-
-    ts.forEachChild(node, processNode);
-  };
-
-  processNode(sourceFile);
+  } else {
+    output[property] = selectedMemberIdx;
+  }
 }
 
 /**
@@ -472,7 +464,7 @@ function traverseInterface(
                   .name.text}'. Please include it.`);
         }
 
-        const extensionNode = (types[extensionType] as any).node;
+        const extensionNode = types[extensionType].node;
         let extensionOutput: Output = {};
         traverseInterface(
             extensionNode, extensionOutput, sourceFile, options, types,
@@ -534,6 +526,7 @@ function processFile(
         if (!isSpecificInterface(p, options) && !propToTraverse) {
           return;
         }
+
         if (propToTraverse) {
           if (p === propToTraverse) {
             traverseInterface(
@@ -578,12 +571,23 @@ function processFile(
  *
  * @param sourceFile TypeScript AST object compiled from file data
  */
-function gatherTypes(sourceFile: ts.SourceFile) {
+function gatherTypes(sourceFile: ts.SourceFile|ts.ModuleBlock) {
   const types: Types = {};
+  let modulePrefix = '';
 
-  const processNode = (node: ts.Node) => {
+  const processNode = (node: ts.Node|ts.ModuleBlock) => {
     const name = (node as ts.DeclarationStatement).name;
     const text = name ? name.text : '';
+
+    // Process declared namespaces and modules
+    if (node.kind === ts.SyntaxKind.ModuleDeclaration) {
+      modulePrefix = text;
+      if ((node as ts.ModuleDeclaration).body) {
+        processNode((node as ts.ModuleDeclaration).body!);
+      }
+
+      return;
+    }
 
     let aliasedTo;
 
@@ -593,10 +597,14 @@ function gatherTypes(sourceFile: ts.SourceFile) {
       aliasedTo = node.kind;
     }
 
+    if (modulePrefix) {
+      types[`${modulePrefix}.${text}`] = {kind: node.kind, aliasedTo, node};
+    }
     types[text] = {kind: node.kind, aliasedTo, node};
 
     ts.forEachChild(node, processNode);
   };
+
 
   processNode(sourceFile);
 
