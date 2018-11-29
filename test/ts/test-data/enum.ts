@@ -46,8 +46,7 @@ interface Person {
 
 export const expectedEnum = {
   Person: {
-    name:
-        'Animi repellat eveniet eveniet dolores quo ullam rerum reiciendis ipsam. Corrupti voluptatem ipsa illum veritatis eligendi sit autem ut quia. Ea sint voluptas impedit ducimus dolores possimus.',
+    name: 'Natasha Jacobs',
     status: 1,
     favoriteNumber: 3.14,
     favoriteMusicians: 'Beethoven',

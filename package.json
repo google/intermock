@@ -12,7 +12,8 @@
     "fs-readfile-promise": "3.0.1",
     "typescript": "3.1.3"
   },
-  "main": "./build/index",
+  "main": "./build/index.js",
+  "types" : "./build/index.d.ts",
   "devDependencies": {
     "@types/chai": "4.1.3",
     "@types/command-line-args": "5.0.0",

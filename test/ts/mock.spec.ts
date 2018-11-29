@@ -128,11 +128,8 @@ describe('Intermock TypeScript: Mock tests', () => {
             .functionRetInterface();
 
     expect(basicRet).to.eql(86924);
-    expect(interfaceRet).to.eql({
-      name:
-          'Animi repellat eveniet eveniet dolores quo ullam rerum reiciendis ipsam. Corrupti voluptatem ipsa illum veritatis eligendi sit autem ut quia. Ea sint voluptas impedit ducimus dolores possimus.',
-      email: 'Myron_Olson39@hotmail.com'
-    });
+    expect(interfaceRet)
+        .to.eql({name: 'Natasha Jacobs', email: 'Myron_Olson39@hotmail.com'});
   });
 
   it('should generate JSON', async () => {

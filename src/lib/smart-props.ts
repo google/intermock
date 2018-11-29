@@ -18,6 +18,7 @@ export const smartProps: {[index: string]: string} = {
   middleName: 'name.firstName',
   lastName: 'name.lastName',
   nickName: 'name.findName',
+  name: 'name.findName',
   informalName: 'name.findName',
   phone: 'phone.phoneNumber',
   email: 'internet.email',
