@@ -4,10 +4,27 @@ Mocking library to create mock objects and JSON for TypeScript interfaces via Fa
 ## Installation
 `git clone sso://user/ryanmcdermott/intermock`
 
+## Building
+`npm run build`
+
 ## Development
-If you want to run the build script and tests after you save a file while developing, 
+If you want to run the build script and tests after you save a file while developing,
 run the following command:
 `npm run test-watch`
+
+## Docs
+### Developing Docs
+To develop documentation run the following command:
+`npm run docs-serve`
+
+Edit the files in `docs/` and Webpack's Dev Server should auto-reload when there are changes
+
+### Statically Building Docs
+To build the docs statically run the following command:
+`npm run docs-build`
+
+## Contributing
+See `CONTRIBUTING.md` in this repo
 
 ## License
 See `LICENSE` in this repo
