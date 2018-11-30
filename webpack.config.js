@@ -6,9 +6,14 @@ module.exports = {
     filename: 'main.js',
     path: path.resolve(__dirname, 'docs/dist')
   },
+  resolve: {
+    alias: {
+      intermock: path.resolve(__dirname, 'build/index.js'),
+    }
+  },
   devServer: {
     contentBase: path.join(__dirname, 'docs/dist'),
     compress: true,
     port: 8080
-  }
+  },
 };
