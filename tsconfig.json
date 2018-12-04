@@ -19,6 +19,9 @@
     "sourceMap": true,
     "strict": true,
     "target": "es2016",
+    "paths": {
+      "intermock": ["./index"]
+    },
   },
   "include": [
     "src/**/*",

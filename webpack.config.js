@@ -1,10 +1,8 @@
 const path = require('path');
 
 module.exports = {
-  //   output: {filename: 'main.js', path: path.resolve(__dirname,
-  //   'docs/dist')},
   output: {
-    path: path.join(__dirname, 'dist'),
+    path: path.join(__dirname, 'docs/dist'),
     filename: '[name].bundle.js',
     chunkFilename: '[name].chunk.js'
   },
@@ -12,13 +10,18 @@ module.exports = {
   resolve: {
     alias: {
       intermock: path.resolve(__dirname, 'build/index.js'),
-    }
+    },
+  },
+  entry: './docs/src/main.ts',
+  module: {
+    rules: [{
+      test: /\.tsx?$/,
+
+      include: path.join(__dirname, 'docs/src'),
+      loader: 'ts-loader'
+    }]
   },
   devtool: 'inline-source-map',
-  entry: './docs/src/index.ts',
-  module: {rules: [{test: /\.tsx?$/, loader: 'ts-loader'}]},
-  resolve: {extensions: ['.ts', '.tsx', '.js']},
-  optimization: {splitChunks: {chunks: 'all'}},
   devServer: {
     contentBase: path.join(__dirname, 'docs/dist'),
     compress: true,
