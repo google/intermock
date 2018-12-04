@@ -4,8 +4,8 @@ async function foo() {
   const module =
       await import(/* webpackChunkName: "intermock" */ '../../src/index');
 
-  console.warn(module);
 
+  console.warn(module);
   container[0].textContent = 'Done!';
 }
 console.warn('running foo');
