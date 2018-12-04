@@ -3,7 +3,6 @@
     "allowSyntheticDefaultImports": true,
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
-    "baseUrl": "src",
     "declaration": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
@@ -11,19 +10,14 @@
          "dom.iterable"],
     "moduleResolution": "node",
     "importHelpers": true,
-    "module": "commonjs",
+    "module": "esnext",
     "noEmitOnError": true,
     "noFallthroughCasesInSwitch": true,
     "noImplicitReturns": true,
     "outDir": "build",
     "pretty": true,
-    "rootDir": ".",
     "sourceMap": true,
     "strict": true,
     "target": "es2016",
   },
-  "include": [
-    "src/**/*",
-    "__tests__/**/*", "test/ts/stringify.spec.ts", "test/ts/mock.spec.ts"
-  ]
 }
