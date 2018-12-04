@@ -30,3 +30,5 @@ bin/src/
 
 # Misc
 .DS_Store
+
+docs/dist/build/**/*

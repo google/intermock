@@ -6,7 +6,6 @@ async function foo() {
 
   console.warn(module);
 
-
   container[0].textContent = 'Done!';
 }
 console.warn('running foo');

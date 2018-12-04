@@ -1,4 +1,5 @@
 const path = require('path');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 module.exports = {
   entry: './docs/src/main.ts',
@@ -11,20 +12,21 @@ module.exports = {
 
   resolve: {
     extensions: ['.js', '.ts'],
-
-    //  alias: {
-    //    intermock: path.resolve(__dirname, 'build/index.js'),
-    //  },
   },
 
+  mode: 'development',
+
   module: {
-    loaders: [{
+    rules: [{
       test: /\.ts$/,
       include: path.join(__dirname),
       loader: 'ts-loader',
       options: {configFile: 'docs/tsconfig.json'}
     }]
   },
+  devtool: 'inline-source-map',
+  //   optimization:
+  //       {minimizer: [new UglifyJsPlugin({parallel: true, sourceMap: true})]},
 
   devServer: {
     contentBase: './docs/dist',
