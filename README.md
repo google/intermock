@@ -14,14 +14,20 @@ run the following command:
 
 ## Docs
 ### Developing Docs
-To develop documentation run the following command:
-`npm run docs-serve`
+To develop documentation run the following commands:
+```
+npm run build
+npm run docs-serve
+```
 
 Edit the files in `docs/` and Webpack's Dev Server should auto-reload when there are changes
 
 ### Statically Building Docs
 To build the docs statically run the following command:
-`npm run docs-build`
+```
+npm run build
+npm run docs-build
+```
 
 ## Contributing
 See `CONTRIBUTING.md` in this repo
