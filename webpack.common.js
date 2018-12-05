@@ -8,7 +8,7 @@ module.exports = {
   output: {
     path: path.join(__dirname, 'docs/dist'),
     filename: '[name].bundle.js',
-    chunkFilename: '[name].chunk.js'
+    chunkFilename: '[name].[contenthash].chunk.js'
   },
 
   resolve: {

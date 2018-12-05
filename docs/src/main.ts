@@ -1,3 +1,5 @@
+import './styles/app.scss';
+
 async function foo() {
   const container = document.querySelectorAll('.container');
   container[0].textContent = 'Loading...';
