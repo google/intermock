@@ -16,18 +16,26 @@ module.exports = {
   },
 
   module: {
-    rules: [{
-      test: /\.ts$/,
-      include: path.join(__dirname),
-      loader: 'ts-loader',
-      options: {configFile: 'docs/tsconfig.json'}
-    }]
+    rules: [
+      {
+        test: /\.ts$/,
+        include: path.join(__dirname),
+        loader: 'ts-loader',
+        options: {configFile: 'docs/tsconfig.json'}
+      },
+      {
+        test: /\.css$/,
+        use: ['style-loader', 'css-loader'],
+      },
+    ]
   },
   devtool: 'inline-source-map',
 
   plugins: [
     new CleanWebpackPlugin(['./docs/dist']),
-    new CopyWebpackPlugin([{from: './docs/static/index.html'}]),
+    new CopyWebpackPlugin([
+      {from: './docs/static/index.html'},
+    ]),
   ],
 
   devServer: {

@@ -1,14 +1,21 @@
 import './styles/app.scss';
 
 async function foo() {
-  const container = document.querySelectorAll('.container');
-  container[0].textContent = 'Loading...';
-  const module =
-      await import(/* webpackChunkName: "intermock" */ '../../src/index');
+  const [intermock, monaco] = await Promise.all([
+    import(/* webpackChunkName: "intermock" */ '../../src/index'),
+    import(/* webpackChunkName: "monaco-editor" */ 'monaco-editor'),
+  ]);
 
+  console.warn(monaco);
+  console.warn(intermock);
 
-  console.warn(module);
-  container[0].textContent = 'Done!';
+  const editorContainer = document.getElementById('editor-container');
+  if (editorContainer) {
+    monaco.editor.create(editorContainer, {
+      value: 'function hello() {\n\talert(\'Hello world!\');\n}',
+      language: 'typescript',
+    });
+  }
 }
 console.warn('running foo');
 foo();
