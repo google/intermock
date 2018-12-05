@@ -1,6 +1,6 @@
 import './styles/app.scss';
 
-async function foo() {
+async function setup() {
   const [intermock, monaco] = await Promise.all([
     import(/* webpackChunkName: "intermock" */ '../../src/index'),
     import(/* webpackChunkName: "monaco-editor" */ 'monaco-editor'),
@@ -16,7 +16,10 @@ async function foo() {
       language: 'typescript',
     });
   }
+  const loadingIcon = document.getElementById('loading-icon');
+  if (loadingIcon) {
+    loadingIcon.remove();
+  }
 }
-console.warn('running foo');
-foo();
-console.warn('after foo');
+
+setup();

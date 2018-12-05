@@ -1,10 +1,17 @@
 @import 'reset.scss';
+@import 'loader.scss';
 
 html, body, #editor-container {
    height: 100%;
    width: 100%;
 }
 
-body {
-   background-color: grey;
+#loading-icon {
+   display: flex;
+   height: 100%;
+   width: 100%;
+   position: absolute;
+   z-index: 1000;
+   justify-content: center;
+   align-items: center;
 }
