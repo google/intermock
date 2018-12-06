@@ -1,9 +1,30 @@
 @import 'reset.scss';
 @import 'loader.scss';
 
-html, body, #editor-container {
+html, body, #editor-container, #mock-container {
    height: 100%;
    width: 100%;
+}
+
+.container {
+   display: flex;
+   height: 100%;
+   width: 100%;
+}
+
+#editor-container, #mock-container {
+   width: 50%;
+}
+
+#mock-container {
+   margin-top: 2rem;
+   pre {
+      white-space: pre-wrap;
+   }
+}
+
+.controls {
+   margin-bottom: 1rem;
 }
 
 #loading-icon {

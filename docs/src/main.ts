@@ -1,4 +1,5 @@
 import './styles/app.scss';
+import {mock} from '../../src/lang/ts/intermock';
 
 async function setup() {
   const [intermock, monaco] = await Promise.all([
@@ -6,20 +7,74 @@ async function setup() {
     import(/* webpackChunkName: "monaco-editor" */ 'monaco-editor'),
   ]);
 
-  console.warn(monaco);
-  console.warn(intermock);
+  const initialEditorContent = `interface Admin extends User {
+   adminRecord: AdminRecord;
+}
+
+interface Student extends User {
+   schoolRecord: SchoolRecord;
+}
+
+interface User {
+   firstName: string;
+   lastName: string;
+   username: string;
+   emailAddress: string;
+}
+
+interface AdminRecord {
+   studentsPassedEachYear: number[];
+}
+
+interface SchoolRecord {
+   startDate: string;
+   endDate: string;
+   isActive: boolean;
+   grades: number[];
+}
+`;
 
   const editorContainer = document.getElementById('editor-container');
+  const mockCodeBlock = document.getElementById('mock-code');
+  const createMockBtn = document.getElementById('create-mock-btn');
+  const loadingIcon = document.getElementById('loading-icon');
+  const interfacesToMock = document.getElementById('interfaces');
+  const interfaces = ['Admin', 'Student'];
+
   if (editorContainer) {
     monaco.editor.create(editorContainer, {
-      value: 'function hello() {\n\talert(\'Hello world!\');\n}',
+      value: initialEditorContent,
       language: 'typescript',
     });
   }
-  const loadingIcon = document.getElementById('loading-icon');
+
   if (loadingIcon) {
     loadingIcon.remove();
   }
+
+  if (interfacesToMock) {
+    //  interfacesToMock.val = interfaces.join(',');
+  }
+
+  if (mockCodeBlock) {
+    const mocked: any = intermock.mock({
+      language: 'typescript',
+      files: [['docs', initialEditorContent]],
+      output: 'string',
+      interfaces
+    });
+
+    mockCodeBlock.textContent = mocked;
+  }
+
+  if (createMockBtn) {
+    createMockBtn.addEventListener(
+        'click',
+        () => {
+
+        });
+  }
 }
+
 
 setup();
