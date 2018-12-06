@@ -53,7 +53,7 @@ interface SchoolRecord {
   }
 
   if (interfacesToMock) {
-    //  interfacesToMock.val = interfaces.join(',');
+    (interfacesToMock as HTMLInputElement).value = interfaces.join(',');
   }
 
   if (mockCodeBlock) {

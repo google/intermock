@@ -1,6 +1,7 @@
 const path = require('path');
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const CleanWebpackPlugin = require('clean-webpack-plugin');
+const WebpackNotifierPlugin = require('webpack-notifier');
 
 module.exports = {
   entry: './docs/src/main.ts',
@@ -32,6 +33,7 @@ module.exports = {
   devtool: 'inline-source-map',
 
   plugins: [
+    new WebpackNotifierPlugin({excludeWarnings: true}),
     new CleanWebpackPlugin(['./docs/dist']),
     new CopyWebpackPlugin([
       {from: './docs/static/index.html'},
