@@ -80,7 +80,7 @@ interface SchoolRecord {
             (interfacesToMock as HTMLInputElement).value.split(',');
         const mocked: any = intermock.mock({
           language: 'typescript',
-          files: [['docs', initialEditorContent]],
+          files: [['docs', editor.getValue()]],
           output: 'string',
           interfaces
         });
