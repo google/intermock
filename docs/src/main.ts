@@ -34,26 +34,32 @@ interface SchoolRecord {
 }
 `;
 
+  const initialInterfacesToMock = ['Admin', 'Student'];
+
   const editorContainer = document.getElementById('editor-container');
   const mockCodeBlock = document.getElementById('mock-code');
   const createMockBtn = document.getElementById('create-mock-btn');
   const loadingIcon = document.getElementById('loading-icon');
   const interfacesToMock = document.getElementById('interfaces');
-  const interfaces = ['Admin', 'Student'];
+  const controls = document.getElementById('controls');
 
-  if (editorContainer) {
-    monaco.editor.create(editorContainer, {
-      value: initialEditorContent,
-      language: 'typescript',
-    });
-  }
+
+  const editor = monaco.editor.create(editorContainer!, {
+    value: initialEditorContent,
+    language: 'typescript',
+  });
 
   if (loadingIcon) {
     loadingIcon.remove();
   }
 
+  if (controls) {
+    controls.style.display = 'block';
+  }
+
   if (interfacesToMock) {
-    (interfacesToMock as HTMLInputElement).value = interfaces.join(',');
+    (interfacesToMock as HTMLInputElement).value =
+        initialInterfacesToMock.join(',');
   }
 
   if (mockCodeBlock) {
@@ -61,18 +67,27 @@ interface SchoolRecord {
       language: 'typescript',
       files: [['docs', initialEditorContent]],
       output: 'string',
-      interfaces
+      interfaces: initialInterfacesToMock,
     });
 
     mockCodeBlock.textContent = mocked;
   }
 
   if (createMockBtn) {
-    createMockBtn.addEventListener(
-        'click',
-        () => {
-
+    createMockBtn.addEventListener('click', () => {
+      if (editor && mockCodeBlock && interfacesToMock) {
+        const interfaces =
+            (interfacesToMock as HTMLInputElement).value.split(',');
+        const mocked: any = intermock.mock({
+          language: 'typescript',
+          files: [['docs', initialEditorContent]],
+          output: 'string',
+          interfaces
         });
+
+        mockCodeBlock.textContent = mocked;
+      }
+    });
   }
 }
 

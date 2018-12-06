@@ -23,8 +23,9 @@ html, body, #editor-container, #mock-container {
    }
 }
 
-.controls {
+#controls {
    margin-bottom: 1rem;
+   display: none;
 }
 
 #loading-icon {
