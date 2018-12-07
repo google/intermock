@@ -60,34 +60,52 @@ interface SchoolRecord {
   if (interfacesToMock) {
     (interfacesToMock as HTMLInputElement).value =
         initialInterfacesToMock.join(',');
+    interfacesToMock.addEventListener('keydown', (e) => {
+      if (e.keyCode === 13) {
+        if (editor && mockCodeBlock && interfacesToMock) {
+          createMock(
+              intermock, interfacesToMock, mockCodeBlock, editor.getValue());
+        }
+      }
+    });
   }
 
   if (mockCodeBlock) {
-    const mocked: any = intermock.mock({
+    const mocked = intermock.mock({
       language: 'typescript',
       files: [['docs', initialEditorContent]],
       output: 'string',
       interfaces: initialInterfacesToMock,
     });
 
-    mockCodeBlock.textContent = mocked;
+    mockCodeBlock.textContent = mocked as string;
   }
 
   if (createMockBtn) {
     createMockBtn.addEventListener('click', () => {
       if (editor && mockCodeBlock && interfacesToMock) {
-        const interfaces =
-            (interfacesToMock as HTMLInputElement).value.split(',');
-        const mocked: any = intermock.mock({
-          language: 'typescript',
-          files: [['docs', editor.getValue()]],
-          output: 'string',
-          interfaces
-        });
-
-        mockCodeBlock.textContent = mocked;
+        createMock(
+            intermock, interfacesToMock, mockCodeBlock, editor.getValue());
       }
     });
+  }
+}
+
+function createMock(
+    intermock: any, interfacesToMock: HTMLElement, mockCodeBlock: HTMLElement,
+    text: string) {
+  const interfaces = (interfacesToMock as HTMLInputElement).value.split(',');
+
+  try {
+    const mocked = intermock.mock({
+      language: 'typescript',
+      files: [['docs', text]],
+      output: 'string',
+      interfaces
+    });
+    mockCodeBlock.textContent = mocked as string;
+  } catch (err) {
+    mockCodeBlock.textContent = err.message;
   }
 }
 
