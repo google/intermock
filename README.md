@@ -1,8 +1,10 @@
 # intermock
-Mocking library to create mock objects and JSON for TypeScript interfaces via Faker
+Mocking library to create mock objects and JSON for TypeScript interfaces via Faker.
+
+**This is not an officially supported Google product**
 
 ## Installation
-`git clone sso://user/ryanmcdermott/intermock`
+`git clone git@github.com:google/intermock.git`
 
 ## Building
 `npm run build`
