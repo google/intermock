@@ -1,0 +1,25 @@
+<!doctype html>
+  <html>
+   <head>
+     <title>Intermock Docs</title>
+     <link rel="stylesheet" type="text/css" href="main.css">
+   </head>
+   <body>
+      <div id="loading-icon" class="la-ball-clip-rotate la-dark la-3x">
+         <div></div>
+      </div>
+      <div class="container">
+         <div id="editor-container">
+            <div id="controls">
+               <label for="interfaces">Comma-separated interfaces to mock</label>
+               <input id="interfaces" name="interfaces" type="text">
+               <button id="create-mock-btn">Create Mock</button>
+            </div>
+         </div>
+         <div id="mock-container">
+            <pre id="mock-code"></pre>
+         </div>
+      </div>
+     <script src="main.bundle.js"></script>
+   </body>
+  </html>
