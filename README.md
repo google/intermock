@@ -4,7 +4,10 @@ Mocking library to create mock objects and JSON for TypeScript interfaces via Fa
 **This is not an officially supported Google product**
 
 ## Installation
-`git clone git@github.com:google/intermock.git`
+```
+git clone git@github.com:google/intermock.git
+npm install
+```
 
 ## Building
 `npm run build`
