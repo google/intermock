@@ -264,9 +264,9 @@ function processJsDocs(
     // Safari and older versions of Node cannot handle this lookahead regex
     // Try catch to handle, discard error for now
     try {
-      const match = jsDocComment.match(/(?<=\{).+?(?=\})/g);
+      const match = jsDocComment.match(/\{([^)]+)\}/);
       if (match) {
-        mockType = match[0];
+        mockType = match[1];
       }
     } catch (err) {
     }
