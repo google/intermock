@@ -261,9 +261,14 @@ function processJsDocs(
   }
 
   if (jsDocComment.startsWith('!mockType')) {
-    const match = jsDocComment.match(/(?<=\{).+?(?=\})/g);
-    if (match) {
-      mockType = match[0];
+    // Safari and older versions of Node cannot handle this lookahead regex
+    // Try catch to handle, discard error for now
+    try {
+      const match = jsDocComment.match(/(?<=\{).+?(?=\})/g);
+      if (match) {
+        mockType = match[0];
+      }
+    } catch (err) {
     }
   } else {
     // TODO
