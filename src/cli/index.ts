@@ -98,12 +98,11 @@ function main() {
     try {
       const output = IntermockTS({
         files,
-        output: 'json',
         interfaces,
         isFixedMode,
       });
 
-      console.log(output);
+      console.dir(output, {depth: null, colors: true});
     } catch (err) {
       console.log(err.message);
     }
