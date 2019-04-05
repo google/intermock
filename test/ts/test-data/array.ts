@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+interface IterableArray<T> {}
+
 interface Order {
   id: string;
 
@@ -24,6 +27,7 @@ interface User {
   orders: Order[];
   /* tslint:disable */
   moreOrders: Array<Order>;
+  finalOrders: IterableArray<Order>;
   /* tslint:enable */
   bestFriends: string[];
 }
@@ -49,6 +53,20 @@ export const expectedArray1 = {
       }
     ],
     'moreOrders': [
+      {
+        'id': 'bfc8cb62-c6ce-4194-a2a5-499320b837eb',
+        'name': 'consequuntur ab fugiat'
+      },
+      {
+        'id': 'bfc8cb62-c6ce-4194-a2a5-499320b837eb',
+        'name': 'consequuntur ab fugiat'
+      },
+      {
+        'id': 'bfc8cb62-c6ce-4194-a2a5-499320b837eb',
+        'name': 'consequuntur ab fugiat'
+      }
+    ],
+    'finalOrders': [
       {
         'id': 'bfc8cb62-c6ce-4194-a2a5-499320b837eb',
         'name': 'consequuntur ab fugiat'

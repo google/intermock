@@ -189,9 +189,8 @@ function processPropertyTypeReference(
   let normalizedTypeName;
 
   if (typeName.startsWith('Array<') || typeName.startsWith('IterableArray<')) {
-    normalizedTypeName = typeName.replace('Array<', '')
-                             .replace('IterableArray<', '')
-                             .replace('>', '');
+    normalizedTypeName =
+        typeName.replace(/(Array|IterableArray)\</, '').replace('>', '');
   } else {
     normalizedTypeName = typeName;
   }

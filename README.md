@@ -18,7 +18,7 @@ mock(options: Options): object|string
 ```
 
 ### Options
-```
+```typescript
 export interface Options {
  // Array of file tuples. (filename, data)
  files?: Array<[string, string]>;
