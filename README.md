@@ -12,7 +12,7 @@ npm install
 Intermock’s API exports only one function, as seen below:
 
 ### Function
-```
+```typescript
 // Returns an object or string based on `output` property specified in `Options`
 mock(options: Options): object|string
 ```
