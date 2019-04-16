@@ -7,8 +7,39 @@ Mocking library to create mock objects and JSON for TypeScript interfaces via Fa
 ```
 git clone git@github.com:google/intermock.git
 npm install
+npm run build
 ```
-## Usage
+
+## CLI
+Intermock exposes a CLI, which is the recommended way to use the tool.
+
+### Example command
+```bash
+node build/src/cli/index.js --files ./example-file.ts --interfaces "Admin"
+```
+
+### Example output
+```json
+{
+  "Admin": {
+    "firstName": "Willa",
+    "lastName": "Walker",
+    "username": "Shyann_Mante",
+    "emailAddress": "Cristobal_Rutherford73@gmail.com",
+    "adminRecord": {
+      "studentsPassedEachYear": [
+        80342,
+        23404,
+        12854,
+        74937,
+        38185,
+        73316
+      ]
+    }
+  },
+```
+
+## API Usage
 Intermock’s API exports only one function, as seen below:
 
 ### Function
