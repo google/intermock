@@ -11,7 +11,36 @@ npm run build
 ```
 
 ## CLI
-Intermock exposes a CLI, which is the recommended way to use the tool.
+Intermock exposes a CLI, which is the recommended way to use the tool. The following subsections show an example file, command, and output to demonstrate using the CLI.
+
+### Example file
+```typescript
+interface Admin extends User {
+   adminRecord: AdminRecord;
+}
+
+interface Student extends User {
+   schoolRecord: SchoolRecord;
+}
+
+interface User {
+   firstName: string;
+   lastName: string;
+   username: string;
+   emailAddress: string;
+}
+
+interface AdminRecord {
+   studentsPassedEachYear: number[];
+}
+
+interface SchoolRecord {
+   startDate: string;
+   endDate: string;
+   isActive: boolean;
+   grades: number[];
+}
+```
 
 ### Example command
 ```bash
