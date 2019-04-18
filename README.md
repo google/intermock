@@ -1,4 +1,4 @@
-# intermock
+# intermock [![Build Status](https://api.travis-ci.org/google/intermock.svg?branch=master)](https://travis-ci.org/google/intermock)
 Mocking library to create mock objects and JSON for TypeScript interfaces via Faker.
 
 **This is not an officially supported Google product.**
