@@ -1,7 +1,7 @@
 # intermock
 Mocking library to create mock objects and JSON for TypeScript interfaces via Faker.
 
-**This is not an officially supported Google product**
+**This is not an officially supported Google product.**
 
 ## Installation
 ```
