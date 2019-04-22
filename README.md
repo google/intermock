@@ -11,7 +11,7 @@ npm run build
 ```
 
 ## CLI
-Intermock exposes a CLI, which is the recommended way to use the tool. The following subsections show an example file, command, and output to demonstrate using the CLI.
+Intermock exposes a CLI, **which is the recommended way to use the tool**. The following subsections show an example file, command, and output to demonstrate using the CLI.
 
 ### Example file
 ```typescript
