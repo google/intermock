@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 interface FlatInterface {
-  name: string;
+  id: 5, type: 'person', wantsFries: true, wantsChocolate: false, name: string;
   age: number;
   isCool: boolean;
 }
@@ -22,5 +22,9 @@ interface FlatInterface {
 export const expectedFlat = {
   name: 'Natasha Jacobs',
   age: 86924,
-  isCool: true
+  isCool: true,
+  type: 'person',
+  id: 5,
+  wantsFries: true,
+  wantsChocolate: false,
 };

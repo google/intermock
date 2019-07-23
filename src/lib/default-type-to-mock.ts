@@ -16,6 +16,14 @@
 import ts from 'typescript';
 import {fake} from './fake';
 
+export enum SupportedTypes {
+  NumberKeyword = ts.SyntaxKind.NumberKeyword,
+  StringKeyword = ts.SyntaxKind.StringKeyword,
+  BooleanKeyword = ts.SyntaxKind.BooleanKeyword,
+  ObjectKeyword = ts.SyntaxKind.ObjectKeyword,
+  AnyKeyword = ts.SyntaxKind.AnyKeyword,
+}
+
 /* tslint:disable */
 export const defaultTypeToMock: {
   [index: number]: (isFixedMode: boolean) => string | number | boolean | object
