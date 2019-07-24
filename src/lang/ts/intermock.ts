@@ -368,7 +368,11 @@ function processUnionPropertyType(
       [];
   // @ts-ignore
   const supportedType = unionNodes.find(
-      type => Object.values(SupportedTypes).includes(type.kind));
+      type =>
+          Object.keys(SupportedTypes)
+              .map(key => (SupportedTypes as unknown as {[key: string]:
+                                                             number})[key])
+              .includes(type.kind));
   if (supportedType) {
     output[property] =
         generatePrimitive(property, supportedType.kind, options, '');
