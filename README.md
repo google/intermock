@@ -141,7 +141,13 @@ npm run docs-build
 ```
 
 ## Contributing
-See `CONTRIBUTING.md` in this repo
+1. Read **all** of `CONTRIBUTING.md` in this repo
+1. Sign the CLA
+1. In a terminal, run `npm run ci`
+1. Fix any linting, formatting, and/or compiling errors. (Note: Format errors can be fixed by `npm run format`. DO NOT fix linting errors by disabling the linter on a line and/or block)
+1. Create a Pull Request
+1. Address all comments, if any
+1. If everything looks good after comments are addressed, your PR will be merged!
 
 ## License
 See `LICENSE` in this repo
