@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import ts, { ArrayTypeNode, FunctionTypeNode, isTypeNode, NumericLiteral, TypeReferenceNode, isLiteralTypeNode } from 'typescript';
+import ts from 'typescript';
 
 import { DEFAULT_ARRAY_RANGE, FIXED_ARRAY_COUNT } from '../../lib/constants';
 import { defaultTypeToMock, SupportedPrimitiveTypes } from '../../lib/default-type-to-mock';
@@ -63,7 +63,7 @@ type TypeCacheRecord = {
   node: ts.Node,
 };
 
-type Output = Record<string, {}>;
+type Output = Record<string | number, {}>;
 type Types = Record<string, TypeCacheRecord>;
 
 /**
@@ -127,7 +127,7 @@ function isQuestionToken(
 function processGenericPropertyType(
   node: ts.PropertySignature, output: Output, property: string,
   kind: ts.SyntaxKind, mockType: string, options: Options) {
-  if (node && node.type && isLiteralTypeNode(node.type)) {
+  if (node && node.type && ts.isLiteralTypeNode(node.type)) {
     const literal = (node.type as ts.LiteralTypeNode).literal;
     // Boolean Literal
     if (literal.kind === ts.SyntaxKind.TrueKeyword) {
@@ -141,7 +141,7 @@ function processGenericPropertyType(
     } else {
       // The text IS a string, but the output value has to be a numeric value
       // tslint:disable-next-line
-      output[property] = parseInt((literal as NumericLiteral).text, 10);
+      output[property] = parseInt((literal as ts.NumericLiteral).text, 10);
     }
     return;
   }
@@ -168,7 +168,7 @@ function processFunctionPropertyType(
   const args = '';
   let body = '';
 
-  const funcNode = (isTypeNode(node) ? node : node.type) as FunctionTypeNode;
+  const funcNode = (ts.isTypeNode(node) ? node : node.type) as ts.FunctionTypeNode;
   const returnType = funcNode.type;
 
   switch (returnType.kind) {
@@ -317,7 +317,7 @@ function processArrayPropertyType(
   typeName = typeName.replace('[', '').replace(']', '');
   output[property] = [];
 
-  if (isTypeNode(node)) {
+  if (ts.isTypeNode(node)) {
     kind = node.kind;
   } else if ((node.type as ts.ArrayTypeNode).elementType) {
     kind = (node.type as ts.ArrayTypeNode).elementType.kind;
@@ -372,7 +372,7 @@ function processUnionPropertyType(
   } else {
     const typeReferenceNode =
       unionNodes.find(node => node.kind === ts.SyntaxKind.TypeReference) as
-      TypeReferenceNode |
+      ts.TypeReferenceNode |
       undefined;
     if (typeReferenceNode) {
       processPropertyTypeReference(
@@ -383,13 +383,13 @@ function processUnionPropertyType(
     }
     const arrayNode =
       unionNodes.find(node => node.kind === ts.SyntaxKind.ArrayType) as
-      ArrayTypeNode |
+      ts.ArrayTypeNode |
       undefined;
     if (arrayNode) {
       processArrayPropertyType(
         arrayNode, output, property,
         `[${
-        ((arrayNode.elementType as TypeReferenceNode).typeName as
+        ((arrayNode.elementType as ts.TypeReferenceNode).typeName as
           ts.Identifier)
           .text}]`,
         arrayNode.kind, sourceFile, options, types);
