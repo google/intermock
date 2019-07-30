@@ -16,6 +16,14 @@
 import ts from 'typescript';
 import {fake} from './fake';
 
+export const supportedPrimitiveTypes: {[key: string]: boolean} = {
+  [ts.SyntaxKind.NumberKeyword]: true,
+  [ts.SyntaxKind.StringKeyword]: true,
+  [ts.SyntaxKind.BooleanKeyword]: true,
+  [ts.SyntaxKind.ObjectKeyword]: true,
+  [ts.SyntaxKind.AnyKeyword]: true,
+};
+
 /* tslint:disable */
 export const defaultTypeToMock: {
   [index: number]: (isFixedMode: boolean) => string | number | boolean | object

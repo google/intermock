@@ -35,6 +35,7 @@ import {expectedNested} from './test-data/nestedSingle';
 import {expectedOptional1, expectedOptional2} from './test-data/optional';
 import {expectedSpecificInterface} from './test-data/specificInterfaces';
 import {expectedTypeAlias} from './test-data/typeAlias';
+import {expectedUnion} from './test-data/unions';
 
 async function runTestCase(
     file: string, outputProp: string, expected: unknown, options?: Options) {
@@ -102,6 +103,28 @@ describe('Intermock TypeScript: Mock tests', () => {
     return runTestCase(
         `${__dirname}/test-data/enum.ts`, 'Person', expectedEnum.Person);
   });
+
+  it('should generate mock for unions - with generic types', () => {
+    return runTestCase(
+        `${__dirname}/test-data/unions.ts`, 'Account', expectedUnion.Account);
+  });
+
+  it('should generate mock for unions - with type references', () => {
+    return runTestCase(
+        `${__dirname}/test-data/unions.ts`, 'Person', expectedUnion.Person);
+  });
+
+  it('should generate mock for unions - with arrays', () => {
+    return runTestCase(
+        `${__dirname}/test-data/unions.ts`, 'Pack', expectedUnion.Pack);
+  });
+
+  it('should generate mock for unions - for null option to work like question mark',
+     async () => {
+       return runTestCase(
+           `${__dirname}/test-data/unions.ts`, 'LonelyHuman',
+           expectedUnion.LonelyHuman);
+     });
 
   it('should generate mock for basic arrays', () => {
     return runTestCase(
