@@ -102,11 +102,12 @@ export interface Options {
 ```
 
 ## Type Support
-The following TypeScript static type features are supported:
+The following TypeScript features are supported:
 - Interfaces
 - Interfaces with properties of primitive types
 - Interfaces with property references to other complex types
 - Interfaces with extensions
+- Unions
 - Type aliases
 - Arrays
 - Namespaces
