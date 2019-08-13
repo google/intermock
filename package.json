@@ -7,7 +7,7 @@
     "url": "https://github.com/google/intermock.git"
   },
   "bin": {
-    "intermock": "./build/src/cli.js"
+    "intermock": "./build/src/cli/index.js"
   },
   "dependencies": {
     "command-line-args": "5.0.2",
