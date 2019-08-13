@@ -14,6 +14,7 @@
     "command-line-usage": "5.0.5",
     "faker": "4.1.0",
     "fs-readfile-promise": "3.0.1",
+    "tslib": "1.10.0",
     "typescript": "3.4.3"
   },
   "main": "./build/index.js",
