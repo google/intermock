@@ -5,9 +5,7 @@ Mocking library to create mock objects and JSON for TypeScript interfaces via Fa
 
 ## Installation
 ```
-git clone git@github.com:google/intermock.git
-npm install
-npm run build
+npm install intermock
 ```
 
 ## CLI
@@ -44,7 +42,7 @@ interface SchoolRecord {
 
 ### Example command
 ```bash
-node build/src/cli/index.js --files ./example-file.ts --interfaces "Admin"
+node ./node_modules/intermock/build/src/cli/index.js --files ./example-file.ts --interfaces "Admin"
 ```
 
 ### Example output
