@@ -111,7 +111,13 @@ The following TypeScript features are supported:
 - Namespaces
 - Functions (stringified output!)
 - Optional properties
-- Specific fake data types (via JSDoc comment)
+- Specific [Faker](https://github.com/marak/Faker.js/#api-methods) data types (via JSDoc comment)
+  ```ts
+  interface Host {
+    /** !mockType {internet.ipv6} */
+    addr: string;
+  }
+  ```
 
 
 ## Building
