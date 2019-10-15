@@ -19,7 +19,7 @@ interface IterableArray<T> {}
 interface Order {
   id: string;
 
-  /** !mockType {lorem.words} */
+  /** @mockType {lorem.words} */
   name: string;
 }
 
