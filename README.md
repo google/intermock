@@ -114,7 +114,7 @@ The following TypeScript features are supported:
 - Specific [Faker](https://github.com/marak/Faker.js/#api-methods) data types (via JSDoc comment)
   ```ts
   interface Host {
-    /** !mockType {internet.ipv6} */
+    /** @mockType {internet.ipv6} */
     addr: string;
   }
   ```
