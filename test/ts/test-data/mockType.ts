@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 interface FlatPerson {
-  /** !mockType {name.firstName} */
+  /** @mockType {name.firstName} */
   fn: string;
 
-  /** !mockType {name.lastName} */
+  /** @mockType {name.lastName} */
   ln: string;
 }
 

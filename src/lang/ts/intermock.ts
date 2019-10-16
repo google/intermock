@@ -49,12 +49,9 @@ export interface Options {
 type OutputType = 'object'|'json'|'string';
 type SupportedLanguage = 'typescript';
 
-interface JSDoc {
-  comment: string;
-}
 
 interface NodeWithDocs extends ts.PropertySignature {
-  jsDoc: JSDoc[];
+  jsDoc: ts.JSDoc[];
 }
 
 type TypeCacheRecord = {
@@ -268,35 +265,29 @@ function processPropertyTypeReference(
  */
 function processJsDocs(
     node: ts.PropertySignature, output: Output, property: string,
-    jsDocs: JSDoc[], options: Options) {
+    jsDocs: ts.JSDoc[], options: Options) {
   // TODO handle case where we get multiple mock JSDocs or a JSDoc like
   // mockRange for an array. In essence, we are only dealing with
   // primitives now
 
   // TODO Handle error case where a complex type has MockDocs
-  let mockType = '';
-  let jsDocComment = '';
+  const [tag] = findSupportedJSDocTags(jsDocs);
 
-  if (jsDocs.length > 0 && jsDocs[0].comment) {
-    jsDocComment = jsDocs[0].comment;
+  const tagValue = extractTagValue(tag);
+
+  switch (tag.tagName.text) {
+    case 'mockType':
+      const mock = generatePrimitive(property, node.kind, options, tagValue);
+      output[property] = mock;
+      break;
+
+    case 'mockRange':
+      // TODO
+      break;
+
+    default:
+      throw new Error(`Unexpected tagName: ${tag.tagName.text}`);
   }
-
-  if (jsDocComment.startsWith('!mockType')) {
-    // Safari and older versions of Node cannot handle this lookahead regex
-    // Try catch to handle, discard error for now
-    try {
-      const match = jsDocComment.match(/\{([^)]+)\}/);
-      if (match) {
-        mockType = match[1];
-      }
-    } catch (err) {
-    }
-  } else {
-    // TODO
-  }
-
-  const mock = generatePrimitive(property, node.kind, options, mockType);
-  output[property] = mock;
 }
 
 /**
@@ -408,13 +399,56 @@ function processUnionPropertyType(
   }
 }
 
-function isAnyJsDocs(jsDocs: JSDoc[]) {
-  if (jsDocs.length > 0 && jsDocs[0].comment &&
-      jsDocs[0].comment.includes('!mockType')) {
-    return true;
+const SUPPORTED_JSDOC_TAGNAMES = ['mockType', 'mockRange'] as const ;
+type SupportedJsDocTagName = typeof SUPPORTED_JSDOC_TAGNAMES[number];
+
+
+/**
+ * Extract value from comment following JSDoc tag
+ *
+ * @param tag processed tag
+ */
+function extractTagValue(tag: ts.JSDocTag): string {
+  let value = tag.comment || '';
+
+  // Unwrap from braces
+  if (value[0] === '{' && value[value.length - 1] === '}') {
+    value = value.slice(1, -1);
   }
 
-  return false;
+  return value;
+}
+
+interface SupportedJSDocTag extends ts.JSDocTag {
+  tagName: ts.Identifier&{text: SupportedJsDocTagName};
+}
+
+function isSupportedJSDocTag(tag: ts.JSDocTag): tag is SupportedJSDocTag {
+  return (SUPPORTED_JSDOC_TAGNAMES as readonly string[])
+      .includes(tag.tagName.text);
+}
+
+/**
+ * Find mockType and mockRange JSDoc tags in array
+ *
+ * @param jsDocs JSDoc comments
+ */
+function findSupportedJSDocTags(jsDocs: ts.JSDoc[]): SupportedJSDocTag[] {
+  const supportedJsDocTags: SupportedJSDocTag[] = [];
+
+  for (const doc of jsDocs) {
+    for (const tag of (doc.tags || [])) {
+      if (isSupportedJSDocTag(tag)) {
+        supportedJsDocTags.push(tag);
+      }
+    }
+  }
+
+  return supportedJsDocTags;
+}
+
+function isAnyJsDocs(jsDocs: ts.JSDoc[]) {
+  return findSupportedJSDocTags(jsDocs).length > 0;
 }
 
 /**
@@ -434,7 +468,7 @@ function traverseInterfaceMembers(
   }
 
   const processPropertySignature = (node: ts.PropertySignature) => {
-    let jsDocs: JSDoc[] = [];
+    let jsDocs: ts.JSDoc[] = [];
 
     if ((node as NodeWithDocs).jsDoc) {
       jsDocs = (node as NodeWithDocs).jsDoc;

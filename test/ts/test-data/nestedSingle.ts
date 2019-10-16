@@ -26,7 +26,7 @@ interface Person {
 }
 
 interface EmployeeDetail {
-  /** !mockType {internet.email} */
+  /** @mockType {internet.email} */
   email: string;
 
   isFullTime: boolean;
