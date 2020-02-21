@@ -192,21 +192,36 @@ function processFunctionPropertyType(
 function processIndexedAccessPropertyType(
     node: ts.IndexedAccessTypeNode, output: Output, property: string,
     options: Options, types: Types) {
+  let kind;
   const objectType =
       ((node.objectType as ts.TypeReferenceNode).typeName as ts.Identifier)
           .escapedText;
   const indexType =
-      ((node.indexType as ts.LiteralTypeNode).literal as any).text;
+      ((node.indexType as ts.LiteralTypeNode).literal as ts.LiteralExpression)
+          .text;
 
-  const kind = (types[objectType as string].node as any)
-                   .type.members
-                   .find((member: any) => member.name.escapedText === indexType)
-                   .type.kind;
+  const members: ts.NodeArray<ts.TypeElement> =
+      ((types[objectType as string].node as ts.TypeAliasDeclaration).type as
+       ts.TypeLiteralNode)
+          .members;
+
+  if (members) {
+    const match = members.find(
+        (member: ts.TypeElement) =>
+            (member.name as ts.Identifier).escapedText === indexType);
+    if (match) {
+      const matchType = (match as ts.PropertySignature).type;
+      if (matchType) {
+        kind = matchType.kind;
+      }
+    }
+  }
+
   const isPrimitiveType = kind === ts.SyntaxKind.StringKeyword ||
       kind === ts.SyntaxKind.NumberKeyword ||
       kind === ts.SyntaxKind.BooleanKeyword;
 
-  if (isPrimitiveType) {
+  if (isPrimitiveType && kind) {
     output[property] = generatePrimitive(indexType, kind, options);
   } else {
     // TODO
@@ -229,7 +244,7 @@ function processPropertyTypeReference(
     node: ts.PropertySignature|ts.TypeNode, output: Output, property: string,
     typeName: string, kind: ts.SyntaxKind, sourceFile: ts.SourceFile,
     options: Options, types: Types) {
-  let normalizedTypeName;
+  let normalizedTypeName: string;
   let hasTypeParameter = false;
 
   if (typeName.startsWith('Array<') || typeName.startsWith('IterableArray<')) {
@@ -239,9 +254,14 @@ function processPropertyTypeReference(
     normalizedTypeName = typeName;
   }
 
-  if ((node as any).type.typeArguments.length) {
+  const typeReference: ts.NodeWithTypeArguments|undefined =
+      (node as ts.MappedTypeNode).type;
+  if (typeReference && typeReference.typeArguments &&
+      typeReference.typeArguments.length) {
     // Process Generic
-    normalizedTypeName = (node as any).type.typeName.escapedText;
+    normalizedTypeName =
+        ((typeReference as ts.TypeReferenceNode).typeName as ts.Identifier)
+            .escapedText as string;
     hasTypeParameter = true;
   }
 
@@ -264,7 +284,7 @@ function processPropertyTypeReference(
       setEnum(sourceFile, output, types, normalizedTypeName, property);
       break;
     default:
-      const record = (types[normalizedTypeName] as TypeCacheRecord)
+      const record = (types[normalizedTypeName] as TypeCacheRecord);
       if (record.kind !== record.aliasedTo) {
         const alias = record.aliasedTo;
         const isPrimitiveType = alias === ts.SyntaxKind.StringKeyword ||
@@ -274,27 +294,49 @@ function processPropertyTypeReference(
         if (isPrimitiveType) {
           output[property] = generatePrimitive(property, alias, options, '');
         } else if (alias === ts.SyntaxKind.UnionType) {
-          const parameters =
-              (types[normalizedTypeName].node as any)
-                  .typeParameters.map((p: any) => p.name.escapedText);
-          (record.node as any).type.types =
-              (record.node as any).type.types.map((t: any) => {
-                const parameterIndex =
-                    t.typeName ? parameters.indexOf(t.typeName.escapedText) : -1
-                if (parameterIndex > -1) {
-                  return (node as any).type.typeArguments[parameterIndex];
-                }
-                return t;
-              });
+          let parameters: string[] = [];
 
-          processUnionPropertyType(
-              record.node as ts.PropertySignature, output, property, typeName,
-              record.kind, sourceFile, options, types);
+          if (record && record.node) {
+            const typeParameters =
+                (record.node as ts.TypeAliasDeclaration).typeParameters;
+            if (typeParameters) {
+              parameters = typeParameters.map(
+                  (value: ts.TypeParameterDeclaration): string =>
+                      value.name.escapedText as string);
+            }
+            console.log('node', node);
+            const updatedArr =
+                ((record.node as ts.TypeAliasDeclaration).type as
+                 ts.UnionOrIntersectionTypeNode)
+                    .types.map(t => {
+                      const parameterIndex =
+                          (t as ts.TypeReferenceNode).typeName ?
+                          parameters.indexOf(
+                              ((t as ts.TypeReferenceNode).typeName as
+                               ts.Identifier)
+                                  .escapedText as string) :
+                          -1;
+                      if (parameterIndex > -1) {
+                        const propertyType: ts.NodeWithTypeArguments|undefined =
+                            (node as ts.PropertySignature).type;
+                        if (propertyType && propertyType.typeArguments) {
+                          return propertyType.typeArguments[parameterIndex];
+                        }
+                      }
+                      return t;
+                    });
+            ((record.node as ts.TypeAliasDeclaration).type as
+             ts.UnionOrIntersectionTypeNode)
+                .types = updatedArr as unknown as ts.NodeArray<ts.TypeNode>;
+            processUnionPropertyType(
+                record.node as ts.PropertySignature, output, property, typeName,
+                record.kind, sourceFile, options, types);
+          }
+
         } else {
           // TODO
         }
-      }
-      else {
+      } else {
         output[property] = {};
         processFile(sourceFile, output[property], options, types, typeName);
         break;
@@ -448,7 +490,7 @@ function processUnionPropertyType(
     if (indexedAccessNode) {
       processIndexedAccessPropertyType(
           indexedAccessNode as ts.IndexedAccessTypeNode, output, property,
-          options, types)
+          options, types);
       return;
     }
 
