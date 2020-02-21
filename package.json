@@ -15,7 +15,7 @@
     "faker": "4.1.0",
     "fs-readfile-promise": "3.0.1",
     "tslib": "1.10.0",
-    "typescript": "3.4.3"
+    "typescript": "^3.7.5"
   },
   "main": "./build/index.js",
   "types": "./build/index.d.ts",
