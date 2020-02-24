@@ -245,28 +245,29 @@ function processPropertyTypeReference(
     typeName: string, kind: ts.SyntaxKind, sourceFile: ts.SourceFile,
     options: Options, types: Types) {
   let normalizedTypeName: string;
-  let hasTypeParameter = false;
+  let isArray = false;
 
   if (typeName.startsWith('Array<') || typeName.startsWith('IterableArray<')) {
     normalizedTypeName =
         typeName.replace(/(Array|IterableArray)\</, '').replace('>', '');
+    isArray = true;
   } else {
     normalizedTypeName = typeName;
   }
 
   const typeReference: ts.NodeWithTypeArguments|undefined =
       (node as ts.MappedTypeNode).type;
-  if (typeReference && typeReference.typeArguments &&
+  if (!isArray && typeReference && typeReference.typeArguments &&
       typeReference.typeArguments.length) {
+    console.log('generic');
     // Process Generic
     normalizedTypeName =
         ((typeReference as ts.TypeReferenceNode).typeName as ts.Identifier)
             .escapedText as string;
-    hasTypeParameter = true;
   }
 
   // TODO: Handle other generics
-  if (normalizedTypeName !== typeName && !hasTypeParameter) {
+  if (normalizedTypeName !== typeName && isArray) {
     processArrayPropertyType(
         node, output, property, normalizedTypeName, kind, sourceFile, options,
         types);
@@ -304,7 +305,7 @@ function processPropertyTypeReference(
                   (value: ts.TypeParameterDeclaration): string =>
                       value.name.escapedText as string);
             }
-            console.log('node', node);
+
             const updatedArr =
                 ((record.node as ts.TypeAliasDeclaration).type as
                  ts.UnionOrIntersectionTypeNode)

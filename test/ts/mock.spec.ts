@@ -28,7 +28,9 @@ import {expectedEnum} from './test-data/enum';
 import {expectedContractor} from './test-data/extension';
 import {expectedFlat} from './test-data/flat';
 import {FunctionInterface} from './test-data/functions';
+import {expectedGenerics} from './test-data/generic';
 import {expectedJson} from './test-data/json';
+import {expectedMappedTypes} from './test-data/mappedTypes';
 import {expectedMockType} from './test-data/mockType';
 import {expectedNamespaced} from './test-data/namespace';
 import {expectedNested} from './test-data/nestedSingle';
@@ -173,5 +175,16 @@ describe('Intermock TypeScript: Mock tests', () => {
     return runTestCase(
         `${__dirname}/test-data/namespace.ts`, 'Person',
         expectedNamespaced.Person);
+  });
+
+  it('should generate mock for mapped tyes', () => {
+    return runTestCase(
+        `${__dirname}/test-data/mappedTypes.ts`, 'Person',
+        expectedMappedTypes.Person);
+  });
+
+  it('should generate mock type references with generics', async () => {
+    return runTestCase(
+        `${__dirname}/test-data/generic.ts`, 'Person', expectedGenerics.Person);
   });
 });
