@@ -140,13 +140,11 @@ describe('Intermock TypeScript: Mock tests', () => {
   });
 
   it('should generate mock for interfaces with functions', async () => {
-    const output = await getOutput(`${__dirname}/test-data/functions.ts`);
-    const basicRet =
-        ((output as Record<string, {}>).FunctionInterface as FunctionInterface)
-            .basicFunctionRetNum();
-    const interfaceRet =
-        ((output as Record<string, {}>).FunctionInterface as FunctionInterface)
-            .functionRetInterface();
+    const output = await getOutput(`${__dirname}/test-data/functions.ts`) as {
+      FunctionInterface: FunctionInterface
+    };
+    const basicRet = output.FunctionInterface.basicFunctionRetNum();
+    const interfaceRet = output.FunctionInterface.functionRetInterface();
 
     expect(basicRet).to.eql(86924);
     expect(interfaceRet)
@@ -155,9 +153,9 @@ describe('Intermock TypeScript: Mock tests', () => {
 
   it('should generate JSON', async () => {
     const output =
-        await getOutput(`${__dirname}/test-data/json.ts`, {output: 'json'});
+      await getOutput(`${__dirname}/test-data/json.ts`, { output: 'json' }) as string;
 
-    expect(JSON.parse(output as string))
+    expect(JSON.parse(output))
         .to.deep.equal(JSON.parse(expectedJson));
   });
 
