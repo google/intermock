@@ -76,18 +76,16 @@ describe('Intermock TypeScript: Mock tests', () => {
   });
 
   it('should generate mock for interfaces with optional types - optional forced as always',
-     () => {
-       return runTestCase(
-           `${__dirname}/test-data/optional.ts`, 'User',
-           expectedOptional1.User);
-     });
+    () => {
+      return runTestCase(
+          `${__dirname}/test-data/optional.ts`, 'User', expectedOptional1.User);
+    });
 
   it('should generate mock for interfaces with optional types - optional forced as never',
-     () => {
-       return runTestCase(
-           `${__dirname}/test-data/optional.ts`, 'User', expectedOptional2.User,
-           {isOptionalAlwaysEnabled: true});
-     });
+    () => {
+      return runTestCase(
+          `${__dirname}/test-data/optional.ts`, 'User', expectedOptional2.User, {isOptionalAlwaysEnabled: true});
+    });
 
   it('should generate mock for type aliases - as a property', () => {
     return runTestCase(
@@ -121,12 +119,10 @@ describe('Intermock TypeScript: Mock tests', () => {
         `${__dirname}/test-data/unions.ts`, 'Pack', expectedUnion.Pack);
   });
 
-  it('should generate mock for unions - for null option to work like question mark',
-     async () => {
-       return runTestCase(
-           `${__dirname}/test-data/unions.ts`, 'LonelyHuman',
-           expectedUnion.LonelyHuman);
-     });
+  it('should generate mock for unions - for null option to work like question mark', () => {
+    return runTestCase(
+        `${__dirname}/test-data/unions.ts`, 'LonelyHuman', expectedUnion.LonelyHuman);
+  });
 
   it('should generate mock for basic arrays', () => {
     return runTestCase(
