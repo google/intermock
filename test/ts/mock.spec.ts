@@ -24,6 +24,7 @@ import {readFiles} from '../../src/lib/read-files';
 
 import {expectedAny} from './test-data/any';
 import {expectedArray1} from './test-data/array';
+import {expectedTuple1} from './test-data/tuple';
 import {expectedEnum} from './test-data/enum';
 import {expectedContractor} from './test-data/extension';
 import {expectedFlat} from './test-data/flat';
@@ -127,6 +128,10 @@ describe('Intermock TypeScript: Mock tests', () => {
   it('should generate mock for basic arrays', () => {
     return runTestCase(
         `${__dirname}/test-data/array.ts`, 'User', expectedArray1.User);
+  });
+  it('should generate mock for basic tuples', () => {
+    return runTestCase(
+      `${__dirname}/test-data/tuple.ts`, 'Test', expectedTuple1.Test);
   });
 
   it('should generate mock for specific interfaces', () => {
