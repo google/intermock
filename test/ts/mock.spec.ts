@@ -24,7 +24,6 @@ import {readFiles} from '../../src/lib/read-files';
 
 import {expectedAny} from './test-data/any';
 import {expectedArray1} from './test-data/array';
-import {expectedTuple1} from './test-data/tuple';
 import {expectedEnum} from './test-data/enum';
 import {expectedContractor} from './test-data/extension';
 import {expectedFlat} from './test-data/flat';
@@ -37,6 +36,7 @@ import {expectedNamespaced} from './test-data/namespace';
 import {expectedNested} from './test-data/nestedSingle';
 import {expectedOptional1, expectedOptional2} from './test-data/optional';
 import {expectedSpecificInterface} from './test-data/specificInterfaces';
+import {expectedTuple1} from './test-data/tuple';
 import {expectedTypeAlias} from './test-data/typeAlias';
 import {expectedUnion} from './test-data/unions';
 
@@ -77,16 +77,18 @@ describe('Intermock TypeScript: Mock tests', () => {
   });
 
   it('should generate mock for interfaces with optional types - optional forced as always',
-    () => {
-      return runTestCase(
-          `${__dirname}/test-data/optional.ts`, 'User', expectedOptional1.User);
-    });
+     () => {
+       return runTestCase(
+           `${__dirname}/test-data/optional.ts`, 'User',
+           expectedOptional1.User);
+     });
 
   it('should generate mock for interfaces with optional types - optional forced as never',
-    () => {
-      return runTestCase(
-          `${__dirname}/test-data/optional.ts`, 'User', expectedOptional2.User, {isOptionalAlwaysEnabled: true});
-    });
+     () => {
+       return runTestCase(
+           `${__dirname}/test-data/optional.ts`, 'User', expectedOptional2.User,
+           {isOptionalAlwaysEnabled: true});
+     });
 
   it('should generate mock for type aliases - as a property', () => {
     return runTestCase(
@@ -120,10 +122,12 @@ describe('Intermock TypeScript: Mock tests', () => {
         `${__dirname}/test-data/unions.ts`, 'Pack', expectedUnion.Pack);
   });
 
-  it('should generate mock for unions - for null option to work like question mark', () => {
-    return runTestCase(
-        `${__dirname}/test-data/unions.ts`, 'LonelyHuman', expectedUnion.LonelyHuman);
-  });
+  it('should generate mock for unions - for null option to work like question mark',
+     () => {
+       return runTestCase(
+           `${__dirname}/test-data/unions.ts`, 'LonelyHuman',
+           expectedUnion.LonelyHuman);
+     });
 
   it('should generate mock for basic arrays', () => {
     return runTestCase(
@@ -131,7 +135,7 @@ describe('Intermock TypeScript: Mock tests', () => {
   });
   it('should generate mock for basic tuples', () => {
     return runTestCase(
-      `${__dirname}/test-data/tuple.ts`, 'Test', expectedTuple1.Test);
+        `${__dirname}/test-data/tuple.ts`, 'Test', expectedTuple1.Test);
   });
 
   it('should generate mock for specific interfaces', () => {
@@ -145,9 +149,8 @@ describe('Intermock TypeScript: Mock tests', () => {
   });
 
   it('should generate mock for interfaces with functions', async () => {
-    const output = await getOutput(`${__dirname}/test-data/functions.ts`) as {
-      FunctionInterface: FunctionInterface
-    };
+    const output = await getOutput(`${__dirname}/test-data/functions.ts`) as
+        {FunctionInterface: FunctionInterface};
     const basicRet = output.FunctionInterface.basicFunctionRetNum();
     const interfaceRet = output.FunctionInterface.functionRetInterface();
 
@@ -158,10 +161,10 @@ describe('Intermock TypeScript: Mock tests', () => {
 
   it('should generate JSON', async () => {
     const output =
-      await getOutput(`${__dirname}/test-data/json.ts`, { output: 'json' }) as string;
+        await getOutput(`${__dirname}/test-data/json.ts`, {output: 'json'}) as
+        string;
 
-    expect(JSON.parse(output))
-        .to.deep.equal(JSON.parse(expectedJson));
+    expect(JSON.parse(output)).to.deep.equal(JSON.parse(expectedJson));
   });
 
   it('should generate extended interfaces', async () => {
