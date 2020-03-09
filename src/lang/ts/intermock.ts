@@ -113,7 +113,7 @@ function isQuestionToken(
 }
 
 function getLiteralTypeValue(node: ts.LiteralTypeNode) {
-  const { literal } = node;
+  const {literal} = node;
   // Boolean Literal
   if (literal.kind === ts.SyntaxKind.TrueKeyword) {
     return true;
@@ -205,7 +205,7 @@ function processIndexedAccessPropertyType(
 
   const members: ts.NodeArray<ts.TypeElement> =
       ((types[objectType as string].node as ts.TypeAliasDeclaration).type as
-      ts.TypeLiteralNode)
+       ts.TypeLiteralNode)
           .members;
 
   if (members) {
@@ -403,20 +403,13 @@ function processArrayPropertyType(
     options: Options, types: Types) {
   typeName = typeName.replace('[', '').replace(']', '');
   output[property] = resolveArrayType(
-    node,
-    property,
-    typeName,
-    kind,
-    sourceFile,
-    options,
-    types
-  );
+      node, property, typeName, kind, sourceFile, options, types);
 }
 
 function resolveArrayType(
-  node: ts.PropertySignature | ts.TypeNode, property: string,
-  typeName: string, kind: ts.SyntaxKind, sourceFile: ts.SourceFile,
-  options: Options, types: Types) {
+    node: ts.PropertySignature|ts.TypeNode, property: string, typeName: string,
+    kind: ts.SyntaxKind, sourceFile: ts.SourceFile, options: Options,
+    types: Types) {
   typeName = typeName.replace('[', '').replace(']', '');
   const result = [];
 
@@ -427,21 +420,19 @@ function resolveArrayType(
   }
 
   const isPrimitiveType = kind === ts.SyntaxKind.StringKeyword ||
-    kind === ts.SyntaxKind.BooleanKeyword ||
-    kind === ts.SyntaxKind.NumberKeyword;
+      kind === ts.SyntaxKind.BooleanKeyword ||
+      kind === ts.SyntaxKind.NumberKeyword;
 
   const arrayRange = options.isFixedMode ?
-    FIXED_ARRAY_COUNT :
-    randomRange(DEFAULT_ARRAY_RANGE[0], DEFAULT_ARRAY_RANGE[1]);
+      FIXED_ARRAY_COUNT :
+      randomRange(DEFAULT_ARRAY_RANGE[0], DEFAULT_ARRAY_RANGE[1]);
 
   for (let i = 0; i < arrayRange; i++) {
     if (isPrimitiveType) {
       result.push(generatePrimitive(property, kind, options, ''));
     } else {
       const cache = {};
-      processFile(
-        sourceFile, cache, options, types,
-        typeName);
+      processFile(sourceFile, cache, options, types, typeName);
       result.push(cache);
     }
   }
@@ -461,21 +452,17 @@ function resolveArrayType(
  * @param types Top-level types of interfaces/aliases etc.
  */
 function processTuplePropertyType(
-  node: ts.TupleTypeNode, output: Output, property: string,
-  sourceFile: ts.SourceFile,
-  options: Options, types: Types) {
-  output[property] = resolveTuplePropertyType(node, property, sourceFile, options, types);
+    node: ts.TupleTypeNode, output: Output, property: string,
+    sourceFile: ts.SourceFile, options: Options, types: Types) {
+  output[property] =
+      resolveTuplePropertyType(node, property, sourceFile, options, types);
 }
 
 function resolveTuplePropertyType(
-  node: ts.TupleTypeNode,
-  property: string,
-  sourceFile: ts.SourceFile,
-  options: Options,
-  types: Types
-): Array<unknown> {
+    node: ts.TupleTypeNode, property: string, sourceFile: ts.SourceFile,
+    options: Options, types: Types): Array<unknown> {
   const result = [];
-  const { elementTypes } = node;
+  const {elementTypes} = node;
 
   for (let i = 0; i < elementTypes.length; i++) {
     const typeNode = elementTypes[i];
@@ -483,14 +470,8 @@ function resolveTuplePropertyType(
       case ts.SyntaxKind.RestType:
         const node = (typeNode as ts.RestTypeNode).type as ts.ArrayTypeNode;
         result.push(...resolveArrayType(
-          node.elementType,
-          property,
-          node.getText(),
-          node.elementType.kind,
-          sourceFile,
-          options,
-          types
-        ));
+            node.elementType, property, node.getText(), node.elementType.kind,
+            sourceFile, options, types));
         break;
       case ts.SyntaxKind.NumberKeyword:
       case ts.SyntaxKind.StringKeyword:
@@ -503,16 +484,22 @@ function resolveTuplePropertyType(
       case ts.SyntaxKind.TypeReference:
         const cache = {};
         processFile(
-          sourceFile, cache, options, types, ((typeNode as ts.TypeReferenceNode).typeName as ts.Identifier).text);
+            sourceFile, cache, options, types,
+            ((typeNode as ts.TypeReferenceNode).typeName as ts.Identifier)
+                .text);
         result.push(cache);
         break;
       case ts.SyntaxKind.TupleType:
-        result.push(resolveTuplePropertyType(typeNode as ts.TupleTypeNode, property, sourceFile, options, types));
+        result.push(resolveTuplePropertyType(
+            typeNode as ts.TupleTypeNode, property, sourceFile, options,
+            types));
         break;
       default:
         const data = {};
         processFile(
-          sourceFile, data, options, types, ((typeNode as ts.TypeReferenceNode).typeName as ts.Identifier).text);
+            sourceFile, data, options, types,
+            ((typeNode as ts.TypeReferenceNode).typeName as ts.Identifier)
+                .text);
         result.push(data);
         break;
     }
@@ -591,7 +578,7 @@ function processUnionPropertyType(
   }
 }
 
-const SUPPORTED_JSDOC_TAGNAMES = ['mockType', 'mockRange'] as const ;
+const SUPPORTED_JSDOC_TAGNAMES = ['mockType', 'mockRange'] as const;
 type SupportedJsDocTagName = typeof SUPPORTED_JSDOC_TAGNAMES[number];
 
 
@@ -708,8 +695,8 @@ function traverseInterfaceMembers(
         break;
       case ts.SyntaxKind.TupleType:
         processTuplePropertyType(
-          node.type as ts.TupleTypeNode, output, property, sourceFile,
-          options, types);
+            node.type as ts.TupleTypeNode, output, property, sourceFile,
+            options, types);
         break;
       case ts.SyntaxKind.ArrayType:
         processArrayPropertyType(
@@ -1000,11 +987,9 @@ export function mock(options: Options) {
   console.log(fileContents);
 
   const types = fileContents.reduce((sum, f) => {
-    const type = gatherTypes(ts.createSourceFile(f[0], f[1], ts.ScriptTarget.ES2015, true));
-    return {
-      ...sum,
-      ...type
-    };
+    const type = gatherTypes(
+        ts.createSourceFile(f[0], f[1], ts.ScriptTarget.ES2015, true));
+    return {...sum, ...type};
   }, {} as Types);
 
   fileContents.forEach((f) => {
