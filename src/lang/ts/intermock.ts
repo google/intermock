@@ -112,6 +112,23 @@ function isQuestionToken(
   return false;
 }
 
+function getLiteralTypeValue(node: ts.LiteralTypeNode) {
+  const { literal } = node;
+  // Boolean Literal
+  if (literal.kind === ts.SyntaxKind.TrueKeyword) {
+    return true;
+  } else if (literal.kind === ts.SyntaxKind.FalseKeyword) {
+    return false;
+    // String Literal
+  } else if (literal.kind === ts.SyntaxKind.StringLiteral) {
+    return literal.text ? literal.text : '';
+    // Numeric Literal
+  } else {
+    // The text IS a string, but the output value has to be a numeric value
+    return Number((literal as ts.NumericLiteral).text);
+  }
+}
+
 /**
  * Process an untyped interface property, defaults to generating a primitive.
  *
@@ -125,21 +142,7 @@ function processGenericPropertyType(
     node: ts.PropertySignature, output: Output, property: string,
     kind: ts.SyntaxKind, mockType: string, options: Options) {
   if (node && node.type && ts.isLiteralTypeNode(node.type)) {
-    const literal = (node.type as ts.LiteralTypeNode).literal;
-    // Boolean Literal
-    if (literal.kind === ts.SyntaxKind.TrueKeyword) {
-      output[property] = true;
-    } else if (literal.kind === ts.SyntaxKind.FalseKeyword) {
-      output[property] = false;
-      // String Literal
-    } else if (literal.kind === ts.SyntaxKind.StringLiteral) {
-      output[property] = literal.text ? literal.text : '';
-      // Numeric Literal
-    } else {
-      // The text IS a string, but the output value has to be a numeric value
-      // tslint:disable-next-line
-      output[property] = parseInt((literal as ts.NumericLiteral).text, 10);
-    }
+    output[property] = getLiteralTypeValue(node.type as ts.LiteralTypeNode);
     return;
   }
   const mock = generatePrimitive(property, kind, options, mockType);
@@ -202,7 +205,7 @@ function processIndexedAccessPropertyType(
 
   const members: ts.NodeArray<ts.TypeElement> =
       ((types[objectType as string].node as ts.TypeAliasDeclaration).type as
-       ts.TypeLiteralNode)
+      ts.TypeLiteralNode)
           .members;
 
   if (members) {
@@ -399,7 +402,23 @@ function processArrayPropertyType(
     typeName: string, kind: ts.SyntaxKind, sourceFile: ts.SourceFile,
     options: Options, types: Types) {
   typeName = typeName.replace('[', '').replace(']', '');
-  output[property] = [];
+  output[property] = resolveArrayType(
+    node,
+    property,
+    typeName,
+    kind,
+    sourceFile,
+    options,
+    types
+  );
+}
+
+function resolveArrayType(
+  node: ts.PropertySignature | ts.TypeNode, property: string,
+  typeName: string, kind: ts.SyntaxKind, sourceFile: ts.SourceFile,
+  options: Options, types: Types) {
+  typeName = typeName.replace('[', '').replace(']', '');
+  const result = [];
 
   if (ts.isTypeNode(node)) {
     kind = node.kind;
@@ -408,24 +427,97 @@ function processArrayPropertyType(
   }
 
   const isPrimitiveType = kind === ts.SyntaxKind.StringKeyword ||
-      kind === ts.SyntaxKind.BooleanKeyword ||
-      kind === ts.SyntaxKind.NumberKeyword;
+    kind === ts.SyntaxKind.BooleanKeyword ||
+    kind === ts.SyntaxKind.NumberKeyword;
 
   const arrayRange = options.isFixedMode ?
-      FIXED_ARRAY_COUNT :
-      randomRange(DEFAULT_ARRAY_RANGE[0], DEFAULT_ARRAY_RANGE[1]);
+    FIXED_ARRAY_COUNT :
+    randomRange(DEFAULT_ARRAY_RANGE[0], DEFAULT_ARRAY_RANGE[1]);
 
   for (let i = 0; i < arrayRange; i++) {
     if (isPrimitiveType) {
-      (output[property] as Array<{}>)[i] =
-          generatePrimitive(property, kind, options, '');
+      result.push(generatePrimitive(property, kind, options, ''));
     } else {
-      (output[property] as Array<{}>).push({});
+      const cache = {};
       processFile(
-          sourceFile, (output[property] as Array<{}>)[i], options, types,
-          typeName);
+        sourceFile, cache, options, types,
+        typeName);
+      result.push(cache);
     }
   }
+  return result;
+}
+
+/**
+ * Process an tuple definition.
+ *
+ * @param node Node being processed
+ * @param output The object outputted by Intermock after all types are mocked
+ * @param property Output property to write to
+ * @param typeName Type name of property
+ * @param kind TS data type of property type
+ * @param sourceFile TypeScript AST object compiled from file data
+ * @param options Intermock general options object
+ * @param types Top-level types of interfaces/aliases etc.
+ */
+function processTuplePropertyType(
+  node: ts.TupleTypeNode, output: Output, property: string,
+  sourceFile: ts.SourceFile,
+  options: Options, types: Types) {
+  output[property] = resolveTuplePropertyType(node, property, sourceFile, options, types);
+}
+
+function resolveTuplePropertyType(
+  node: ts.TupleTypeNode,
+  property: string,
+  sourceFile: ts.SourceFile,
+  options: Options,
+  types: Types
+): Array<unknown> {
+  const result = [];
+  const { elementTypes } = node;
+
+  for (let i = 0; i < elementTypes.length; i++) {
+    const typeNode = elementTypes[i];
+    switch (typeNode.kind) {
+      case ts.SyntaxKind.RestType:
+        const node = (typeNode as ts.RestTypeNode).type as ts.ArrayTypeNode;
+        result.push(...resolveArrayType(
+          node.elementType,
+          property,
+          node.getText(),
+          node.elementType.kind,
+          sourceFile,
+          options,
+          types
+        ));
+        break;
+      case ts.SyntaxKind.NumberKeyword:
+      case ts.SyntaxKind.StringKeyword:
+      case ts.SyntaxKind.BooleanKeyword:
+        result.push(generatePrimitive(property, typeNode.kind, options, ''));
+        break;
+      case ts.SyntaxKind.LiteralType:
+        result.push(getLiteralTypeValue(typeNode as ts.LiteralTypeNode));
+        break;
+      case ts.SyntaxKind.TypeReference:
+        const cache = {};
+        processFile(
+          sourceFile, cache, options, types, ((typeNode as ts.TypeReferenceNode).typeName as ts.Identifier).text);
+        result.push(cache);
+        break;
+      case ts.SyntaxKind.TupleType:
+        result.push(resolveTuplePropertyType(typeNode as ts.TupleTypeNode, property, sourceFile, options, types));
+        break;
+      default:
+        const data = {};
+        processFile(
+          sourceFile, data, options, types, ((typeNode as ts.TypeReferenceNode).typeName as ts.Identifier).text);
+        result.push(data);
+        break;
+    }
+  }
+  return result;
 }
 
 /**
@@ -614,6 +706,11 @@ function traverseInterfaceMembers(
             node, output, property, typeName, kind as ts.SyntaxKind, sourceFile,
             options, types);
         break;
+      case ts.SyntaxKind.TupleType:
+        processTuplePropertyType(
+          node.type as ts.TupleTypeNode, output, property, sourceFile,
+          options, types);
+        break;
       case ts.SyntaxKind.ArrayType:
         processArrayPropertyType(
             node, output, property, typeName, kind as ts.SyntaxKind, sourceFile,
@@ -704,7 +801,7 @@ function traverseInterface(
 
   const heritageClauses = (node as ts.InterfaceDeclaration).heritageClauses;
   const extensions: Output[] = [];
-  if (heritageClauses && heritageClauses.length > 0) {
+  if (heritageClauses) {
     heritageClauses.forEach((clause) => {
       const extensionTypes = clause.types;
 
@@ -896,18 +993,19 @@ function formatOutput(output: Output, options: Options): string|Output {
 export function mock(options: Options) {
   const output: Output = {};
   const fileContents = options.files;
-  let types: Types = {};
 
   if (!fileContents) {
     return {};
   }
+  console.log(fileContents);
 
-  fileContents.forEach((f) => {
-    types = Object.assign(
-        {}, types,
-        gatherTypes(
-            ts.createSourceFile(f[0], f[1], ts.ScriptTarget.ES2015, true)));
-  });
+  const types = fileContents.reduce((sum, f) => {
+    const type = gatherTypes(ts.createSourceFile(f[0], f[1], ts.ScriptTarget.ES2015, true));
+    return {
+      ...sum,
+      ...type
+    };
+  }, {} as Types);
 
   fileContents.forEach((f) => {
     processFile(
