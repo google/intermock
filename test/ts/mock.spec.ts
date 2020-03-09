@@ -36,6 +36,7 @@ import {expectedNamespaced} from './test-data/namespace';
 import {expectedNested} from './test-data/nestedSingle';
 import {expectedOptional1, expectedOptional2} from './test-data/optional';
 import {expectedSpecificInterface} from './test-data/specificInterfaces';
+import {expectedTuple1} from './test-data/tuple';
 import {expectedTypeAlias} from './test-data/typeAlias';
 import {expectedUnion} from './test-data/unions';
 
@@ -122,7 +123,7 @@ describe('Intermock TypeScript: Mock tests', () => {
   });
 
   it('should generate mock for unions - for null option to work like question mark',
-     async () => {
+     () => {
        return runTestCase(
            `${__dirname}/test-data/unions.ts`, 'LonelyHuman',
            expectedUnion.LonelyHuman);
@@ -131,6 +132,10 @@ describe('Intermock TypeScript: Mock tests', () => {
   it('should generate mock for basic arrays', () => {
     return runTestCase(
         `${__dirname}/test-data/array.ts`, 'User', expectedArray1.User);
+  });
+  it('should generate mock for basic tuples', () => {
+    return runTestCase(
+        `${__dirname}/test-data/tuple.ts`, 'Test', expectedTuple1.Test);
   });
 
   it('should generate mock for specific interfaces', () => {
@@ -144,13 +149,10 @@ describe('Intermock TypeScript: Mock tests', () => {
   });
 
   it('should generate mock for interfaces with functions', async () => {
-    const output = await getOutput(`${__dirname}/test-data/functions.ts`);
-    const basicRet =
-        ((output as Record<string, {}>).FunctionInterface as FunctionInterface)
-            .basicFunctionRetNum();
-    const interfaceRet =
-        ((output as Record<string, {}>).FunctionInterface as FunctionInterface)
-            .functionRetInterface();
+    const output = await getOutput(`${__dirname}/test-data/functions.ts`) as
+        {FunctionInterface: FunctionInterface};
+    const basicRet = output.FunctionInterface.basicFunctionRetNum();
+    const interfaceRet = output.FunctionInterface.functionRetInterface();
 
     expect(basicRet).to.eql(86924);
     expect(interfaceRet)
@@ -159,10 +161,10 @@ describe('Intermock TypeScript: Mock tests', () => {
 
   it('should generate JSON', async () => {
     const output =
-        await getOutput(`${__dirname}/test-data/json.ts`, {output: 'json'});
+        await getOutput(`${__dirname}/test-data/json.ts`, {output: 'json'}) as
+        string;
 
-    expect(JSON.parse(output as string))
-        .to.deep.equal(JSON.parse(expectedJson));
+    expect(JSON.parse(output)).to.deep.equal(JSON.parse(expectedJson));
   });
 
   it('should generate extended interfaces', async () => {
