@@ -336,7 +336,9 @@ function processPropertyTypeReference(
                 record.node as ts.PropertySignature, output, property, typeName,
                 record.kind, sourceFile, options, types);
           }
-
+        } else if (alias === ts.SyntaxKind.TypeLiteral) {
+          output[property] = {};
+          processFile(sourceFile, output[property], options, types, typeName);
         } else {
           // TODO
         }
@@ -499,12 +501,6 @@ function resolveTuplePropertyType(
         break;
       case ts.SyntaxKind.LiteralType:
         result.push(getLiteralTypeValue(typeNode as ts.LiteralTypeNode));
-        break;
-      case ts.SyntaxKind.TypeReference:
-        const cache = {};
-        processFile(
-          sourceFile, cache, options, types, ((typeNode as ts.TypeReferenceNode).typeName as ts.Identifier).text);
-        result.push(cache);
         break;
       case ts.SyntaxKind.TupleType:
         result.push(resolveTuplePropertyType(typeNode as ts.TupleTypeNode, property, sourceFile, options, types));
