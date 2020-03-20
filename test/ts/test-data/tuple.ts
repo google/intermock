@@ -24,7 +24,10 @@ interface Order {
 interface Test {
   pattern1: [Order, Order];
   pattern2: [Order, Order, ...Order[]];
-  pattern3: [number, Order, [false, 4649, 3939, true], string, 'hello world', 123.456, true, false, ...number[]];
+  pattern3: [
+    number, Order, [false, 4649, 3939, true], string, 'hello world', 123.456,
+    true, false, ...number[]
+  ];
 }
 
 const sampleOrderData = {
@@ -35,19 +38,14 @@ export const expectedTuple1 = {
   'Order': sampleOrderData,
   'Test': {
     'pattern1': [sampleOrderData, sampleOrderData],
-    'pattern2': [sampleOrderData, sampleOrderData, sampleOrderData, sampleOrderData, sampleOrderData],
+    'pattern2': [
+      sampleOrderData, sampleOrderData, sampleOrderData, sampleOrderData,
+      sampleOrderData
+    ],
     'pattern3': [
-      86924,
-      sampleOrderData,
-      [false, 4649, 3939, true],
+      86924, sampleOrderData, [false, 4649, 3939, true],
       'Animi repellat eveniet eveniet dolores quo ullam rerum reiciendis ipsam. Corrupti voluptatem ipsa illum veritatis eligendi sit autem ut quia. Ea sint voluptas impedit ducimus dolores possimus.',
-      'hello world',
-      123.456,
-      true,
-      false,
-      86924,
-      86924,
-      86924
+      'hello world', 123.456, true, false, 86924, 86924, 86924
     ]
   }
 };

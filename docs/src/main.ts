@@ -18,8 +18,8 @@ import {mock} from '../../src/lang/ts/intermock';
 
 async function setup() {
   const [intermock, monaco] = await Promise.all([
-    import(/* webpackChunkName: "intermock" */ '../../src/index'),
-    import(/* webpackChunkName: "monaco-editor" */ 'monaco-editor'),
+    import(/* webpackChunkName: "intermock" */ '../../src/index') as any,
+    import(/* webpackChunkName: "monaco-editor" */ 'monaco-editor') as any,
   ]);
 
   const initialEditorContent = `interface Admin extends User {

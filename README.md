@@ -109,6 +109,9 @@ The following TypeScript features are supported:
 - Type aliases
 - Arrays
 - Namespaces
+- Tuples
+- Mapped types
+- Generics
 - Functions (stringified output!)
 - Optional properties
 - Specific [Faker](https://github.com/marak/Faker.js/#api-methods) data types (via JSDoc comment)
