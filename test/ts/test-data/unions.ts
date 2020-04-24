@@ -39,6 +39,12 @@ interface Account {
   lastDeposit: number|string;
 }
 
+
+interface Book {
+  title: string,
+  color: 'red' | 'blue' | 'yellow';
+}
+
 export interface LonelyHuman {
   name: string;
   bestFriend: Dog|null;
@@ -85,5 +91,9 @@ export const expectedUnion = {
   },
   LonelyHuman: {
     name: 'Natasha Jacobs',
+  },
+  Book: {
+    title: 'Animi repellat eveniet eveniet dolores quo ullam rerum reiciendis ipsam. Corrupti voluptatem ipsa illum veritatis eligendi sit autem ut quia. Ea sint voluptas impedit ducimus dolores possimus.',
+    color: 'red'
   }
 };
