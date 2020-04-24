@@ -567,6 +567,13 @@ function processUnionPropertyType(
           options, types);
       return;
     }
+    const literalNode = unionNodes.every(
+      (node: ts.Node) => node.kind === ts.SyntaxKind.LiteralType);
+    if (literalNode) {
+      const literalIndex = options.isFixedMode ? 0 : randomRange(0, unionNodes.length - 1);
+      output[property] = getLiteralTypeValue(unionNodes[literalIndex] as ts.LiteralTypeNode);
+      return;
+    }
 
     throw Error(`Unsupported Union option type ${property}: ${typeName}`);
   }
