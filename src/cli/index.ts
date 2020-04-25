@@ -16,8 +16,8 @@
 import commandLineArgs from 'command-line-args';
 import commandLineUsage from 'command-line-usage';
 
-import {mock as IntermockTS} from '../lang/ts/intermock';
-import {readFiles} from '../lib/read-files';
+import { mock as IntermockTS } from '../lang/ts/intermock';
+import { readFiles } from '../lib/read-files';
 
 const optionDefinitions = [
   {
@@ -27,19 +27,21 @@ const optionDefinitions = [
     multiple: true,
     defaultOption: true
   },
-  {name: 'interfaces', alias: 'i', type: String, multiple: true},
-  {name: 'help', alias: 'h', type: Boolean},
-  {name: 'fixed', alias: 'x', type: Boolean},
+  { name: 'interfaces', alias: 'i', type: String, multiple: true },
+  { name: 'help', alias: 'h', type: Boolean },
+  { name: 'fixed', alias: 'x', type: Boolean },
+  { name: 'output', alias: 'o', type: String },
+  { name: 'isOptionalAlwaysEnabled', alias: 'e', type: Boolean }
 ];
 
 const instructions = [
   {
     content: 'Intermock',
-    raw: true,
+    raw: true
   },
   {
     header: '',
-    content: 'Generates fake data from TypeScript interfaces via Faker',
+    content: 'Generates fake data from TypeScript interfaces via Faker'
   },
   {
     header: 'Options',
@@ -47,19 +49,29 @@ const instructions = [
       {
         name: 'interfaces',
         typeLabel: 'example: --interfaces "Person" "User"',
-        description: 'Optional list of interfaces to mock',
+        description: 'Optional list of interfaces to mock'
       },
       {
         name: 'files',
         typeLabel: 'example: web/apps/some-directory/interfaces1.ts',
-        description: 'Interface files to generate fake data from',
+        description: 'Interface files to generate fake data from'
       },
       {
         name: 'help',
-        description: 'Print this usage guide.',
+        description: 'Print this usage guide.'
+      },
+      {
+        name: 'output',
+        typeLabel: 'example: --output json',
+        description: 'Set the output to either one of json, string, or object'
+      },
+      {
+        name: 'isOptionalAlwaysEnabled',
+        typeLabel: 'example: --isOptionalAlwaysEnabled',
+        description: 'Control whether optional properties are always mocked.'
       }
-    ],
-  },
+    ]
+  }
 ];
 
 interface Options {
@@ -68,6 +80,8 @@ interface Options {
   language: string;
   interfaces: string[];
   fixed: boolean;
+  output: 'object' | 'json' | 'string';
+  isOptionalAlwaysEnabled: boolean;
 }
 
 function isWelcomeMessageNeeded(options: Options) {
@@ -93,16 +107,20 @@ function main() {
 
   const isFixedMode = options.fixed;
   const interfaces = options.interfaces;
+  const isOptionalAlwaysEnabled = options.isOptionalAlwaysEnabled;
+  const resultOutput = options.output;
 
-  return readFiles(options.files).then((files) => {
+  return readFiles(options.files).then(files => {
     try {
       const output = IntermockTS({
         files,
         interfaces,
         isFixedMode,
+        output: resultOutput,
+        isOptionalAlwaysEnabled
       });
 
-      console.dir(output, {depth: null, colors: true});
+      console.dir(output, { depth: null, colors: true });
     } catch (err) {
       console.log(err.message);
     }
