@@ -30,6 +30,7 @@ const optionDefinitions = [
   {name: 'interfaces', alias: 'i', type: String, multiple: true},
   {name: 'help', alias: 'h', type: Boolean},
   {name: 'fixed', alias: 'x', type: Boolean},
+  {name: 'outputFormat', alias: 'o', type: String},
 ];
 
 const instructions = [
@@ -55,6 +56,11 @@ const instructions = [
         description: 'Interface files to generate fake data from',
       },
       {
+        name: 'outputFormat',
+        typeLabel: 'example: json',
+        description: 'Format to use for output. Can be string, json or object',
+      },
+      {
         name: 'help',
         description: 'Print this usage guide.',
       }
@@ -68,6 +74,7 @@ interface Options {
   language: string;
   interfaces: string[];
   fixed: boolean;
+  outputFormat: string;
 }
 
 function isWelcomeMessageNeeded(options: Options) {
@@ -93,16 +100,18 @@ function main() {
 
   const isFixedMode = options.fixed;
   const interfaces = options.interfaces;
+  const output = options.outputFormat;
 
   return readFiles(options.files).then((files) => {
     try {
-      const output = IntermockTS({
+      const result = IntermockTS({
         files,
         interfaces,
         isFixedMode,
+        output,
       });
 
-      console.dir(output, {depth: null, colors: true});
+      console.log(result);
     } catch (err) {
       console.log(err.message);
     }
