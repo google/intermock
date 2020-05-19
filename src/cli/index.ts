@@ -16,7 +16,7 @@
 import commandLineArgs from 'command-line-args';
 import commandLineUsage from 'command-line-usage';
 
-import {mock as IntermockTS} from '../lang/ts/intermock';
+import {mock as IntermockTS, OutputType} from '../lang/ts/intermock';
 import {readFiles} from '../lib/read-files';
 
 const optionDefinitions = [
@@ -74,7 +74,7 @@ interface Options {
   language: string;
   interfaces: string[];
   fixed: boolean;
-  outputFormat: string;
+  outputFormat: OutputType;
 }
 
 function isWelcomeMessageNeeded(options: Options) {

@@ -40,13 +40,14 @@ export interface Options {
 
   // One of object|json|string. Strings have their object's functions
   // stringified.
-  output?: string;
+  output?: OutputType;
 
   // Should optional properties always be enabled
   isOptionalAlwaysEnabled?: boolean;
 }
 
 type SupportedLanguage = 'typescript';
+export type OutputType = 'object'|'json'|'string';
 
 interface NodeWithDocs extends ts.PropertySignature {
   jsDoc: ts.JSDoc[];
@@ -983,8 +984,6 @@ export function mock(options: Options) {
   if (!fileContents) {
     return {};
   }
-  // remove this from the overall output, maybe wrap in an if with a new arg in options.
-  // console.log(fileContents);
 
   const types = fileContents.reduce((sum, f) => {
     const type = gatherTypes(
