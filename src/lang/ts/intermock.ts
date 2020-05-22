@@ -46,9 +46,8 @@ export interface Options {
   isOptionalAlwaysEnabled?: boolean;
 }
 
-type OutputType = 'object'|'json'|'string';
 type SupportedLanguage = 'typescript';
-
+export type OutputType = 'object'|'json'|'string';
 
 interface NodeWithDocs extends ts.PropertySignature {
   jsDoc: ts.JSDoc[];
@@ -985,7 +984,6 @@ export function mock(options: Options) {
   if (!fileContents) {
     return {};
   }
-  console.log(fileContents);
 
   const types = fileContents.reduce((sum, f) => {
     const type = gatherTypes(
