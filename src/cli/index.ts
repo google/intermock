@@ -125,7 +125,7 @@ function main() {
                 isOptionalAlwaysEnabled
             });
 
-            console.dir(result, { depth: null, colors: true });
+            process.stdout.write(result as string);
         } catch (err) {
             console.log(err.message);
         }
