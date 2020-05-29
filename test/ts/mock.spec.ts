@@ -122,6 +122,11 @@ describe('Intermock TypeScript: Mock tests', () => {
         `${__dirname}/test-data/unions.ts`, 'Pack', expectedUnion.Pack);
   });
 
+  it('should generate mock for unions - with literals', () => {
+    return runTestCase(
+        `${__dirname}/test-data/unions.ts`, 'Book', expectedUnion.Book);
+  });
+
   it('should generate mock for unions - for null option to work like question mark',
      () => {
        return runTestCase(
