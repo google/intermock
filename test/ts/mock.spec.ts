@@ -34,9 +34,11 @@ import {expectedMappedTypes} from './test-data/mappedTypes';
 import {expectedMockType} from './test-data/mockType';
 import {expectedNamespaced} from './test-data/namespace';
 import {expectedNested} from './test-data/nestedSingle';
+import {expectedTypeLiterals} from './test-data/typeLiterals';
 import {expectedOptional1, expectedOptional2} from './test-data/optional';
 import {expectedSpecificInterface} from './test-data/specificInterfaces';
 import {expectedTuple1} from './test-data/tuple';
+import {expectedParens} from './test-data/parenthesis';
 import {expectedTypeAlias} from './test-data/typeAlias';
 import {expectedUnion} from './test-data/unions';
 
@@ -74,6 +76,11 @@ describe('Intermock TypeScript: Mock tests', () => {
   it('should generate mock for singly nested interfaces', () => {
     return runTestCase(
         `${__dirname}/test-data/nestedSingle.ts`, 'Person', expectedNested);
+  });
+
+  it('should generate mock for type literals', () => {
+    return runTestCase(
+        `${__dirname}/test-data/typeLiterals.ts`, 'Person', expectedTypeLiterals);
   });
 
   it('should generate mock for interfaces with optional types - optional forced as always',
@@ -138,6 +145,7 @@ describe('Intermock TypeScript: Mock tests', () => {
     return runTestCase(
         `${__dirname}/test-data/array.ts`, 'User', expectedArray1.User);
   });
+
   it('should generate mock for basic tuples', () => {
     return runTestCase(
         `${__dirname}/test-data/tuple.ts`, 'Test', expectedTuple1.Test);
@@ -182,6 +190,12 @@ describe('Intermock TypeScript: Mock tests', () => {
     return runTestCase(
         `${__dirname}/test-data/namespace.ts`, 'Person',
         expectedNamespaced.Person);
+  });
+
+  it('should generate mock for parenthesis types', () => {
+    return runTestCase(
+        `${__dirname}/test-data/parenthesis.ts`, 'Secret',
+        expectedParens.Secret);
   });
 
   it('should generate mock for mapped tyes', () => {

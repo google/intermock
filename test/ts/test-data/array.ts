@@ -30,6 +30,11 @@ interface User {
   finalOrders: IterableArray<Order>;
   /* tslint:enable */
   bestFriends: string[];
+  // tslint:disable-next-line: array-type
+  simpleArray: Array<string>;
+  literalArray: Array<{ id: string}>;
+  literalUnionArray: Array<{ id: string} | null>;
+  literalUnionParenArray: Array<({ id: string} | { some: string} | { other: string}) | null>;
 }
 
 export const expectedArray1 = {
@@ -84,7 +89,26 @@ export const expectedArray1 = {
       'Animi repellat eveniet eveniet dolores quo ullam rerum reiciendis ipsam. Corrupti voluptatem ipsa illum veritatis eligendi sit autem ut quia. Ea sint voluptas impedit ducimus dolores possimus.',
       'Animi repellat eveniet eveniet dolores quo ullam rerum reiciendis ipsam. Corrupti voluptatem ipsa illum veritatis eligendi sit autem ut quia. Ea sint voluptas impedit ducimus dolores possimus.',
       'Animi repellat eveniet eveniet dolores quo ullam rerum reiciendis ipsam. Corrupti voluptatem ipsa illum veritatis eligendi sit autem ut quia. Ea sint voluptas impedit ducimus dolores possimus.'
-    ]
-
+    ],
+    'simpleArray': [
+      'Animi repellat eveniet eveniet dolores quo ullam rerum reiciendis ipsam. Corrupti voluptatem ipsa illum veritatis eligendi sit autem ut quia. Ea sint voluptas impedit ducimus dolores possimus.',
+      'Animi repellat eveniet eveniet dolores quo ullam rerum reiciendis ipsam. Corrupti voluptatem ipsa illum veritatis eligendi sit autem ut quia. Ea sint voluptas impedit ducimus dolores possimus.',
+      'Animi repellat eveniet eveniet dolores quo ullam rerum reiciendis ipsam. Corrupti voluptatem ipsa illum veritatis eligendi sit autem ut quia. Ea sint voluptas impedit ducimus dolores possimus.',
+    ],
+    'literalArray': [
+      { id: "bfc8cb62-c6ce-4194-a2a5-499320b837eb" },
+      { id: "bfc8cb62-c6ce-4194-a2a5-499320b837eb" },
+      { id: "bfc8cb62-c6ce-4194-a2a5-499320b837eb" },
+    ],
+    'literalUnionArray': [
+      { id: "bfc8cb62-c6ce-4194-a2a5-499320b837eb" },
+      { id: "bfc8cb62-c6ce-4194-a2a5-499320b837eb" },
+      { id: "bfc8cb62-c6ce-4194-a2a5-499320b837eb" },
+    ],
+    'literalUnionParenArray': [
+      { id: "bfc8cb62-c6ce-4194-a2a5-499320b837eb" },
+      { id: "bfc8cb62-c6ce-4194-a2a5-499320b837eb" },
+      { id: "bfc8cb62-c6ce-4194-a2a5-499320b837eb" },
+    ],
   }
 };
