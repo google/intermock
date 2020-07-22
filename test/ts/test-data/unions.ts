@@ -41,7 +41,7 @@ interface Account {
 
 
 interface Book {
-  title: string,
+  title: string;
   color: 'red' | 'blue' | 'yellow';
 }
 
