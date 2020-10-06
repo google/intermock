@@ -1,6 +1,6 @@
 {
   "name": "intermock",
-  "version": "0.2.2",
+  "version": "0.2.4",
   "description": "Automatically create mock objects and JSON from TypeScript interfaces via Faker",
   "repository": {
     "type": "git",
