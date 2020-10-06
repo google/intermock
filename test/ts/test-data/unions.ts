@@ -42,7 +42,7 @@ interface Account {
 
 interface Book {
   title: string;
-  color: 'red' | 'blue' | 'yellow';
+  color: 'red'|'blue'|'yellow';
 }
 
 export interface LonelyHuman {
@@ -93,7 +93,8 @@ export const expectedUnion = {
     name: 'Natasha Jacobs',
   },
   Book: {
-    title: 'Animi repellat eveniet eveniet dolores quo ullam rerum reiciendis ipsam. Corrupti voluptatem ipsa illum veritatis eligendi sit autem ut quia. Ea sint voluptas impedit ducimus dolores possimus.',
+    title:
+        'Animi repellat eveniet eveniet dolores quo ullam rerum reiciendis ipsam. Corrupti voluptatem ipsa illum veritatis eligendi sit autem ut quia. Ea sint voluptas impedit ducimus dolores possimus.',
     color: 'red'
   }
 };

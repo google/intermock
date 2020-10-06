@@ -18,7 +18,9 @@ type Scalars = {
   ID: string; String: string; Boolean: boolean; Int: number; Float: number;
 };
 type Name = string;
-type Age = { birthday: string };
+type Age = {
+  birthday: string
+};
 export interface Person {
   name: Name;
   age: Age;
@@ -28,5 +30,13 @@ export interface Person {
 }
 
 export const expectedMappedTypes = {
-  Person: {id: 'consequuntur ab fugiat', isActive: true, name: 'Natasha Jacobs', age: { birthday: 'Animi repellat eveniet eveniet dolores quo ullam rerum reiciendis ipsam. Corrupti voluptatem ipsa illum veritatis eligendi sit autem ut quia. Ea sint voluptas impedit ducimus dolores possimus.'}}
+  Person: {
+    id: 'consequuntur ab fugiat',
+    isActive: true,
+    name: 'Natasha Jacobs',
+    age: {
+      birthday:
+          'Animi repellat eveniet eveniet dolores quo ullam rerum reiciendis ipsam. Corrupti voluptatem ipsa illum veritatis eligendi sit autem ut quia. Ea sint voluptas impedit ducimus dolores possimus.'
+    }
+  }
 };
