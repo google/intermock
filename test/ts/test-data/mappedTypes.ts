@@ -20,8 +20,8 @@ type Scalars = {
 type Name = string;
 type Age = { birthday: string };
 export interface Person {
-  name: Name
-  age: Age
+  name: Name;
+  age: Age;
   /** @mockType {lorem.words} */
   id: Scalars['ID'];
   isActive: Scalars['Boolean'];
