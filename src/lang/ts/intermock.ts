@@ -328,9 +328,14 @@ function processPropertyTypeReference(
                       }
                       return t;
                     });
-            ((record.node as ts.TypeAliasDeclaration).type as
-             ts.UnionOrIntersectionTypeNode)
-                .types = updatedArr as unknown as ts.NodeArray<ts.TypeNode>;
+            // immutable record fields requires clone
+            record.node = {
+              ...(record.node as ts.TypeAliasDeclaration),
+              type: {
+                ...((record.node as ts.TypeAliasDeclaration).type as ts.UnionOrIntersectionTypeNode),
+                types: updatedArr as unknown as ts.NodeArray<ts.TypeNode>
+              } as ts.UnionOrIntersectionTypeNode
+            } as ts.TypeAliasDeclaration;
             processUnionPropertyType(
                 record.node as ts.PropertySignature, output, property, typeName,
                 record.kind, sourceFile, options, types);
@@ -461,12 +466,12 @@ function processTuplePropertyType(
 
 function resolveTuplePropertyType(
     node: ts.TupleTypeNode, property: string, sourceFile: ts.SourceFile,
-    options: Options, types: Types): Array<unknown> {
+    options: Options, types: Types): unknown[] {
   const result = [];
-  const {elementTypes} = node;
+  const {elements} = node;
 
-  for (let i = 0; i < elementTypes.length; i++) {
-    const typeNode = elementTypes[i];
+  for (let i = 0; i < elements.length; i++) {
+    const typeNode = elements[i];
     switch (typeNode.kind) {
       case ts.SyntaxKind.RestType:
         const node = (typeNode as ts.RestTypeNode).type as ts.ArrayTypeNode;
