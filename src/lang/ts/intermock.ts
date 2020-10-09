@@ -667,9 +667,9 @@ function traverseInterfaceMembers(
     const isUnion = node.type && node.type.kind === ts.SyntaxKind.UnionType;
 
     if (isUnion) {
-      isUnionWithNull = !!(node.type as ts.UnionTypeNode)
-                              .types.map(type => type.kind)
-                              .some(kind => kind === ts.SyntaxKind.NullKeyword);
+      isUnionWithNull = (node.type as ts.UnionTypeNode)
+          .types.some(type => type.kind === ts.SyntaxKind.LiteralType
+              && (type as ts.LiteralTypeNode).literal.kind === ts.SyntaxKind.NullKeyword);
     }
 
     let typeName = '';
