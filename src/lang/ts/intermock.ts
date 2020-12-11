@@ -386,6 +386,10 @@ function processJsDocs(
   }
 }
 
+function normalizeNamespaceTypeName(typeName: string) {
+  return typeName.replace(/[a-zA-Z0-9]+\.([a-zA-Z0-9]+)/g, '$1')
+}
+
 /**
  * Process an array definition.
  *
@@ -403,6 +407,7 @@ function processArrayPropertyType(
     typeName: string, kind: ts.SyntaxKind, sourceFile: ts.SourceFile,
     options: Options, types: Types) {
   typeName = typeName.replace('[', '').replace(']', '');
+  typeName = normalizeNamespaceTypeName(typeName)
   output[property] = resolveArrayType(
       node, property, typeName, kind, sourceFile, options, types);
 }
