@@ -93,6 +93,7 @@ function generatePrimitive(
  * for it. Invokes this using Math.random.
  *
  * @param questionToken
+ * @param isUnionWithNull
  * @param options Intermock general options object
  */
 function isQuestionToken(
@@ -131,6 +132,7 @@ function getLiteralTypeValue(node: ts.LiteralTypeNode) {
 /**
  * Process an untyped interface property, defaults to generating a primitive.
  *
+ * @param node Node being processed
  * @param output The object outputted by Intermock after all types are mocked
  * @param property Output property to write to
  * @param kind TS data type of property type
@@ -251,7 +253,7 @@ function processPropertyTypeReference(
 
   if (typeName.startsWith('Array<') || typeName.startsWith('IterableArray<')) {
     normalizedTypeName =
-        typeName.replace(/(Array|IterableArray)\</, '').replace('>', '');
+        typeName.replace(/(Array|IterableArray)</, '').replace('>', '');
     isArray = true;
   } else {
     normalizedTypeName = typeName;
@@ -328,9 +330,15 @@ function processPropertyTypeReference(
                       }
                       return t;
                     });
-            ((record.node as ts.TypeAliasDeclaration).type as
-             ts.UnionOrIntersectionTypeNode)
-                .types = updatedArr as unknown as ts.NodeArray<ts.TypeNode>;
+            // immutable record fields requires clone
+            record.node = {
+              ...(record.node as ts.TypeAliasDeclaration),
+              type: {
+                ...((record.node as ts.TypeAliasDeclaration).type as
+                    ts.UnionOrIntersectionTypeNode),
+                types: updatedArr as unknown as ts.NodeArray<ts.TypeNode>
+              } as ts.UnionOrIntersectionTypeNode
+            } as ts.TypeAliasDeclaration;
             processUnionPropertyType(
                 record.node as ts.PropertySignature, output, property, typeName,
                 record.kind, sourceFile, options, types);
@@ -451,8 +459,6 @@ function resolveArrayType(
  * @param node Node being processed
  * @param output The object outputted by Intermock after all types are mocked
  * @param property Output property to write to
- * @param typeName Type name of property
- * @param kind TS data type of property type
  * @param sourceFile TypeScript AST object compiled from file data
  * @param options Intermock general options object
  * @param types Top-level types of interfaces/aliases etc.
@@ -466,12 +472,12 @@ function processTuplePropertyType(
 
 function resolveTuplePropertyType(
     node: ts.TupleTypeNode, property: string, sourceFile: ts.SourceFile,
-    options: Options, types: Types): Array<unknown> {
+    options: Options, types: Types): unknown[] {
   const result = [];
-  const {elementTypes} = node;
+  const {elements} = node;
 
-  for (let i = 0; i < elementTypes.length; i++) {
-    const typeNode = elementTypes[i];
+  for (let i = 0; i < elements.length; i++) {
+    const typeNode = elements[i];
     switch (typeNode.kind) {
       case ts.SyntaxKind.RestType:
         const node = (typeNode as ts.RestTypeNode).type as ts.ArrayTypeNode;
@@ -667,9 +673,12 @@ function traverseInterfaceMembers(
     const isUnion = node.type && node.type.kind === ts.SyntaxKind.UnionType;
 
     if (isUnion) {
-      isUnionWithNull = !!(node.type as ts.UnionTypeNode)
-                              .types.map(type => type.kind)
-                              .some(kind => kind === ts.SyntaxKind.NullKeyword);
+      isUnionWithNull =
+          (node.type as ts.UnionTypeNode)
+              .types.some(
+                  type => type.kind === ts.SyntaxKind.LiteralType &&
+                      (type as ts.LiteralTypeNode).literal.kind ===
+                          ts.SyntaxKind.NullKeyword);
     }
 
     let typeName = '';
@@ -734,6 +743,7 @@ function traverseInterfaceMembers(
  *
  * @param sourceFile TypeScript AST object compiled from file data
  * @param output The object outputted by Intermock after all types are mocked
+ * @param types Top-level types of interfaces/aliases etc.
  * @param typeName Type name of property
  * @param property Output property to write to
  */
@@ -757,7 +767,7 @@ function setEnum(
         break;
       case ts.SyntaxKind.StringLiteral:
         output[property] =
-            selectedMember.initializer.getText().replace(/\'/g, '');
+            selectedMember.initializer.getText().replace(/'/g, '');
         break;
       default:
         break;
