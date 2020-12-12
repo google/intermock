@@ -20,6 +20,13 @@ declare namespace enums {
   enum GreatNumbers { e = 2.71, pi = 3.14, golden = 1.61 }
 }
 
+declare namespace international {
+  export interface Language {
+    /** @mockType {lorem.words} */
+    name: string
+  }
+}
+
 enum GreatMusicians {
   mozart = 'Mozart',
   beethoven = 'Beethoven'
@@ -37,6 +44,8 @@ interface Person {
   favoriteNumber: enums.GreatNumbers;
   favoriteMusicians: GreatMusicians;
   favoriteNovel: GreatNovels;
+  knownLanguages: Array<international.Language>
+  desiredLanguages: international.Language[]
 }
 
 export const expectedNamespaced = {
@@ -45,6 +54,28 @@ export const expectedNamespaced = {
     status: 1,
     favoriteNumber: 3.14,
     favoriteMusicians: 'Beethoven',
-    favoriteNovel: 1
+    favoriteNovel: 1,
+    knownLanguages: [
+      {
+        "name": "consequuntur ab fugiat"
+      },
+      {
+        "name": "consequuntur ab fugiat"
+      },
+      {
+        "name": "consequuntur ab fugiat"
+      }
+    ],
+    desiredLanguages: [
+      {
+        "name": "consequuntur ab fugiat"
+      },
+      {
+        "name": "consequuntur ab fugiat"
+      },
+      {
+        "name": "consequuntur ab fugiat"
+      }
+    ]
   }
 };
