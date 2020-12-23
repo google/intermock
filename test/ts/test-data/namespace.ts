@@ -23,7 +23,7 @@ declare namespace enums {
 declare namespace international {
   export interface Language {
     /** @mockType {lorem.words} */
-    name: string
+    name: string;
   }
 }
 
@@ -44,8 +44,10 @@ interface Person {
   favoriteNumber: enums.GreatNumbers;
   favoriteMusicians: GreatMusicians;
   favoriteNovel: GreatNovels;
-  knownLanguages: Array<international.Language>
-  desiredLanguages: international.Language[]
+  /* tslint:disable */
+  knownLanguages: Array<international.Language>;
+  /* tslint:enable */
+  desiredLanguages: international.Language[];
 }
 
 export const expectedNamespaced = {
