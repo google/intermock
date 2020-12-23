@@ -69,12 +69,12 @@
     "docs-build": "webpack --config webpack.prod.js",
     "dist": "tsc -p tsconfig.json --outDir ./bin",
     "watch": "tsc -w -p tsconfig.json",
-    "lint": "tslint -t stylish --project \"tsconfig.json\"",
+    "lint": "./node_modules/tslint/bin/tslint -t stylish --project \"tsconfig.json\"",
     "format": "./node_modules/clang-format/bin/linux_x64/clang-format -i -style=file src/**/*.ts test/**/*.ts",
     "precommit": "check-clang-format",
     "run-watch": "./node_modules/watch-cli/bin/watch -p \"./**/*.ts\" -c \"npm run cli\"",
     "test": "npm run test-only",
-    "test-only": "mocha --reporter mocha-multi-reporters --reporter-options configFile=mocha-config.json --no-colors -r ts-node/register test/**/*.spec.ts",
+    "test-only": "./node_modules/mocha/bin/mocha --reporter mocha-multi-reporters --reporter-options configFile=mocha-config.json --no-colors -r ts-node/register test/**/*.spec.ts",
     "test-watch": "./node_modules/watch-cli/bin/watch -p \"./**/*.ts\" -c \"npm run build && npm run test\""
   },
   "nyc": {
