@@ -7,7 +7,7 @@
     "url": "https://github.com/google/intermock.git"
   },
   "bin": {
-    "intermock": "./build/src/cli/index.js"
+    "intermock": "build/src/cli/index.js"
   },
   "dependencies": {
     "command-line-args": "5.0.2",
@@ -33,6 +33,7 @@
     "closure-webpack-plugin": "^1.2.0",
     "copy-webpack-plugin": "^4.6.0",
     "css-loader": "^1.0.1",
+    "husky": "^4.3.6",
     "mini-css-extract-plugin": "^0.4.5",
     "mocha": "5.2.0",
     "mocha-multi-reporters": "1.1.7",
