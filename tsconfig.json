@@ -7,7 +7,7 @@
     "declaration": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
-    "lib": ["es2016", "dom",
+    "lib": ["es2020", "dom",
          "dom.iterable"],
     "moduleResolution": "node",
     "importHelpers": true,
