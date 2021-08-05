@@ -59,4 +59,8 @@ module.exports = {
     contentBase: './docs/dist',
     port: 8080,
   },
+
+  node: {
+    fs: 'empty',
+  }
 };
