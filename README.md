@@ -114,6 +114,7 @@ The following TypeScript features are supported:
 - Generics
 - Functions (stringified output!)
 - Optional properties
+- Type imports
 - Specific [Faker](https://github.com/marak/Faker.js/#api-methods) data types (via JSDoc comment)
   ```ts
   interface Host {
