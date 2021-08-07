@@ -21,6 +21,7 @@ import {expect} from 'chai';
 import {mock} from '../../index';
 import {Options} from '../../src/lang/ts/intermock';
 import {readFiles} from '../../src/lib/read-files';
+import {setImportExportSpecifier} from '../../src/lib/resolve-file-imports';
 
 import {expectedAny} from './test-data/any';
 import {expectedArray1} from './test-data/array';
@@ -29,6 +30,7 @@ import {expectedContractor} from './test-data/extension';
 import {expectedFlat} from './test-data/flat';
 import {FunctionInterface} from './test-data/functions';
 import {expectedGenerics} from './test-data/generic';
+import {expectedImportExportSpecifier} from './test-data/importExportSpecifier/import';
 import {expectedJson} from './test-data/json';
 import {expectedMappedTypes} from './test-data/mappedTypes';
 import {expectedMockType} from './test-data/mockType';
@@ -193,5 +195,12 @@ describe('Intermock TypeScript: Mock tests', () => {
   it('should generate mock type references with generics', async () => {
     return runTestCase(
         `${__dirname}/test-data/generic.ts`, 'Person', expectedGenerics.Person);
+  });
+
+  it('should generate mock for imported interfaces', async () => {
+    return runTestCase(
+        `${__dirname}/test-data/importExportSpecifier/import.ts`, 'Foo',
+        expectedImportExportSpecifier.Foo,
+        {importsResolver: setImportExportSpecifier});
   });
 });

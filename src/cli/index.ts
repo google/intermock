@@ -20,6 +20,8 @@ import commandLineUsage from 'command-line-usage';
 
 import {mock as IntermockTS, OutputType} from '../lang/ts/intermock';
 import {readFiles} from '../lib/read-files';
+import {setImportExportSpecifier} from '../lib/resolve-file-imports';
+
 
 const optionDefinitions = [
   {
@@ -33,6 +35,7 @@ const optionDefinitions = [
   {name: 'help', alias: 'h', type: Boolean},
   {name: 'fixed', alias: 'x', type: Boolean},
   {name: 'outputFormat', alias: 'o', type: String},
+  {name: 'resolveFileImports', alias: 'r', type: Boolean},
 ];
 
 const instructions = [
@@ -76,6 +79,7 @@ interface Options {
   language: string;
   interfaces: string[];
   fixed: boolean;
+  resolveFileImports: boolean;
   outputFormat: OutputType;
 }
 
@@ -103,15 +107,13 @@ function main() {
   const isFixedMode = options.fixed;
   const interfaces = options.interfaces;
   const output = options.outputFormat;
+  const importsResolver =
+      options.resolveFileImports ? setImportExportSpecifier : undefined;
 
   return readFiles(options.files).then((files) => {
     try {
-      const result = IntermockTS({
-        files,
-        interfaces,
-        isFixedMode,
-        output,
-      });
+      const result = IntermockTS(
+          {files, interfaces, isFixedMode, output, importsResolver});
 
       console.log(result);
     } catch (err) {

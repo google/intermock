@@ -44,6 +44,9 @@ export interface Options {
 
   // Should optional properties always be enabled
   isOptionalAlwaysEnabled?: boolean;
+
+  // Function to resolve file imports
+  importsResolver?: Function;
 }
 
 type SupportedLanguage = 'typescript';
@@ -59,8 +62,8 @@ type TypeCacheRecord = {
   node: ts.Node,
 };
 
-type Output = Record<string|number, {}>;
-type Types = Record<string, TypeCacheRecord>;
+export type Output = Record<string|number, {}>;
+export type Types = Record<string, TypeCacheRecord>;
 
 /**
  * Generate fake data using faker for primitive types: string|number|boolean.
@@ -285,6 +288,13 @@ function processPropertyTypeReference(
   switch ((types[normalizedTypeName] as TypeCacheRecord).kind) {
     case ts.SyntaxKind.EnumDeclaration:
       setEnum(sourceFile, output, types, normalizedTypeName, property);
+      break;
+    case ts.SyntaxKind.ImportSpecifier:
+    case ts.SyntaxKind.ExportSpecifier:
+      if (options.importsResolver) {
+        options.importsResolver(
+            sourceFile, output, types, normalizedTypeName, property, options);
+      }
       break;
     default:
       const record = (types[normalizedTypeName] as TypeCacheRecord);
@@ -766,6 +776,8 @@ function setEnum(
     output[property] = selectedMemberIdx;
   }
 }
+
+
 
 /**
  * Traverse each declared interface in a node.
