@@ -21,6 +21,7 @@ import {expect} from 'chai';
 import {mock} from '../../index';
 import {Options} from '../../src/lang/ts/intermock';
 import {readFiles} from '../../src/lib/read-files';
+import {setImportExportSpecifier} from '../../src/lib/resolve-file-imports';
 
 import {expectedAny} from './test-data/any';
 import {expectedArray1} from './test-data/array';
@@ -199,6 +200,7 @@ describe('Intermock TypeScript: Mock tests', () => {
   it('should generate mock for imported interfaces', async () => {
     return runTestCase(
         `${__dirname}/test-data/importExportSpecifier/import.ts`, 'Foo',
-        expectedImportExportSpecifier.Foo);
+        expectedImportExportSpecifier.Foo,
+        {importsResolver: setImportExportSpecifier});
   });
 });
