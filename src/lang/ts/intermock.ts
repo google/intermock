@@ -698,6 +698,11 @@ function traverseInterfaceMembers(
       kind = node.type.kind;
       typeName = node.type.getText();
     }
+    
+    if (typeName === "Date" && kind == ts.SyntaxKind.TypeReference) {
+      output[property] = generatePrimitive(property, ts.SyntaxKind.StringKeyword, options, "date.past");
+      return;
+    }
 
     switch (kind) {
       case ts.SyntaxKind.TypeReference:
