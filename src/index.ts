@@ -23,3 +23,5 @@ export function mock(options: Options) {
       return mockTS(options);
   }
 }
+
+export const mockInterface = (optionsWithoutInterfaces: Exclude<Options, "interfaces">) => (interfaces: Options["interfaces"]) => mock({...optionsWithoutInterfaces, interfaces})
