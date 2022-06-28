@@ -23,3 +23,9 @@ export function mock(options: Options) {
       return mockTS(options);
   }
 }
+
+export const mockInterface = (optionsWithoutInterfaces: Exclude<Options, "interfaces">) => {
+  return <TModel>(interfaces: Options["interfaces"]) => {
+    return mock({...optionsWithoutInterfaces, interfaces}) as unknown as TModel;
+  }
+}
