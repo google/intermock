@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import ts from 'typescript';
-import {fake} from './fake';
+import { faker } from "@faker-js/faker";
+import ts from "typescript";
 
-export const supportedPrimitiveTypes: {[key: string]: boolean} = {
+export const supportedPrimitiveTypes: { [key: string]: boolean } = {
   [ts.SyntaxKind.NumberKeyword]: true,
   [ts.SyntaxKind.StringKeyword]: true,
   [ts.SyntaxKind.BooleanKeyword]: true,
@@ -26,17 +26,17 @@ export const supportedPrimitiveTypes: {[key: string]: boolean} = {
 
 /* tslint:disable */
 export const defaultTypeToMock: {
-  [index: number]: (isFixedMode: boolean) => string | number | boolean | object
+  [index: number]: (isFixedMode: boolean) => string | number | boolean | object;
 } = {
   [ts.SyntaxKind.NumberKeyword]: (isFixedMode = false) =>
-      parseInt(fake('random.number', isFixedMode) as string, 10),
+    parseInt(faker.random.numeric(), 10),
   [ts.SyntaxKind.StringKeyword]: (isFixedMode = false) =>
-      fake('lorem.text', isFixedMode),
+    faker.lorem.sentence(),
   [ts.SyntaxKind.BooleanKeyword]: (isFixedMode = false) =>
-      JSON.parse(fake('random.boolean', isFixedMode) as string),
+    JSON.parse(faker.datatype.boolean() as unknown as string),
   [ts.SyntaxKind.ObjectKeyword]: (isFixedMode = false) => {
-    return {}
+    return {};
   },
-  [ts.SyntaxKind.AnyKeyword]: (isFixedMode = false) => '',
+  [ts.SyntaxKind.AnyKeyword]: (isFixedMode = false) => "",
 };
 /* tslint:enable */
