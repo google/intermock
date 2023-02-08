@@ -91,7 +91,8 @@ function generatePrimitive(
     return fake(property, options.isFixedMode, true);
   } else {
     if (!defaultTypeToMock[syntaxType]) {
-      throw Error(`Unsupported Primitive type ${syntaxType}`);
+      console.error(`Unsupported Primitive type ${syntaxType}`);
+      return {};
     }
     return defaultTypeToMock[syntaxType](isFixedMode);
   }
@@ -554,7 +555,7 @@ function resolveArrayType(
     kind === ts.SyntaxKind.StringKeyword ||
     kind === ts.SyntaxKind.BooleanKeyword ||
     kind === ts.SyntaxKind.NumberKeyword;
-
+  // const literalNode = node.kind === ts.SyntaxKind.LiteralType;
   const arrayRange = options.isFixedMode
     ? FIXED_ARRAY_COUNT
     : randomRange(DEFAULT_ARRAY_RANGE[0], DEFAULT_ARRAY_RANGE[1]);
@@ -563,6 +564,8 @@ function resolveArrayType(
     if (isPrimitiveType) {
       result.push(generatePrimitive(property, kind, options, ""));
     } else {
+      //@ts-ignore
+      console.log("typeName", node.type, property);
       const cache = {};
       processFile(sourceFile, cache, options, types, typeName);
       result.push(cache);
