@@ -13,16 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import faker from 'faker';
-import {fixedData} from './fixed-data';
+import { faker } from "@faker-js/faker";
+import { fixedData } from "./fixed-data";
 
 /**
  * Wrapper for Faker, or any mocking framework
  */
-export function fake(mockType: string, isFixedMode = false) {
+export function fake(mockType: string, isFixedMode = false, isSmart = false) {
   if (isFixedMode) {
     return fixedData[mockType];
   }
+  if (isSmart) {
+    return mockType;
+  }
 
-  return faker.fake(`{{${mockType}}}`);
+  return faker.helpers.fake(`{{${mockType}}}`);
 }

@@ -15,60 +15,59 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import commandLineArgs from 'command-line-args';
-import commandLineUsage from 'command-line-usage';
+import commandLineArgs from "command-line-args";
+import commandLineUsage from "command-line-usage";
 
-import {mock as IntermockTS, OutputType} from '../lang/ts/intermock';
-import {readFiles} from '../lib/read-files';
-import {setImportExportSpecifier} from '../lib/resolve-file-imports';
-
+import { mock as IntermockTS, OutputType } from "../lang/ts/intermock";
+import { readFiles } from "../lib/read-files";
+import { setImportExportSpecifier } from "../lib/resolve-file-imports";
 
 const optionDefinitions = [
   {
-    name: 'files',
-    alias: 'f',
+    name: "files",
+    alias: "f",
     type: String,
     multiple: true,
-    defaultOption: true
+    defaultOption: true,
   },
-  {name: 'interfaces', alias: 'i', type: String, multiple: true},
-  {name: 'help', alias: 'h', type: Boolean},
-  {name: 'fixed', alias: 'x', type: Boolean},
-  {name: 'outputFormat', alias: 'o', type: String},
-  {name: 'resolveFileImports', alias: 'r', type: Boolean},
+  { name: "interfaces", alias: "i", type: String, multiple: true },
+  { name: "help", alias: "h", type: Boolean },
+  { name: "fixed", alias: "x", type: Boolean },
+  { name: "outputFormat", alias: "o", type: String },
+  { name: "resolveFileImports", alias: "r", type: Boolean },
 ];
 
 const instructions = [
   {
-    content: 'Intermock',
+    content: "Intermock",
     raw: true,
   },
   {
-    header: '',
-    content: 'Generates fake data from TypeScript interfaces via Faker',
+    header: "",
+    content: "Generates fake data from TypeScript interfaces via Faker",
   },
   {
-    header: 'Options',
+    header: "Options",
     optionList: [
       {
-        name: 'interfaces',
+        name: "interfaces",
         typeLabel: 'example: --interfaces "Person" "User"',
-        description: 'Optional list of interfaces to mock',
+        description: "Optional list of interfaces to mock",
       },
       {
-        name: 'files',
-        typeLabel: 'example: web/apps/some-directory/interfaces1.ts',
-        description: 'Interface files to generate fake data from',
+        name: "files",
+        typeLabel: "example: web/apps/some-directory/interfaces1.ts",
+        description: "Interface files to generate fake data from",
       },
       {
-        name: 'outputFormat',
-        typeLabel: 'example: json',
-        description: 'Format to use for output. Can be string, json or object',
+        name: "outputFormat",
+        typeLabel: "example: json",
+        description: "Format to use for output. Can be string, json or object",
       },
       {
-        name: 'help',
-        description: 'Print this usage guide.',
-      }
+        name: "help",
+        description: "Print this usage guide.",
+      },
     ],
   },
 ];
@@ -107,17 +106,23 @@ function main() {
   const isFixedMode = options.fixed;
   const interfaces = options.interfaces;
   const output = options.outputFormat;
-  const importsResolver =
-      options.resolveFileImports ? setImportExportSpecifier : undefined;
+  const importsResolver = options.resolveFileImports
+    ? setImportExportSpecifier
+    : undefined;
 
   return readFiles(options.files).then((files) => {
     try {
-      const result = IntermockTS(
-          {files, interfaces, isFixedMode, output, importsResolver});
+      const result = IntermockTS({
+        files,
+        interfaces,
+        isFixedMode,
+        output,
+        importsResolver,
+      });
 
       console.log(result);
     } catch (err) {
-      console.log(err.message);
+      console.log(err);
     }
   });
 }
