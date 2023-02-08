@@ -972,8 +972,6 @@ function traverseInterfaceMembers(
     const property = node.name.getText();
     const questionToken = node.questionToken;
     const isUnion = node.type && node.type.kind === ts.SyntaxKind.UnionType;
-    const isIntersection =
-      node.type && node.type.kind === ts.SyntaxKind.IntersectionType;
 
     if (isUnion) {
       isUnionWithNull = !!(node.type as ts.UnionTypeNode).types
@@ -981,8 +979,6 @@ function traverseInterfaceMembers(
         .some((kind) => kind === ts.SyntaxKind.NullKeyword);
     }
 
-    if (isIntersection) {
-    }
     let typeName = "";
     let kind;
 
@@ -1278,7 +1274,7 @@ function processFile(
         const type = (node as ts.TypeAliasDeclaration).type;
         const path = (node as ts.TypeAliasDeclaration).name.text;
 
-        if (!isSpecificInterface(path, options)) {
+        if (!isSpecificInterface(path, options) && !propToTraverse) {
           return;
         }
 
