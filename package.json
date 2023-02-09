@@ -10,11 +10,11 @@
     "intermock": "build/src/cli/index.js"
   },
   "dependencies": {
+    "@faker-js/faker": "^7.6.0",
     "command-line-args": "5.2.1",
     "command-line-usage": "6.1.3",
     "fs-readfile-promise": "3.0.1",
     "tslib": "2.5.0",
-    "@faker-js/faker": "^7.6.0",
     "typescript": "^4.9.5"
   },
   "main": "./build/index.js",
@@ -34,7 +34,7 @@
     "css-loader": "^6.7.3",
     "husky": "^8.0.3",
     "mini-css-extract-plugin": "^2.7.2",
-    "mocha": "10.2.0",
+    "mocha": "^10.2.0",
     "mocha-multi-reporters": "1.5.1",
     "mocha-notifier-reporter": "0.1.2",
     "monaco-editor": "^0.34.1",
@@ -71,7 +71,7 @@
     "precommit": "check-clang-format",
     "run-watch": "./node_modules/watch-cli/bin/watch -p \"./**/*.ts\" -c \"npm run cli\"",
     "test": "npm run test-only",
-    "test-only": "./node_modules/mocha/bin/mocha --reporter mocha-multi-reporters --reporter-options configFile=mocha-config.json --no-colors -r ts-node/register test/**/*.spec.ts",
+    "test-only": "./node_modules/mocha/bin/mocha.js --reporter mocha-multi-reporters --reporter-options configFile=mocha-config.json --no-colors -r ts-node/register test/**/*.spec.ts",
     "test-watch": "./node_modules/watch-cli/bin/watch -p \"./**/*.ts\" -c \"npm run build && npm run test\""
   },
   "nyc": {

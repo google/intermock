@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import ts from "typescript";
+import ts, { TypeReference } from "typescript";
 
 import { DEFAULT_ARRAY_RANGE, FIXED_ARRAY_COUNT } from "../../lib/constants";
 import {
@@ -88,7 +88,7 @@ function generatePrimitive(
   if (mockType) {
     return fake(mockType, options.isFixedMode);
   } else if (smartProp) {
-    return smartProp;
+    return fake(property, options.isFixedMode, true);
   } else {
     if (!defaultTypeToMock[syntaxType]) {
       console.error(`Unsupported Primitive type ${syntaxType}`);
@@ -302,8 +302,6 @@ function processPropertyTypeReference(
     node as ts.MappedTypeNode
   ).type;
 
-  const valueRef: any = node as ts.MappedTypeNode;
-
   if (
     !isArray &&
     typeReference &&
@@ -331,8 +329,10 @@ function processPropertyTypeReference(
     );
     return;
   } else {
-    valueRef?.type?.typeArguments?.forEach((typeArg: any) => {
-      const typeName = typeArg?.typeName?.escapedText;
+    typeReference?.typeArguments?.forEach((typeArg) => {
+      const typeName = (
+        (typeArg as ts.TypeReferenceNode)?.typeName as ts.Identifier
+      )?.escapedText as string;
       processArrayPropertyType(
         node,
         output,
