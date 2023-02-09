@@ -45,11 +45,7 @@ export const smartProps: { [index: string]: any } = {
   duration: faker.random.numeric(1),
   color: faker.color.human(),
   colour: faker.color.human(),
-  images: [
-    faker.image.imageUrl(),
-    faker.image.imageUrl(),
-    faker.image.imageUrl(),
-  ],
+  images: faker.image.imageUrl(),
   video: "https://www.youtube.com/watch?v=cI4ryatVkKw",
   previous: faker.internet.url(),
   next: faker.internet.url(),

@@ -88,7 +88,7 @@ function generatePrimitive(
   if (mockType) {
     return fake(mockType, options.isFixedMode);
   } else if (smartProp) {
-    return fake(property, options.isFixedMode, true);
+    return smartProp;
   } else {
     if (!defaultTypeToMock[syntaxType]) {
       console.error(`Unsupported Primitive type ${syntaxType}`);
@@ -545,7 +545,9 @@ function resolveArrayType(
   typeName = typeName.replace("[", "").replace("]", "");
   const result = [];
 
-  if (ts.isTypeNode(node)) {
+  if ((node as ts.ArrayTypeNode).elementType) {
+    kind = (node as ts.ArrayTypeNode).elementType.kind;
+  } else if (ts.isTypeNode(node)) {
     kind = node.kind;
   } else if ((node.type as ts.ArrayTypeNode).elementType) {
     kind = (node.type as ts.ArrayTypeNode).elementType.kind;
@@ -555,7 +557,7 @@ function resolveArrayType(
     kind === ts.SyntaxKind.StringKeyword ||
     kind === ts.SyntaxKind.BooleanKeyword ||
     kind === ts.SyntaxKind.NumberKeyword;
-  // const literalNode = node.kind === ts.SyntaxKind.LiteralType;
+
   const arrayRange = options.isFixedMode
     ? FIXED_ARRAY_COUNT
     : randomRange(DEFAULT_ARRAY_RANGE[0], DEFAULT_ARRAY_RANGE[1]);
@@ -565,7 +567,6 @@ function resolveArrayType(
       result.push(generatePrimitive(property, kind, options, ""));
     } else {
       //@ts-ignore
-      console.log("typeName", node.type, property);
       const cache = {};
       processFile(sourceFile, cache, options, types, typeName);
       result.push(cache);
@@ -731,7 +732,7 @@ function processUnionPropertyType(
           (
             (arrayNode.elementType as ts.TypeReferenceNode)
               .typeName as ts.Identifier
-          ).text
+          )?.text || (arrayNode.elementType as ts.TypeReferenceNode).typeName
         }]`,
         arrayNode.kind,
         sourceFile,
@@ -820,67 +821,6 @@ function processIntersectionPropertyType(
           types
         );
 
-        return;
-      }
-      const arrayNode = intersectionNodes.find(
-        (node) => node.kind === ts.SyntaxKind.ArrayType
-      ) as ts.ArrayTypeNode | undefined;
-      if (arrayNode) {
-        processArrayPropertyType(
-          arrayNode,
-          output,
-          property,
-          `[${
-            (
-              (arrayNode.elementType as ts.TypeReferenceNode)
-                .typeName as ts.Identifier
-            ).text
-          }]`,
-          arrayNode.kind,
-          sourceFile,
-          options,
-          types
-        );
-        return;
-      }
-
-      const functionNode = intersectionNodes.find(
-        (node: ts.Node) => node.kind === ts.SyntaxKind.FunctionType
-      );
-      if (functionNode) {
-        processFunctionPropertyType(
-          functionNode,
-          output,
-          property,
-          sourceFile,
-          options,
-          types
-        );
-        return;
-      }
-      const indexedAccessNode = intersectionNodes.find(
-        (node: ts.Node) => node.kind === ts.SyntaxKind.IndexedAccessType
-      );
-      if (indexedAccessNode) {
-        processIndexedAccessPropertyType(
-          indexedAccessNode as ts.IndexedAccessTypeNode,
-          output,
-          property,
-          options,
-          types
-        );
-        return;
-      }
-      const literalNode = intersectionNodes.every(
-        (node: ts.Node) => node.kind === ts.SyntaxKind.LiteralType
-      );
-      if (literalNode) {
-        const literalIndex = options.isFixedMode
-          ? 0
-          : randomRange(0, intersectionNodes.length - 1);
-        output[property] = getLiteralTypeValue(
-          intersectionNodes[literalIndex] as ts.LiteralTypeNode
-        );
         return;
       }
 

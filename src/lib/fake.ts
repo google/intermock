@@ -23,9 +23,5 @@ export function fake(mockType: string, isFixedMode = false, isSmart = false) {
   if (isFixedMode) {
     return fixedData[mockType];
   }
-  if (isSmart) {
-    return mockType;
-  }
-
   return faker.helpers.fake(`{{${mockType}}}`);
 }
