@@ -15,6 +15,7 @@
  */
 import { faker } from "@faker-js/faker";
 import { fixedData } from "./fixed-data";
+import { smartProps } from "./smart-props";
 
 /**
  * Wrapper for Faker, or any mocking framework
@@ -22,6 +23,9 @@ import { fixedData } from "./fixed-data";
 export function fake(mockType: string, isFixedMode = false, isSmart = false) {
   if (isFixedMode) {
     return fixedData[mockType];
+  }
+  if (isSmart) {
+    return smartProps[mockType];
   }
   return faker.helpers.fake(`{{${mockType}}}`);
 }

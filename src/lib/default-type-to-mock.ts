@@ -15,6 +15,7 @@
  */
 import { faker } from "@faker-js/faker";
 import ts from "typescript";
+import { fake } from "./fake";
 
 export const supportedPrimitiveTypes: { [key: string]: boolean } = {
   [ts.SyntaxKind.NumberKeyword]: true,
@@ -29,11 +30,15 @@ export const defaultTypeToMock: {
   [index: number]: (isFixedMode: boolean) => string | number | boolean | object;
 } = {
   [ts.SyntaxKind.NumberKeyword]: (isFixedMode = false) =>
-    parseInt(faker.random.numeric(), 10),
+    !isFixedMode
+      ? parseInt(faker.random.numeric(), 10)
+      : parseInt(fake("random.number", isFixedMode) as string, 10),
   [ts.SyntaxKind.StringKeyword]: (isFixedMode = false) =>
-    faker.lorem.sentence(),
+    !isFixedMode ? fake("lorem.text", isFixedMode) : faker.lorem.sentence(),
   [ts.SyntaxKind.BooleanKeyword]: (isFixedMode = false) =>
-    JSON.parse(faker.datatype.boolean() as unknown as string),
+    !isFixedMode
+      ? parseInt(faker.random.numeric(), 10)
+      : JSON.parse(fake("random.boolean", isFixedMode) as string),
   [ts.SyntaxKind.ObjectKeyword]: (isFixedMode = false) => {
     return {};
   },
