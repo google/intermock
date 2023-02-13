@@ -560,12 +560,10 @@ function resolveArrayType(
   const arrayRange = options.isFixedMode
     ? FIXED_ARRAY_COUNT
     : randomRange(DEFAULT_ARRAY_RANGE[0], DEFAULT_ARRAY_RANGE[1]);
-
   for (let i = 0; i < arrayRange; i++) {
     if (isPrimitiveType) {
       result.push(generatePrimitive(property, kind, options, ""));
     } else {
-      //@ts-ignore
       const cache = {};
       processFile(sourceFile, cache, options, types, typeName);
       result.push(cache);
@@ -898,6 +896,9 @@ function traverseInterfaceMembers(
   options: Options,
   types: Types
 ) {
+  if (node.kind === ts.SyntaxKind.LiteralType) {
+    //TODO: add support for literal types
+  }
   if (node.kind !== ts.SyntaxKind.PropertySignature) {
     return;
   }
@@ -914,7 +915,6 @@ function traverseInterfaceMembers(
     const property = node.name.getText();
     const questionToken = node.questionToken;
     const isUnion = node.type && node.type.kind === ts.SyntaxKind.UnionType;
-
     if (isUnion) {
       isUnionWithNull = !!(node.type as ts.UnionTypeNode).types
         .map((type) => type.kind)
@@ -1016,6 +1016,9 @@ function traverseInterfaceMembers(
           types
         );
         break;
+      case ts.SyntaxKind.LiteralType:
+        output[property] = getLiteralTypeValue(node.type as ts.LiteralTypeNode);
+        break;
       default:
         processGenericPropertyType(
           node,
@@ -1106,7 +1109,6 @@ function traverseInterface(
     output[newPath] = {};
     output = output[newPath];
   }
-
   const heritageClauses = (node as ts.InterfaceDeclaration).heritageClauses;
   const extensions: Output[] = [];
   if (heritageClauses) {
@@ -1150,7 +1152,15 @@ function traverseInterface(
   // TODO given a range of interfaces to generate, add to array. If 1
   // then just return an object
   node.forEachChild((child) => {
-    return traverseInterfaceMembers(child, output, sourceFile, options, types);
+    {
+      return traverseInterfaceMembers(
+        child,
+        output,
+        sourceFile,
+        options,
+        types
+      );
+    }
   });
 }
 
@@ -1174,6 +1184,7 @@ function isSpecificInterface(name: string, options: Options) {
  * @param options Intermock general options object
  * @param types Top-level types of interfaces/aliases etc.
  * @param propToTraverse Optional specific property to traverse through the
+ * @param genericTypeArgumentName Optional specific generic type argument name to
  *     interface
  */
 
