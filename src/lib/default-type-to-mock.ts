@@ -34,10 +34,10 @@ export const defaultTypeToMock: {
       ? parseInt(faker.random.numeric(), 10)
       : parseInt(fake("random.number", isFixedMode) as string, 10),
   [ts.SyntaxKind.StringKeyword]: (isFixedMode = false) =>
-    !isFixedMode ? fake("lorem.text", isFixedMode) : faker.lorem.sentence(),
+    !isFixedMode ? faker.lorem.sentence() : fake("lorem.text", isFixedMode),
   [ts.SyntaxKind.BooleanKeyword]: (isFixedMode = false) =>
     !isFixedMode
-      ? parseInt(faker.random.numeric(), 10)
+      ? JSON.parse(faker.datatype.boolean() as unknown as string)
       : JSON.parse(fake("random.boolean", isFixedMode) as string),
   [ts.SyntaxKind.ObjectKeyword]: (isFixedMode = false) => {
     return {};

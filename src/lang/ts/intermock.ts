@@ -85,7 +85,6 @@ function generatePrimitive(
 ) {
   const smartProp = smartProps[property];
   const isFixedMode = options.isFixedMode ? options.isFixedMode : false;
-
   if (mockType) {
     return fake(mockType, options.isFixedMode);
   } else if (smartProp) {
@@ -305,8 +304,6 @@ function processPropertyTypeReference(
     node as ts.MappedTypeNode
   ).type;
 
-  const valueRef: any = node as ts.MappedTypeNode;
-
   if (
     !isArray &&
     typeReference &&
@@ -315,7 +312,6 @@ function processPropertyTypeReference(
   ) {
     console.log("generic");
     isGeneric = true;
-    // Process Generic
     normalizedTypeName = (
       (typeReference as ts.TypeReferenceNode).typeName as ts.Identifier
     ).escapedText as string;
@@ -335,7 +331,7 @@ function processPropertyTypeReference(
     );
     return;
   } else {
-    valueRef?.type?.typeArguments?.forEach((typeArg: any) => {
+    typeReference?.typeArguments?.forEach((typeArg: any) => {
       typeArgumentName = typeArg?.typeName?.escapedText;
     });
   }
@@ -430,6 +426,10 @@ function processPropertyTypeReference(
         } else if (alias === ts.SyntaxKind.TypeLiteral) {
           output[property] = {};
           processFile(sourceFile, output[property], options, types, typeName);
+        } else if (alias === ts.SyntaxKind.LiteralType) {
+          const literalNode = (record.node as ts.TypeAliasDeclaration)
+            .type as ts.LiteralTypeNode;
+          output[property] = getLiteralTypeValue(literalNode);
         } else {
           // TODO
         }
@@ -1149,9 +1149,9 @@ function traverseInterface(
   // TODO get range from JSDoc
   // TODO given a range of interfaces to generate, add to array. If 1
   // then just return an object
-  node.forEachChild((child) =>
-    traverseInterfaceMembers(child, output, sourceFile, options, types)
-  );
+  node.forEachChild((child) => {
+    return traverseInterfaceMembers(child, output, sourceFile, options, types);
+  });
 }
 
 function isSpecificInterface(name: string, options: Options) {
@@ -1216,7 +1216,6 @@ function processFile(
               types,
               propToTraverse
             );
-          } else {
           }
         } else {
           traverseInterface(node, output, sourceFile, options, types);
