@@ -24,6 +24,7 @@ import { fake } from "../../lib/fake";
 import { randomRange } from "../../lib/random-range";
 import { smartProps } from "../../lib/smart-props";
 import { stringify } from "../../lib/stringify";
+const fs = require("fs");
 
 /**
  * Intermock general options
@@ -276,6 +277,7 @@ function processIndexedAccessPropertyType(
  * @param options Intermock general options object
  * @param types Top-level types of interfaces/aliases etc.
  */
+let typeArgumentName = ""; //this is for generic cases
 function processPropertyTypeReference(
   node: ts.PropertySignature | ts.TypeNode,
   output: Output,
@@ -288,6 +290,7 @@ function processPropertyTypeReference(
 ) {
   let normalizedTypeName: string;
   let isArray = false;
+  let isGeneric = false;
 
   if (typeName.startsWith("Array<") || typeName.startsWith("IterableArray<")) {
     normalizedTypeName = typeName
@@ -302,6 +305,8 @@ function processPropertyTypeReference(
     node as ts.MappedTypeNode
   ).type;
 
+  const valueRef: any = node as ts.MappedTypeNode;
+
   if (
     !isArray &&
     typeReference &&
@@ -309,6 +314,7 @@ function processPropertyTypeReference(
     typeReference.typeArguments.length
   ) {
     console.log("generic");
+    isGeneric = true;
     // Process Generic
     normalizedTypeName = (
       (typeReference as ts.TypeReferenceNode).typeName as ts.Identifier
@@ -329,20 +335,8 @@ function processPropertyTypeReference(
     );
     return;
   } else {
-    typeReference?.typeArguments?.forEach((typeArg) => {
-      const typeName = (
-        (typeArg as ts.TypeReferenceNode)?.typeName as ts.Identifier
-      )?.escapedText as string;
-      processArrayPropertyType(
-        node,
-        output,
-        property,
-        typeName,
-        kind,
-        sourceFile,
-        options,
-        types
-      );
+    valueRef?.type?.typeArguments?.forEach((typeArg: any) => {
+      typeArgumentName = typeArg?.typeName?.escapedText;
     });
   }
 
@@ -440,13 +434,18 @@ function processPropertyTypeReference(
           // TODO
         }
       } else {
-        output[property] = output[property] || {}; // This handles intersection type\\
+        output[property] = output[property] || {}; // This handles intersection type
+        const propertyTypeName =
+          normalizedTypeName.replace("[]", "").length === 1
+            ? typeArgumentName
+            : normalizedTypeName;
         processFile(
           sourceFile,
           output[property],
           options,
           types,
-          normalizedTypeName
+          propertyTypeName,
+          isGeneric ? typeArgumentName : undefined
         );
         break;
       }
@@ -1177,13 +1176,23 @@ function isSpecificInterface(name: string, options: Options) {
  * @param propToTraverse Optional specific property to traverse through the
  *     interface
  */
+
+let genericArrayTypeArgumentName: string | undefined;
 function processFile(
   sourceFile: ts.SourceFile,
   output: Output,
   options: Options,
   types: Types,
-  propToTraverse?: string
+  propToTraverse?: string,
+  genericTypeArgumentName?: string
 ) {
+  genericArrayTypeArgumentName = genericTypeArgumentName
+    ? genericTypeArgumentName
+    : genericArrayTypeArgumentName;
+  propToTraverse =
+    propToTraverse?.replace("[]", "").length === 1
+      ? genericArrayTypeArgumentName
+      : propToTraverse;
   const processNode = (node: ts.Node) => {
     switch (node.kind) {
       case ts.SyntaxKind.InterfaceDeclaration:
@@ -1351,6 +1360,25 @@ export function mock(options: Options) {
       types
     );
   });
-  console.log(JSON.stringify(output));
+
+  writeToaFile(JSON.stringify(output), options);
   return formatOutput(output, options);
 }
+
+const writeToaFile = (output: string, options: Options) => {
+  const format1 = output.slice(1, -1).split(":");
+  const [, ...rest] = format1;
+  const formattedOutput = rest.join(":");
+  const filePath = options.files?.[0][0].replace(".ts", "");
+
+  const outputToWrite = `
+  import { ${options.interfaces} } from "${filePath}";
+  export const mockData:${options.interfaces}=${formattedOutput}`;
+
+  fs.writeFile("./" + "/MockData.ts", outputToWrite, function (err: any) {
+    if (err) return console.log(err);
+  });
+  fs.writeFile("./" + "/MockData.json", output, function (err: any) {
+    if (err) return console.log(err);
+  });
+};
