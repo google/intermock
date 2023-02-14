@@ -1365,6 +1365,5 @@ export function mock(options: Options) {
     );
   });
 
-  console.log("output===>", JSON.stringify(output));
   return formatOutput(output, options);
 }
