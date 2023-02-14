@@ -22,6 +22,7 @@ import { smartProps } from "./smart-props";
  */
 export function fake(mockType: string, isFixedMode = false, isSmart = false) {
   if (isFixedMode) {
+    console.log("mockType", mockType);
     return fixedData[mockType];
   }
   if (isSmart) {

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import ts, { TypeReference } from "typescript";
 
 import { DEFAULT_ARRAY_RANGE, FIXED_ARRAY_COUNT } from "../../lib/constants";
@@ -83,17 +84,17 @@ function generatePrimitive(
   options: Options,
   mockType?: string
 ) {
-  const smartProp = smartProps[property];
+  const smartMockType = smartProps[property];
   const isFixedMode = options.isFixedMode ? options.isFixedMode : false;
   if (mockType) {
-    return fake(mockType, options.isFixedMode);
-  } else if (smartProp) {
-    return fake(property, options.isFixedMode, true);
+    return fake(property, isFixedMode);
+  } else if (smartMockType) {
+    return fake(property, isFixedMode, true);
   } else {
     if (!defaultTypeToMock[syntaxType]) {
-      console.error(`Unsupported Primitive type ${syntaxType}`);
-      return {};
+      throw Error(`Unsupported Primitive type ${syntaxType}`);
     }
+
     return defaultTypeToMock[syntaxType](isFixedMode);
   }
 }
