@@ -59,24 +59,24 @@ export const expectedNamespaced = {
     favoriteNovel: 1,
     knownLanguages: [
       {
-        "name": "consequuntur ab fugiat"
+        "name": "Natasha Jacobs"
       },
       {
-        "name": "consequuntur ab fugiat"
+        "name": "Natasha Jacobs"
       },
       {
-        "name": "consequuntur ab fugiat"
+        "name": "Natasha Jacobs"
       }
     ],
     desiredLanguages: [
       {
-        "name": "consequuntur ab fugiat"
+        "name": "Natasha Jacobs"
       },
       {
-        "name": "consequuntur ab fugiat"
+        "name": "Natasha Jacobs"
       },
       {
-        "name": "consequuntur ab fugiat"
+        "name": "Natasha Jacobs"
       }
     ]
   }

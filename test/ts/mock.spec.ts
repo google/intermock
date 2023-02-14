@@ -31,6 +31,7 @@ import {expectedFlat} from './test-data/flat';
 import {FunctionInterface} from './test-data/functions';
 import {expectedGenerics} from './test-data/generic';
 import {expectedImportExportSpecifier} from './test-data/importExportSpecifier/import';
+import {expectedIntersection} from './test-data/intersection';
 import {expectedJson} from './test-data/json';
 import {expectedMappedTypes} from './test-data/mappedTypes';
 import {expectedMockType} from './test-data/mockType';
@@ -136,10 +137,17 @@ describe('Intermock TypeScript: Mock tests', () => {
            expectedUnion.LonelyHuman);
      });
 
+  it('should generate mock for intersection', () => {
+    return runTestCase(
+        `${__dirname}/test-data/intersection.ts`, 'LonelyHuman',
+        expectedIntersection.LonelyHuman);
+  });
+
   it('should generate mock for basic arrays', () => {
     return runTestCase(
         `${__dirname}/test-data/array.ts`, 'User', expectedArray1.User);
   });
+
   it('should generate mock for basic tuples', () => {
     return runTestCase(
         `${__dirname}/test-data/tuple.ts`, 'Test', expectedTuple1.Test);
@@ -156,21 +164,22 @@ describe('Intermock TypeScript: Mock tests', () => {
   });
 
   it('should generate mock for interfaces with functions', async () => {
-    const output = await getOutput(`${__dirname}/test-data/functions.ts`) as
-        {FunctionInterface: FunctionInterface};
+    const output = (await getOutput(`${__dirname}/test-data/functions.ts`)) as {
+      FunctionInterface: FunctionInterface;
+    };
     const basicRet = output.FunctionInterface.basicFunctionRetNum();
     const interfaceRet = output.FunctionInterface.functionRetInterface();
-
     expect(basicRet).to.eql(86924);
-    expect(interfaceRet)
-        .to.eql({name: 'Natasha Jacobs', email: 'Myron_Olson39@hotmail.com'});
+    expect(interfaceRet).to.eql({
+      name: 'Natasha Jacobs',
+      email: 'Myron_Olson39@hotmail.com',
+    });
   });
 
   it('should generate JSON', async () => {
-    const output =
-        await getOutput(`${__dirname}/test-data/json.ts`, {output: 'json'}) as
-        string;
-
+    const output = (await getOutput(`${__dirname}/test-data/json.ts`, {
+                     output: 'json',
+                   })) as string;
     expect(JSON.parse(output)).to.deep.equal(JSON.parse(expectedJson));
   });
 
@@ -196,7 +205,7 @@ describe('Intermock TypeScript: Mock tests', () => {
     return runTestCase(
         `${__dirname}/test-data/generic.ts`, 'Person', expectedGenerics.Person);
   });
-
+  
   it('should generate mock for imported interfaces', async () => {
     return runTestCase(
         `${__dirname}/test-data/importExportSpecifier/import.ts`, 'Foo',

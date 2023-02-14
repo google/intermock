@@ -106,6 +106,8 @@ The following TypeScript features are supported:
 - Interfaces with property references to other complex types
 - Interfaces with extensions
 - Unions
+- Intersections
+- Type literals
 - Type aliases
 - Arrays
 - Namespaces

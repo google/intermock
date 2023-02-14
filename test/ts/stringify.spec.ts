@@ -18,6 +18,7 @@
 import 'mocha';
 
 import {expect} from 'chai';
+
 import {stringify} from '../../src/lib/stringify';
 
 describe('Stringify tests', () => {
