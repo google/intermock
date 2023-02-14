@@ -1,6 +1,5 @@
 import {existsSync, readFileSync} from 'fs';
 import {resolve} from 'path';
-
 import ts from 'typescript';
 
 import {mock, Options, Output, Types} from '../lang/ts/intermock';

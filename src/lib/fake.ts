@@ -13,9 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { faker } from "@faker-js/faker";
-import { fixedData } from "./fixed-data";
-import { smartProps } from "./smart-props";
+import {faker} from '@faker-js/faker';
+
+import {fixedData} from './fixed-data';
+import {smartProps} from './smart-props';
 
 /**
  * Wrapper for Faker, or any mocking framework
