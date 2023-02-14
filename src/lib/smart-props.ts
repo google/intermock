@@ -50,7 +50,7 @@ export const smartProps: { [index: string]: any } = {
   birthdate: faker.date.birthdate(),
   productID: faker.random.alphaNumeric(5),
   product_id: faker.random.alphaNumeric(6),
-  duration: faker.random.numeric(1),
+  duration: faker.datatype.number({ min: 1, max: 10 }),
   color: faker.color.human(),
   colour: faker.color.human(),
   images: faker.image.imageUrl(),

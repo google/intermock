@@ -92,7 +92,8 @@ function generatePrimitive(
     return fake(property, isFixedMode, true);
   } else {
     if (!defaultTypeToMock[syntaxType]) {
-      throw Error(`Unsupported Primitive type ${syntaxType}`);
+      console.error(`Unsupported Primitive type ${syntaxType}`);
+      return {};
     }
 
     return defaultTypeToMock[syntaxType](isFixedMode);
@@ -1363,5 +1364,7 @@ export function mock(options: Options) {
       types
     );
   });
+
+  console.log("output===>", JSON.stringify(output));
   return formatOutput(output, options);
 }

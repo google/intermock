@@ -41,6 +41,7 @@ import { expectedSpecificInterface } from "./test-data/specificInterfaces";
 import { expectedTuple1 } from "./test-data/tuple";
 import { expectedTypeAlias } from "./test-data/typeAlias";
 import { expectedUnion } from "./test-data/unions";
+import { expectedIntersection } from "./test-data/intersection";
 
 async function runTestCase(
   file: string,
@@ -76,7 +77,6 @@ describe("Intermock TypeScript: Mock tests", () => {
       expectedFlat
     );
   });
-
   it("should generate mock for a specified mock type", () => {
     return runTestCase(
       `${__dirname}/test-data/mockType.ts`,
@@ -84,7 +84,6 @@ describe("Intermock TypeScript: Mock tests", () => {
       expectedMockType
     );
   });
-
   it("should generate mock for singly nested interfaces", () => {
     return runTestCase(
       `${__dirname}/test-data/nestedSingle.ts`,
@@ -92,7 +91,6 @@ describe("Intermock TypeScript: Mock tests", () => {
       expectedNested
     );
   });
-
   it("should generate mock for interfaces with optional types - optional forced as always", () => {
     return runTestCase(
       `${__dirname}/test-data/optional.ts`,
@@ -100,7 +98,6 @@ describe("Intermock TypeScript: Mock tests", () => {
       expectedOptional1.User
     );
   });
-
   it("should generate mock for interfaces with optional types - optional forced as never", () => {
     return runTestCase(
       `${__dirname}/test-data/optional.ts`,
@@ -109,7 +106,6 @@ describe("Intermock TypeScript: Mock tests", () => {
       { isOptionalAlwaysEnabled: true }
     );
   });
-
   it("should generate mock for type aliases - as a property", () => {
     return runTestCase(
       `${__dirname}/test-data/typeAlias.ts`,
@@ -117,7 +113,6 @@ describe("Intermock TypeScript: Mock tests", () => {
       expectedTypeAlias.Person
     );
   });
-
   it("should generate mock for type aliases - as a definition", () => {
     return runTestCase(
       `${__dirname}/test-data/typeAlias.ts`,
@@ -125,7 +120,6 @@ describe("Intermock TypeScript: Mock tests", () => {
       expectedTypeAlias.Detail
     );
   });
-
   it("should generate mock for enums", () => {
     return runTestCase(
       `${__dirname}/test-data/enum.ts`,
@@ -133,7 +127,6 @@ describe("Intermock TypeScript: Mock tests", () => {
       expectedEnum.Person
     );
   });
-
   it("should generate mock for unions - with generic types", () => {
     return runTestCase(
       `${__dirname}/test-data/unions.ts`,
@@ -141,7 +134,6 @@ describe("Intermock TypeScript: Mock tests", () => {
       expectedUnion.Account
     );
   });
-
   it("should generate mock for unions - with type references", () => {
     return runTestCase(
       `${__dirname}/test-data/unions.ts`,
@@ -149,7 +141,6 @@ describe("Intermock TypeScript: Mock tests", () => {
       expectedUnion.Person
     );
   });
-
   it("should generate mock for unions - with arrays", () => {
     return runTestCase(
       `${__dirname}/test-data/unions.ts`,
@@ -157,7 +148,6 @@ describe("Intermock TypeScript: Mock tests", () => {
       expectedUnion.Pack
     );
   });
-
   it("should generate mock for unions - with literals", () => {
     return runTestCase(
       `${__dirname}/test-data/unions.ts`,
@@ -165,13 +155,19 @@ describe("Intermock TypeScript: Mock tests", () => {
       expectedUnion.Book
     );
   });
-
   it("should generate mock for unions - for null option to work like question mark", () => {
-    ///TODO: fix this
     return runTestCase(
       `${__dirname}/test-data/unions.ts`,
       "LonelyHuman",
       expectedUnion.LonelyHuman
+    );
+  });
+
+  it("should generate mock for intersection", () => {
+    return runTestCase(
+      `${__dirname}/test-data/intersection.ts`,
+      "LonelyHuman",
+      expectedIntersection.LonelyHuman
     );
   });
 
@@ -189,7 +185,6 @@ describe("Intermock TypeScript: Mock tests", () => {
       expectedTuple1.Test
     );
   });
-
   it("should generate mock for specific interfaces", () => {
     return runTestCase(
       `${__dirname}/test-data/specificInterfaces.ts`,
@@ -198,33 +193,27 @@ describe("Intermock TypeScript: Mock tests", () => {
       { interfaces: ["Person", "User"] }
     );
   });
-
   it("should generate mock for any types", () => {
     return runTestCase(`${__dirname}/test-data/any.ts`, "User", expectedAny);
   });
-
   it("should generate mock for interfaces with functions", async () => {
     const output = (await getOutput(`${__dirname}/test-data/functions.ts`)) as {
       FunctionInterface: FunctionInterface;
     };
     const basicRet = output.FunctionInterface.basicFunctionRetNum();
     const interfaceRet = output.FunctionInterface.functionRetInterface();
-
     expect(basicRet).to.eql(86924);
     expect(interfaceRet).to.eql({
       name: "Natasha Jacobs",
       email: "Myron_Olson39@hotmail.com",
     });
   });
-
   it("should generate JSON", async () => {
     const output = (await getOutput(`${__dirname}/test-data/json.ts`, {
       output: "json",
     })) as string;
-
     expect(JSON.parse(output)).to.deep.equal(JSON.parse(expectedJson));
   });
-
   it("should generate extended interfaces", async () => {
     return runTestCase(
       `${__dirname}/test-data/extension.ts`,
@@ -232,7 +221,6 @@ describe("Intermock TypeScript: Mock tests", () => {
       expectedContractor.Contractor
     );
   });
-
   it("should generate mock for namespaced interfaces and enums", () => {
     return runTestCase(
       `${__dirname}/test-data/namespace.ts`,
@@ -240,7 +228,6 @@ describe("Intermock TypeScript: Mock tests", () => {
       expectedNamespaced.Person
     );
   });
-
   it("should generate mock for mapped tyes", () => {
     return runTestCase(
       `${__dirname}/test-data/mappedTypes.ts`,
@@ -248,7 +235,6 @@ describe("Intermock TypeScript: Mock tests", () => {
       expectedMappedTypes.Person
     );
   });
-
   it("should generate mock type references with generics", async () => {
     return runTestCase(
       `${__dirname}/test-data/generic.ts`,
@@ -256,7 +242,6 @@ describe("Intermock TypeScript: Mock tests", () => {
       expectedGenerics.Person
     );
   });
-
   it("should generate mock for imported interfaces", async () => {
     return runTestCase(
       `${__dirname}/test-data/importExportSpecifier/import.ts`,
