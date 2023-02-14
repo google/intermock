@@ -1363,25 +1363,5 @@ export function mock(options: Options) {
       types
     );
   });
-
-  writeToaFile(JSON.stringify(output), options);
   return formatOutput(output, options);
 }
-
-const writeToaFile = (output: string, options: Options) => {
-  const format1 = output.slice(1, -1).split(":");
-  const [, ...rest] = format1;
-  const formattedOutput = rest.join(":");
-  const filePath = options.files?.[0][0].replace(".ts", "");
-
-  const outputToWrite = `
-  import { ${options.interfaces} } from "${filePath}";
-  export const mockData:${options.interfaces}=${formattedOutput}`;
-
-  fs.writeFile("./" + "/MockData.ts", outputToWrite, function (err: any) {
-    if (err) return console.log(err);
-  });
-  fs.writeFile("./" + "/MockData.json", output, function (err: any) {
-    if (err) return console.log(err);
-  });
-};
