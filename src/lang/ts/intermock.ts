@@ -1152,17 +1152,9 @@ function traverseInterface(
   // TODO get range from JSDoc
   // TODO given a range of interfaces to generate, add to array. If 1
   // then just return an object
-  node.forEachChild((child) => {
-    {
-      return traverseInterfaceMembers(
-        child,
-        output,
-        sourceFile,
-        options,
-        types
-      );
-    }
-  });
+  node.forEachChild((child) =>
+    traverseInterfaceMembers(child, output, sourceFile, options, types)
+  );
 }
 
 function isSpecificInterface(name: string, options: Options) {
