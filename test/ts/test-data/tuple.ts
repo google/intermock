@@ -32,7 +32,7 @@ interface Test {
 
 const sampleOrderData = {
   'id': 'bfc8cb62-c6ce-4194-a2a5-499320b837eb',
-  'name': 'consequuntur ab fugiat'
+  'name': 'Natasha Jacobs'
 };
 export const expectedTuple1 = {
   'Order': sampleOrderData,

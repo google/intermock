@@ -26,28 +26,27 @@ interface Cat {
 interface Person {
   name: string;
   age: number;
-  bestFriend: Dog|Cat;
+  bestFriend: Dog | Cat;
 }
 
 interface Pack {
   id: string;
-  dogs: Dog[]|Cat[];
+  dogs: Dog[] | Cat[];
 }
 
 interface Account {
   id: string;
-  lastDeposit: number|string;
+  lastDeposit: number | string;
 }
-
 
 interface Book {
   title: string;
-  color: 'red'|'blue'|'yellow';
+  color: "red" | "blue" | "yellow";
 }
 
 export interface LonelyHuman {
   name: string;
-  bestFriend: Dog|null;
+  bestFriend: Dog | null;
 }
 
 // TODO: test union with
@@ -57,44 +56,49 @@ export interface LonelyHuman {
 
 export const expectedUnion = {
   Person: {
-    name: 'Natasha Jacobs',
+    name: "Natasha Jacobs",
     age: 86924,
     bestFriend: {
-      name: 'Natasha Jacobs',
+      name: "Natasha Jacobs",
       owner:
-          'Animi repellat eveniet eveniet dolores quo ullam rerum reiciendis ipsam. Corrupti voluptatem ipsa illum veritatis eligendi sit autem ut quia. Ea sint voluptas impedit ducimus dolores possimus.'
-    }
+        "Animi repellat eveniet eveniet dolores quo ullam rerum reiciendis ipsam. Corrupti voluptatem ipsa illum veritatis eligendi sit autem ut quia. Ea sint voluptas impedit ducimus dolores possimus.",
+    },
   },
   Pack: {
-    id: 'bfc8cb62-c6ce-4194-a2a5-499320b837eb',
+    id: "bfc8cb62-c6ce-4194-a2a5-499320b837eb",
     dogs: [
       {
-        name: 'Natasha Jacobs',
+        name: "Natasha Jacobs",
         owner:
-            'Animi repellat eveniet eveniet dolores quo ullam rerum reiciendis ipsam. Corrupti voluptatem ipsa illum veritatis eligendi sit autem ut quia. Ea sint voluptas impedit ducimus dolores possimus.'
+          "Animi repellat eveniet eveniet dolores quo ullam rerum reiciendis ipsam. Corrupti voluptatem ipsa illum veritatis eligendi sit autem ut quia. Ea sint voluptas impedit ducimus dolores possimus.",
       },
       {
-        name: 'Natasha Jacobs',
+        name: "Natasha Jacobs",
         owner:
-            'Animi repellat eveniet eveniet dolores quo ullam rerum reiciendis ipsam. Corrupti voluptatem ipsa illum veritatis eligendi sit autem ut quia. Ea sint voluptas impedit ducimus dolores possimus.'
+          "Animi repellat eveniet eveniet dolores quo ullam rerum reiciendis ipsam. Corrupti voluptatem ipsa illum veritatis eligendi sit autem ut quia. Ea sint voluptas impedit ducimus dolores possimus.",
       },
       {
-        name: 'Natasha Jacobs',
+        name: "Natasha Jacobs",
         owner:
-            'Animi repellat eveniet eveniet dolores quo ullam rerum reiciendis ipsam. Corrupti voluptatem ipsa illum veritatis eligendi sit autem ut quia. Ea sint voluptas impedit ducimus dolores possimus.'
-      }
-    ]
+          "Animi repellat eveniet eveniet dolores quo ullam rerum reiciendis ipsam. Corrupti voluptatem ipsa illum veritatis eligendi sit autem ut quia. Ea sint voluptas impedit ducimus dolores possimus.",
+      },
+    ],
   },
   Account: {
-    id: 'bfc8cb62-c6ce-4194-a2a5-499320b837eb',
+    id: "bfc8cb62-c6ce-4194-a2a5-499320b837eb",
     lastDeposit: 86924,
   },
   LonelyHuman: {
-    name: 'Natasha Jacobs',
+    name: "Natasha Jacobs",
+    bestFriend: {
+      name: "Natasha Jacobs",
+      owner:
+        "Animi repellat eveniet eveniet dolores quo ullam rerum reiciendis ipsam. Corrupti voluptatem ipsa illum veritatis eligendi sit autem ut quia. Ea sint voluptas impedit ducimus dolores possimus.",
+    },
   },
   Book: {
     title:
-        'Animi repellat eveniet eveniet dolores quo ullam rerum reiciendis ipsam. Corrupti voluptatem ipsa illum veritatis eligendi sit autem ut quia. Ea sint voluptas impedit ducimus dolores possimus.',
-    color: 'red'
-  }
+      "Animi repellat eveniet eveniet dolores quo ullam rerum reiciendis ipsam. Corrupti voluptatem ipsa illum veritatis eligendi sit autem ut quia. Ea sint voluptas impedit ducimus dolores possimus.",
+    color: "red",
+  },
 };

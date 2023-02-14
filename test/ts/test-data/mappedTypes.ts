@@ -31,7 +31,7 @@ export interface Person {
 
 export const expectedMappedTypes = {
   Person: {
-    id: 'consequuntur ab fugiat',
+    id: 'bfc8cb62-c6ce-4194-a2a5-499320b837eb',
     isActive: true,
     name: 'Natasha Jacobs',
     age: {

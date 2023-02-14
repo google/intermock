@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import ts from "typescript";
+
+import ts, { TypeReference } from "typescript";
 
 import { DEFAULT_ARRAY_RANGE, FIXED_ARRAY_COUNT } from "../../lib/constants";
 import {
@@ -24,6 +25,7 @@ import { fake } from "../../lib/fake";
 import { randomRange } from "../../lib/random-range";
 import { smartProps } from "../../lib/smart-props";
 import { stringify } from "../../lib/stringify";
+const fs = require("fs");
 
 /**
  * Intermock general options
@@ -82,17 +84,17 @@ function generatePrimitive(
   options: Options,
   mockType?: string
 ) {
-  const smartProp = smartProps[property];
+  const smartMockType = smartProps[property];
   const isFixedMode = options.isFixedMode ? options.isFixedMode : false;
-
   if (mockType) {
-    return fake(mockType, options.isFixedMode);
-  } else if (smartProp) {
-    return fake(property, options.isFixedMode, true);
+    return fake(property, isFixedMode);
+  } else if (smartMockType) {
+    return fake(property, isFixedMode, true);
   } else {
     if (!defaultTypeToMock[syntaxType]) {
       throw Error(`Unsupported Primitive type ${syntaxType}`);
     }
+
     return defaultTypeToMock[syntaxType](isFixedMode);
   }
 }
@@ -275,6 +277,7 @@ function processIndexedAccessPropertyType(
  * @param options Intermock general options object
  * @param types Top-level types of interfaces/aliases etc.
  */
+let typeArgumentName = ""; //this is for generic cases
 function processPropertyTypeReference(
   node: ts.PropertySignature | ts.TypeNode,
   output: Output,
@@ -287,6 +290,7 @@ function processPropertyTypeReference(
 ) {
   let normalizedTypeName: string;
   let isArray = false;
+  let isGeneric = false;
 
   if (typeName.startsWith("Array<") || typeName.startsWith("IterableArray<")) {
     normalizedTypeName = typeName
@@ -301,8 +305,6 @@ function processPropertyTypeReference(
     node as ts.MappedTypeNode
   ).type;
 
-  const valueRef: any = node as ts.MappedTypeNode;
-
   if (
     !isArray &&
     typeReference &&
@@ -310,7 +312,7 @@ function processPropertyTypeReference(
     typeReference.typeArguments.length
   ) {
     console.log("generic");
-    // Process Generic
+    isGeneric = true;
     normalizedTypeName = (
       (typeReference as ts.TypeReferenceNode).typeName as ts.Identifier
     ).escapedText as string;
@@ -330,18 +332,8 @@ function processPropertyTypeReference(
     );
     return;
   } else {
-    valueRef?.type?.typeArguments?.forEach((typeArg: any) => {
-      const typeName = typeArg?.typeName?.escapedText;
-      processArrayPropertyType(
-        node,
-        output,
-        property,
-        typeName,
-        kind,
-        sourceFile,
-        options,
-        types
-      );
+    typeReference?.typeArguments?.forEach((typeArg: any) => {
+      typeArgumentName = typeArg?.typeName?.escapedText;
     });
   }
 
@@ -435,17 +427,26 @@ function processPropertyTypeReference(
         } else if (alias === ts.SyntaxKind.TypeLiteral) {
           output[property] = {};
           processFile(sourceFile, output[property], options, types, typeName);
+        } else if (alias === ts.SyntaxKind.LiteralType) {
+          const literalNode = (record.node as ts.TypeAliasDeclaration)
+            .type as ts.LiteralTypeNode;
+          output[property] = getLiteralTypeValue(literalNode);
         } else {
           // TODO
         }
       } else {
-        output[property] = output[property] || {}; // This handles intersection type\\
+        output[property] = output[property] || {}; // This handles intersection type
+        const propertyTypeName =
+          normalizedTypeName.replace("[]", "").length === 1
+            ? typeArgumentName
+            : normalizedTypeName;
         processFile(
           sourceFile,
           output[property],
           options,
           types,
-          normalizedTypeName
+          propertyTypeName,
+          isGeneric ? typeArgumentName : undefined
         );
         break;
       }
@@ -544,7 +545,9 @@ function resolveArrayType(
   typeName = typeName.replace("[", "").replace("]", "");
   const result = [];
 
-  if (ts.isTypeNode(node)) {
+  if ((node as ts.ArrayTypeNode).elementType) {
+    kind = (node as ts.ArrayTypeNode).elementType.kind;
+  } else if (ts.isTypeNode(node)) {
     kind = node.kind;
   } else if ((node.type as ts.ArrayTypeNode).elementType) {
     kind = (node.type as ts.ArrayTypeNode).elementType.kind;
@@ -558,7 +561,6 @@ function resolveArrayType(
   const arrayRange = options.isFixedMode
     ? FIXED_ARRAY_COUNT
     : randomRange(DEFAULT_ARRAY_RANGE[0], DEFAULT_ARRAY_RANGE[1]);
-
   for (let i = 0; i < arrayRange; i++) {
     if (isPrimitiveType) {
       result.push(generatePrimitive(property, kind, options, ""));
@@ -728,7 +730,7 @@ function processUnionPropertyType(
           (
             (arrayNode.elementType as ts.TypeReferenceNode)
               .typeName as ts.Identifier
-          ).text
+          )?.text || (arrayNode.elementType as ts.TypeReferenceNode).typeName
         }]`,
         arrayNode.kind,
         sourceFile,
@@ -819,67 +821,6 @@ function processIntersectionPropertyType(
 
         return;
       }
-      const arrayNode = intersectionNodes.find(
-        (node) => node.kind === ts.SyntaxKind.ArrayType
-      ) as ts.ArrayTypeNode | undefined;
-      if (arrayNode) {
-        processArrayPropertyType(
-          arrayNode,
-          output,
-          property,
-          `[${
-            (
-              (arrayNode.elementType as ts.TypeReferenceNode)
-                .typeName as ts.Identifier
-            ).text
-          }]`,
-          arrayNode.kind,
-          sourceFile,
-          options,
-          types
-        );
-        return;
-      }
-
-      const functionNode = intersectionNodes.find(
-        (node: ts.Node) => node.kind === ts.SyntaxKind.FunctionType
-      );
-      if (functionNode) {
-        processFunctionPropertyType(
-          functionNode,
-          output,
-          property,
-          sourceFile,
-          options,
-          types
-        );
-        return;
-      }
-      const indexedAccessNode = intersectionNodes.find(
-        (node: ts.Node) => node.kind === ts.SyntaxKind.IndexedAccessType
-      );
-      if (indexedAccessNode) {
-        processIndexedAccessPropertyType(
-          indexedAccessNode as ts.IndexedAccessTypeNode,
-          output,
-          property,
-          options,
-          types
-        );
-        return;
-      }
-      const literalNode = intersectionNodes.every(
-        (node: ts.Node) => node.kind === ts.SyntaxKind.LiteralType
-      );
-      if (literalNode) {
-        const literalIndex = options.isFixedMode
-          ? 0
-          : randomRange(0, intersectionNodes.length - 1);
-        output[property] = getLiteralTypeValue(
-          intersectionNodes[literalIndex] as ts.LiteralTypeNode
-        );
-        return;
-      }
 
       throw Error(
         `Unsupported Intersection option type ${property}: ${typeName}`
@@ -956,6 +897,9 @@ function traverseInterfaceMembers(
   options: Options,
   types: Types
 ) {
+  if (node.kind === ts.SyntaxKind.LiteralType) {
+    //TODO: add support for literal types
+  }
   if (node.kind !== ts.SyntaxKind.PropertySignature) {
     return;
   }
@@ -972,17 +916,12 @@ function traverseInterfaceMembers(
     const property = node.name.getText();
     const questionToken = node.questionToken;
     const isUnion = node.type && node.type.kind === ts.SyntaxKind.UnionType;
-    const isIntersection =
-      node.type && node.type.kind === ts.SyntaxKind.IntersectionType;
-
     if (isUnion) {
       isUnionWithNull = !!(node.type as ts.UnionTypeNode).types
         .map((type) => type.kind)
         .some((kind) => kind === ts.SyntaxKind.NullKeyword);
     }
 
-    if (isIntersection) {
-    }
     let typeName = "";
     let kind;
 
@@ -1078,6 +1017,9 @@ function traverseInterfaceMembers(
           types
         );
         break;
+      case ts.SyntaxKind.LiteralType:
+        output[property] = getLiteralTypeValue(node.type as ts.LiteralTypeNode);
+        break;
       default:
         processGenericPropertyType(
           node,
@@ -1168,7 +1110,6 @@ function traverseInterface(
     output[newPath] = {};
     output = output[newPath];
   }
-
   const heritageClauses = (node as ts.InterfaceDeclaration).heritageClauses;
   const extensions: Output[] = [];
   if (heritageClauses) {
@@ -1236,15 +1177,26 @@ function isSpecificInterface(name: string, options: Options) {
  * @param options Intermock general options object
  * @param types Top-level types of interfaces/aliases etc.
  * @param propToTraverse Optional specific property to traverse through the
+ * @param genericTypeArgumentName Optional specific generic type argument name to
  *     interface
  */
+
+let genericArrayTypeArgumentName: string | undefined;
 function processFile(
   sourceFile: ts.SourceFile,
   output: Output,
   options: Options,
   types: Types,
-  propToTraverse?: string
+  propToTraverse?: string,
+  genericTypeArgumentName?: string
 ) {
+  genericArrayTypeArgumentName = genericTypeArgumentName
+    ? genericTypeArgumentName
+    : genericArrayTypeArgumentName;
+  propToTraverse =
+    propToTraverse?.replace("[]", "").length === 1
+      ? genericArrayTypeArgumentName
+      : propToTraverse;
   const processNode = (node: ts.Node) => {
     switch (node.kind) {
       case ts.SyntaxKind.InterfaceDeclaration:
@@ -1268,7 +1220,6 @@ function processFile(
               types,
               propToTraverse
             );
-          } else {
           }
         } else {
           traverseInterface(node, output, sourceFile, options, types);
@@ -1278,7 +1229,7 @@ function processFile(
         const type = (node as ts.TypeAliasDeclaration).type;
         const path = (node as ts.TypeAliasDeclaration).name.text;
 
-        if (!isSpecificInterface(path, options)) {
+        if (!isSpecificInterface(path, options) && !propToTraverse) {
           return;
         }
 
@@ -1412,6 +1363,25 @@ export function mock(options: Options) {
       types
     );
   });
-  console.log(JSON.stringify(output));
+
+  writeToaFile(JSON.stringify(output), options);
   return formatOutput(output, options);
 }
+
+const writeToaFile = (output: string, options: Options) => {
+  const format1 = output.slice(1, -1).split(":");
+  const [, ...rest] = format1;
+  const formattedOutput = rest.join(":");
+  const filePath = options.files?.[0][0].replace(".ts", "");
+
+  const outputToWrite = `
+  import { ${options.interfaces} } from "${filePath}";
+  export const mockData:${options.interfaces}=${formattedOutput}`;
+
+  fs.writeFile("./" + "/MockData.ts", outputToWrite, function (err: any) {
+    if (err) return console.log(err);
+  });
+  fs.writeFile("./" + "/MockData.json", output, function (err: any) {
+    if (err) return console.log(err);
+  });
+};

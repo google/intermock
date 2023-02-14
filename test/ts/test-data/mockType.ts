@@ -15,13 +15,13 @@
  */
 interface FlatPerson {
   /** @mockType {name.firstName} */
-  fn: string;
+  firstName: string;
 
   /** @mockType {name.lastName} */
-  ln: string;
+  lastName: string;
 }
 
 export const expectedMockType = {
-  fn: 'Mabel',
-  ln: 'Williamson'
+  firstName: "Mabel",
+  lastName: "Williamson",
 };
