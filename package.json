@@ -33,7 +33,7 @@
     "closure-webpack-plugin": "^1.2.0",
     "copy-webpack-plugin": "^4.6.0",
     "css-loader": "^1.0.1",
-    "husky": "^4.3.6",
+    "husky": "^8.0.3",
     "mini-css-extract-plugin": "^0.4.5",
     "mocha": "5.2.0",
     "mocha-multi-reporters": "1.1.7",
