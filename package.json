@@ -55,7 +55,7 @@
     "watch-cli": "0.2.3",
     "webpack": "^4.29.6",
     "webpack-cli": "^3.3.0",
-    "webpack-dev-server": "^3.3.1",
+    "webpack-dev-server": "^5.0.4",
     "webpack-merge": "^4.2.1",
     "webpack-notifier": "^1.7.0"
   },
